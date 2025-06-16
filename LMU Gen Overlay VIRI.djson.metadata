@@ -1,0 +1,23 @@
+{
+  "ScreenCount": 7.0,
+  "InGameScreensIndexs": [
+    2,
+    3,
+    4
+  ],
+  "IdleScreensIndexs": [],
+  "MainPreviewIndex": 2,
+  "IsOverlay": false,
+  "OverlaySizeWarning": true,
+  "MetadataVersion": 2.0,
+  "EnableOnDashboardMessaging": true,
+  "PitScreensIndexs": [],
+  "SimHubVersion": "9.8.4",
+  "Category": null,
+  "Title": "Universal Overlay",
+  "Description": null,
+  "Author": null,
+  "Width": 1280.0,
+  "Height": 600.0,
+  "DashboardVersion": ""
+}
