@@ -759,6 +759,7 @@ const TC_SLIP_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const TC_CUT_GAME_PROPERTY_MAP = {
+  AssettoCorsaCompetizione: "GameRawData.Graphics.TCCut",
   LMU: "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLPOWERCUTMAP",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
