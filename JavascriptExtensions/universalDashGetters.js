@@ -41,15 +41,18 @@
  *  - 2.d ABS
  *  - 2.e BRAKE BIAS
  *  - 2.f BRAKE MIGRATION
- *  ----------------------------------------------------------------
- *  TODO: ------ Everything below this is not yet implemented ------
+ *  ---------------------
  *  3. FUEL
  *  - 3.a FUEL STATE
  *  - 3.b FUEL USAGE
+ *  - 3.c FUEL TIME
+ *  TODO: ------ Everything below this is not yet implemented ------
+ * -----------------
  *  4. TEMPS
  *  - 4.a OIL TEMP
  *  - 4.b WATER TEMP
  *  - 4.c ENGINE TEMP
+ * -----------------
  *  5. TYRES
  *  - 5.a FL TEMP
  *  - 5.b FL WEAR
@@ -59,11 +62,13 @@
  *  - 5.f RL WEAR
  *  - 5.g RR TEMP
  *  - 5.h RR WEAR
+ * -------------
  *  6. BRAKES
  *  - 6.a FL TEMP
  *  - 6.b FR TEMP
  *  - 6.c RL TEMP
  *  - 6.d RR TEMP
+ * --------------
  *  7. DAMAGE
  *  - 7.a FRONT BODY
  *  - 7.b FL BODY
@@ -76,9 +81,11 @@
  *  - 7.i FL WING
  *  - 7.j FR WING
  *  - 7.k REAR WING
+ * ----------------
  *  8. SUSPENSION
  *  - 8.a FRONT ARB
  *  - 8.b REAR ARB
+ * -----------------
  *  9. MISCELLANEOUS
  *  - 9.a PIT LIMITER
  * ===========================
@@ -735,6 +742,54 @@ const BM_POPUP_MAP = {
 };
 
 /**
+ * ==== 3. FUEL SECTION ====
+ * All fuel information and calculations go here
+ * ========================
+ */
+/** @type {StringRecord} */
+const FUEL_MASTER_SECTION_UI_LABELS = {
+  Generic: "Fuel",
+  GTE: "Fuel",
+  GT3: "Fuel",
+};
+/**
+ * ---- 3.a FUEL STATE SECTION ----
+ * Describes current Fuel state in liters
+ */
+/** @type {StringRecord} */
+const FUEL_STATE_GAME_PROPERTY_MAP = {
+  Generic: "Fuel",
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const FUEL_STATE_UI_PROPERTY_MAP = {
+  Generic: "Tank",
+};
+/**
+ * ---- 3.b FUEL USAGE SECTION ----
+ * Describes Fuel usage over the current lap
+ */
+/** @type {StringRecord} */
+const FUEL_USAGE_GAME_PROPERTY_MAP = {
+  Generic: "DataCorePlugin.Computed.Fuel_CurrentLapConsumption",
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const FUEL_USAGE_UI_PROPERTY_MAP = {
+  Generic: "TLap",
+};
+/**
+ * ---- 3.c FUEL TIME SECTION ----
+ * Projected remaining stint time at the current fuel usage rate
+ */
+/** @type {StringRecord} */
+const FUEL_TIME_GAME_PROPERTY_MAP = {
+  Generic: "DataCorePlugin.Computed.Fuel_RemainingTime",
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const FUEL_TIME_UI_PROPERTY_MAP = {
+  Generic: "Time",
+};
+
+/**
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {boolean} debugMode
@@ -818,10 +873,35 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
   const brakeMigrationUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_UI_PROPERTY_MAP);
   const brakeMigrationPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_POPUP_MAP);
 
+  // 3
+  const fuelMasterSectionUILabels = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_MASTER_SECTION_UI_LABELS
+  );
+  // 3.a
+  const fuelStateGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_STATE_GAME_PROPERTY_MAP
+  );
+  const fuelStateUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_STATE_UI_PROPERTY_MAP);
+  // 3.b
+  const fuelUsageGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_USAGE_GAME_PROPERTY_MAP
+  );
+  const fuelUsageUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_USAGE_UI_PROPERTY_MAP);
+  // 3.c
+  const fuelTimeGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_TIME_GAME_PROPERTY_MAP);
+  const fuelTimeUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_TIME_UI_PROPERTY_MAP);
+
   const resultMaps = {
     masterSectionUiLabels: {
       ers: ersMasterSectionUiLabels,
       carControl: carControlMasterSectionUILabels,
+      fuel: fuelMasterSectionUILabels,
     },
     labelMaps: {
       ers: {
@@ -839,6 +919,11 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
         abs: {},
         brakeBias: {},
         brakeMigration: {},
+      },
+      fuel: {
+        fuelState: {},
+        fuelUsage: {},
+        fuelTime: {},
       },
     },
     gameProperties: {
@@ -858,6 +943,11 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
         brakeBias: brakeBiasGameProperty ?? (BB_GAME_PROPERTY_MAP.Generic || {}),
         brakeMigration: brakeMigrationGameProperty ?? (BM_GAME_PROPERTY_MAP.Generic || {}),
       },
+      fuel: {
+        fuelState: fuelStateGameProperty ?? (FUEL_STATE_GAME_PROPERTY_MAP.Generic || {}),
+        fuelUsage: fuelUsageGameProperty ?? (FUEL_USAGE_GAME_PROPERTY_MAP.Generic || {}),
+        fuelTime: fuelTimeGameProperty ?? (FUEL_TIME_GAME_PROPERTY_MAP.Generic || {}),
+      },
     },
     transformations: {
       ers: {
@@ -875,6 +965,11 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
         abs: ABS_TRANSFORMATION_MAP,
         brakeBias: {},
         brakeMigration: {},
+      },
+      fuel: {
+        fuelState: {},
+        fuelUsage: {},
+        fuelTime: {},
       },
     },
     uiLabels: {
@@ -894,6 +989,11 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
         brakeBias: brakeBiasUiProperty ?? (BB_UI_PROPERTY_MAP.Generic || {}),
         brakeMigration: brakeMigrationUiProperty ?? (BM_UI_PROPERTY_MAP.Generic || {}),
       },
+      fuel: {
+        fuelState: fuelStateUiProperty ?? (FUEL_STATE_UI_PROPERTY_MAP.Generic || {}),
+        fuelUsage: fuelUsageUiProperty ?? (FUEL_STATE_UI_PROPERTY_MAP.Generic || {}),
+        fuelTime: fuelTimeUiProperty ?? (FUEL_TIME_UI_PROPERTY_MAP.Generic || {}),
+      },
     },
     popupLabels: {
       ers: {
@@ -911,6 +1011,11 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
         abs: absPopup ?? (ABS_POPUP_MAP.Generic || {}),
         brakeBias: brakeBiasPopup ?? (BB_POPUP_MAP.Generic || {}),
         brakeMigration: brakeMigrationPopup ?? (BM_POPUP_MAP.Generic || {}),
+      },
+      fuel: {
+        fuelState: {},
+        fuelUsage: {},
+        fuelTime: {},
       },
     },
   };
