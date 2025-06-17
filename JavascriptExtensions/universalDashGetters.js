@@ -96,6 +96,8 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 5.f RL WEAR
  *  - 5.g RR TEMP
  *  - 5.h RR WEAR
+ *  - 5.i PRESSURE SWEETSPOT
+ *  - 5.j WEAR SIGN (Wear might be reported inverted depending on game. Some games report maximum wear as 100%, some as 0%)
  * -------------
  *  6. BRAKES
  *  - 6.a FL TEMP
@@ -195,8 +197,14 @@ class LabelMap {
   /**
    * @param {string} key
    */
-  get(key) {
-    return this._map[key];
+  getLabel(key) {
+    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].label;
+  }
+  /**
+   * @param {string} key
+   */
+  getColor(key) {
+    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].color;
   }
 }
 
@@ -356,12 +364,17 @@ function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, curren
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {GameOrCarClassNullableStringRecord} map
+ * @param {string | undefined} currentCarId
  */
-function getGameOrClassStringOverrides(currentGame, currentCarClass, map) {
+function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId) {
   if (currentGame in map) {
     const gameMap = map[currentGame];
     if (!gameMap || typeof gameMap === "string") {
       return gameMap;
+    }
+
+    if (currentCarId && currentCarId in gameMap) {
+      return gameMap[currentCarId];
     }
 
     if (currentCarClass && currentCarClass in gameMap) {
@@ -387,12 +400,17 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map) {
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {GameOrCarClassLabelMapRecord} map
+ * @param {string | undefined} currentCarId
  *
  * @returns {LabelMap | null}
  */
-function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map) {
+function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map, currentCarId) {
   if (currentGame in map && map[currentGame]) {
     const gameMap = map[currentGame];
+
+    if (currentCarId && currentCarId in gameMap && gameMap[currentCarId]) {
+      return gameMap[currentCarId];
+    }
 
     if (currentCarClass && currentCarClass in gameMap && gameMap[currentCarClass]) {
       return gameMap[currentCarClass];
@@ -424,6 +442,7 @@ function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map) {
 const ERS_MASTER_SECTION_UI_LABELS = {
   Generic: "Motor",
   Hyper: "ERS",
+  AssettoCorsaCompetizione: "Engine",
   GT3: "Sett",
   GTE: "Sett",
 };
@@ -449,16 +468,30 @@ const AC1_ERS_MODE_LABEL_MAP = {
   4: "High 2",
   5: "Quali",
 };
+/** @type {StringRecord} */
+const ACC_DRY_WET_PACE_CAR_MAPS = {
+  1: "1 - DRY FAST",
+  2: "2 - DRY",
+  3: "3 - DRY",
+  4: "4 - DRY FUEL SAVE",
+  5: "5 - WET",
+  6: "6 - WET FUEL SAVE",
+  7: "7 - WET FUEL SAVE",
+  8: "8 - SAFETY CAR",
+};
 /** @type {GameOrCarClassLabelMapRecord} */
 const ERS_MODE_LABEL_MAP = {
   // TODO: Implement generic label map
   Generic: new LabelMap({}),
   Automobilista2: new LabelMap(AMS_ERS_MODE_LABEL_MAP),
   AssettoCorsa: new LabelMap(AC1_ERS_MODE_LABEL_MAP),
+  AssettoCorsaCompetizione: {
+    ferrari_488_gt3: new LabelMap(ACC_DRY_WET_PACE_CAR_MAPS),
+  },
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_GAME_PROPERTY_MAP = {
-  Generic: "unimplemented",
+  Generic: "EngineMap",
   Automobilista2: "GameRawData.mErsDeploymentMode",
   AssettoCorsa: "GameRawData.Physics.ErsPowerLevel",
   LMU: {
@@ -484,7 +517,7 @@ const ERS_MODE_UI_PROPERTY_MAP = {
   Automobilista2: "Mode",
   AssettoCorsa: "Mode",
   LMU: { Hyper: "Map" },
-  ACC: "Map",
+  AssettoCorsaCompetizione: "Map",
   GT3: "Map",
   GTE: "Mix",
 };
@@ -494,7 +527,7 @@ const ERS_MODE_POPUP_MAP = {
   Automobilista2: "MODE",
   AssettoCorsa: "MODE",
   LMU: { Hyper: "MOTOR MAP" },
-  ACC: "MOTOR MAP",
+  AssettoCorsaCompetizione: "ENGINE MAP",
   GT3: "MOTOR MAP",
   GTE: "ENGINE MIX",
 };
@@ -711,13 +744,13 @@ const TC_SLIP_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_UI_PROPERTY_MAP = {
   Generic: "SLIP",
-  ACC: "TC1",
+  AssettoCorsaCompetizione: "",
   iRacing: "TC1",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_POPUP_MAP = {
   Generic: "TC SLIP LEVEL",
-  ACC: "TC1 LEVEL",
+  AssettoCorsaCompetizione: "TC1 LEVEL",
   iRacing: "TC1 LEVEL",
 };
 /**
@@ -731,13 +764,13 @@ const TC_CUT_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_CUT_UI_PROPERTY_MAP = {
   Generic: "CUT",
-  ACC: "TC2",
+  AssettoCorsaCompetizione: "Cut",
   iRacing: "TC2",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_CUT_POPUP_MAP = {
   Generic: "TC CUT LEVEL",
-  ACC: "TC2 LEVEL",
+  AssettoCorsaCompetizione: "TC CUT LEVEL",
   iRacing: "TC2 LEVEL",
 };
 /**
@@ -930,129 +963,295 @@ const WATER_TEMP_TRANSFORMATION_MAP = {
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
  */
-function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
+function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = false, currentCarId = undefined) {
   // 1
   const ersMasterSectionUiLabels = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    ERS_MASTER_SECTION_UI_LABELS
+    ERS_MASTER_SECTION_UI_LABELS,
+    currentCarId
   );
 
   // 1.a
-  const ersModeGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_GAME_PROPERTY_MAP);
-  const ersModeLabelMap = getGameOrClassLabelMapOverrides(currentGame, currentCarClass, ERS_MODE_LABEL_MAP);
-  const ersModeUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_UI_PROPERTY_MAP);
-  const ersModePopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_POPUP_MAP);
+  const ersModeGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_MODE_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const ersModeLabelMap = getGameOrClassLabelMapOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_MODE_LABEL_MAP,
+    currentCarId
+  );
+  const ersModeUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_MODE_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  const ersModePopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_POPUP_MAP, currentCarId);
 
   // 1.b
-  const ersSocGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_SOC_GAME_PROPERTY_MAP);
-  const ersSocUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_SOC_UI_PROPERTY_MAP);
+  const ersSocGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_SOC_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const ersSocUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_SOC_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 1.c
   const ersCurrentGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    ERS_CURRENT_GAME_PROPERTY_MAP
+    ERS_CURRENT_GAME_PROPERTY_MAP,
+    currentCarId
   );
-  const ersCurrentLabel = getGameOrClassLabelMapOverrides(currentGame, currentCarClass, ERS_CURRENT_LABEL_MAP);
-  const ersCurrentUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_CURRENT_UI_PROPERTY_MAP);
+  const ersCurrentLabel = getGameOrClassLabelMapOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_CURRENT_LABEL_MAP,
+    currentCarId
+  );
+  const ersCurrentUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_CURRENT_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 1.d
   const ersRecoveryGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    ERS_RECOVERY_GAME_PROPERTY_MAP
+    ERS_RECOVERY_GAME_PROPERTY_MAP,
+    currentCarId
   );
   const ersRecoveryUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    ERS_RECOVERY_UI_PROPERTY_MAP
+    ERS_RECOVERY_UI_PROPERTY_MAP,
+    currentCarId
   );
-  const ersRecoveryPopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_RECOVERY_POPUP_MAP);
+  const ersRecoveryPopupMap = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_RECOVERY_POPUP_MAP,
+    currentCarId
+  );
 
   // 1.e
-  const ersDeltaGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_DELTA_GAME_PROPERTY_MAP);
-  const ersDeltaUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_DELTA_UI_PROPERTY_MAP);
+  const ersDeltaGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_DELTA_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const ersDeltaUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_DELTA_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 1.f
-  const ersLapGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_LAP_GAME_PROPERTY_MAP);
-  const ersLapUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_LAP_UI_PROPERTY_MAP);
+  const ersLapGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_LAP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const ersLapUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ERS_LAP_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 2
   const carControlMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    CAR_CONTROL_MASTER_SECTION_UI_LABELS
+    CAR_CONTROL_MASTER_SECTION_UI_LABELS,
+    currentCarId
   );
   // 2.a
-  const tcGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_GAME_PROPERTY_MAP);
-  const tcUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_UI_PROPERTY_MAP);
-  const tcPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_POPUP_MAP);
+  const tcGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    TC_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const tcUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_UI_PROPERTY_MAP, currentCarId);
+  const tcPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_POPUP_MAP, currentCarId);
   // 2.b
-  const tcSlipGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_GAME_PROPERTY_MAP);
-  const tcSlipUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_UI_PROPERTY_MAP);
-  const tcSlipPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_POPUP_MAP);
+  const tcSlipGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    TC_SLIP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const tcSlipUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    TC_SLIP_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  const tcSlipPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_POPUP_MAP, currentCarId);
   // 2.c
-  const tcCutGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_GAME_PROPERTY_MAP);
-  const tcCutUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_UI_PROPERTY_MAP);
-  const tcCutPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_POPUP_MAP);
+  const tcCutGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    TC_CUT_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const tcCutUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    TC_CUT_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  const tcCutPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_POPUP_MAP, currentCarId);
   // 2.d
-  const absGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_GAME_PROPERTY_MAP);
-  const absUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_UI_PROPERTY_MAP);
-  const absPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_POPUP_MAP);
+  const absGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ABS_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const absUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_UI_PROPERTY_MAP, currentCarId);
+  const absPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_POPUP_MAP, currentCarId);
   // 2.e
-  const brakeBiasGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_GAME_PROPERTY_MAP);
-  const brakeBiasUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_UI_PROPERTY_MAP);
-  const brakeBiasPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_POPUP_MAP);
+  const brakeBiasGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    BB_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const brakeBiasUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    BB_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  const brakeBiasPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_POPUP_MAP, currentCarId);
   // 2.f
-  const brakeMigrationGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_GAME_PROPERTY_MAP);
-  const brakeMigrationUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_UI_PROPERTY_MAP);
-  const brakeMigrationPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_POPUP_MAP);
+  const brakeMigrationGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    BM_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const brakeMigrationUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    BM_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  const brakeMigrationPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_POPUP_MAP, currentCarId);
 
   // 3
   const fuelMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    FUEL_MASTER_SECTION_UI_LABELS
+    FUEL_MASTER_SECTION_UI_LABELS,
+    currentCarId
   );
   // 3.a
   const fuelStateGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    FUEL_STATE_GAME_PROPERTY_MAP
+    FUEL_STATE_GAME_PROPERTY_MAP,
+    currentCarId
   );
-  const fuelStateUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_STATE_UI_PROPERTY_MAP);
+  const fuelStateUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_STATE_UI_PROPERTY_MAP,
+    currentCarId
+  );
   // 3.b
   const fuelUsageGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    FUEL_USAGE_GAME_PROPERTY_MAP
+    FUEL_USAGE_GAME_PROPERTY_MAP,
+    currentCarId
   );
-  const fuelUsageUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_USAGE_UI_PROPERTY_MAP);
+  const fuelUsageUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_USAGE_UI_PROPERTY_MAP,
+    currentCarId
+  );
   // 3.c
-  const fuelTimeGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_TIME_GAME_PROPERTY_MAP);
-  const fuelTimeUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_TIME_UI_PROPERTY_MAP);
+  const fuelTimeGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_TIME_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const fuelTimeUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_TIME_UI_PROPERTY_MAP,
+    currentCarId
+  );
   // 3.d
-  const fuelLapsGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_LAPS_GAME_PROPERTY_MAP);
-  const fuelLapsUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, FUEL_LAPS_UI_PROPERTY_MAP);
+  const fuelLapsGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_LAPS_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const fuelLapsUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_LAPS_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 4
   const tempMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    TEMP_MASTER_SECTION_UI_LABELS
+    TEMP_MASTER_SECTION_UI_LABELS,
+    currentCarId
   );
   // 4.a
-  const oilTempGameProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, OIL_TEMP_GAME_PROPERTY_MAP);
-  const oilTempUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, OIL_TEMP_UI_PROPERTY_MAP);
+  const oilTempGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    OIL_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const oilTempUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    OIL_TEMP_UI_PROPERTY_MAP,
+    currentCarId
+  );
   // 4.b
   const waterTempGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
-    WATER_TEMP_GAME_PROPERTY_MAP
+    WATER_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
   );
-  const waterTempUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, WATER_TEMP_UI_PROPERTY_MAP);
+  const waterTempUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    WATER_TEMP_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   const resultMaps = {
     masterSectionUiLabels: {
@@ -1064,29 +1263,29 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
     labelMaps: {
       ers: {
         ersMode: ersModeLabelMap ?? (ERS_MODE_LABEL_MAP.Generic || {}),
-        ersSoc: {},
-        ersCurrent: ersCurrentLabel ?? (ERS_CURRENT_LABEL_MAP.Generic || {}),
-        ersRecovery: {},
-        ersDelta: {},
-        ersLap: {},
+        ersSoc: null,
+        ersCurrent: ersCurrentLabel ?? (ERS_CURRENT_LABEL_MAP.Generic || null),
+        ersRecovery: null,
+        ersDelta: null,
+        ersLap: null,
       },
       carControl: {
-        tc: {},
-        tcCut: {},
-        tcSlip: {},
-        abs: {},
-        brakeBias: {},
-        brakeMigration: {},
+        tc: null,
+        tcCut: null,
+        tcSlip: null,
+        abs: null,
+        brakeBias: null,
+        brakeMigration: null,
       },
       fuel: {
-        fuelState: {},
-        fuelUsage: {},
-        fuelTime: {},
-        fuelLaps: {},
+        fuelState: null,
+        fuelUsage: null,
+        fuelTime: null,
+        fuelLaps: null,
       },
       temperature: {
-        oil: {},
-        water: {},
+        oil: null,
+        water: null,
       },
     },
     gameProperties: {
@@ -1221,9 +1420,10 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode) {
  * @param {boolean} debugMode
  * @param {string} section
  * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
  */
-function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode);
+function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode, currentCarId) {
+  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
 
   if (debugMode) {
     return telemetry.availableValues;
@@ -1246,9 +1446,10 @@ function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode)
  * @param {string} section
  * @param {string} property
  * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
  */
-function getPropertyPopupLabel(currentGame, currentCarClass, section, property, debugMode) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode);
+function getPropertyPopupLabel(currentGame, currentCarClass, section, property, debugMode, currentCarId) {
+  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
 
   if (debugMode) {
     return telemetry.availableValues;
@@ -1271,9 +1472,10 @@ function getPropertyPopupLabel(currentGame, currentCarClass, section, property, 
  * @param {string} section
  * @param {string} property
  * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
  */
-function getPropertyUILabel(currentGame, currentCarClass, section, property, debugMode) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode);
+function getPropertyUILabel(currentGame, currentCarClass, section, property, debugMode, currentCarId) {
+  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
 
   if (debugMode) {
     return telemetry.availableValues;
@@ -1296,9 +1498,10 @@ function getPropertyUILabel(currentGame, currentCarClass, section, property, deb
  * @param {string} section
  * @param {string} property
  * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
  */
-function getPropertyValue(currentGame, currentCarClass, section, property, debugMode) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode);
+function getPropertyValue(currentGame, currentCarClass, section, property, debugMode, currentCarId) {
+  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
 
   if (debugMode) {
     return telemetry.availableValues;
