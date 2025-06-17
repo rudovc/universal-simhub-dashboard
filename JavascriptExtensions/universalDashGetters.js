@@ -172,6 +172,10 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  */
 
 /**
+ * @typedef {{[key: GamePropertyKey]: null | LabelMap | {[key: GamePropertyKey]: LabelMap }}} NullableGameOrCarClassLabelMapRecord
+ */
+
+/**
  * @param {LabelColor} map
  */
 function getOrCreateLabelAndColor(map) {
@@ -399,7 +403,7 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
 /**
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
- * @param {GameOrCarClassLabelMapRecord} map
+ * @param {NullableGameOrCarClassLabelMapRecord} map
  * @param {string | undefined} currentCarId
  *
  * @returns {LabelMap | null}
@@ -479,15 +483,14 @@ const ACC_DRY_WET_PACE_CAR_MAPS = {
   7: "7 - WET FUEL SAVE",
   8: "8 - SAFETY CAR",
 };
-/** @type {GameOrCarClassLabelMapRecord} */
+/** @type {NullableGameOrCarClassLabelMapRecord} */
 const ERS_MODE_LABEL_MAP = {
-  // TODO: Implement generic label map
-  Generic: new LabelMap({}),
   Automobilista2: new LabelMap(AMS_ERS_MODE_LABEL_MAP),
   AssettoCorsa: new LabelMap(AC1_ERS_MODE_LABEL_MAP),
   AssettoCorsaCompetizione: {
     ferrari_488_gt3: new LabelMap(ACC_DRY_WET_PACE_CAR_MAPS),
   },
+  LMU: null,
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_GAME_PROPERTY_MAP = {
@@ -1263,9 +1266,9 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     },
     labelMaps: {
       ers: {
-        ersMode: ersModeLabelMap ?? (ERS_MODE_LABEL_MAP.Generic || {}),
+        ersMode: ersModeLabelMap,
         ersSoc: null,
-        ersCurrent: ersCurrentLabel ?? (ERS_CURRENT_LABEL_MAP.Generic || null),
+        ersCurrent: ersCurrentLabel,
         ersRecovery: null,
         ersDelta: null,
         ersLap: null,
@@ -1375,10 +1378,10 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     },
     popupLabels: {
       ers: {
-        ersMode: ersModePopupMap ?? (ERS_MODE_POPUP_MAP.Generic || {}),
+        ersMode: ersModePopupMap,
         ersSoc: {},
         ersCurrent: {},
-        ersRecovery: ersRecoveryPopupMap ?? (ERS_RECOVERY_POPUP_MAP || {}),
+        ersRecovery: ersRecoveryPopupMap,
         ersDelta: {},
         ersLap: {},
       },
