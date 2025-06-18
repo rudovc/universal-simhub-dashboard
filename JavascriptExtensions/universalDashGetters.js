@@ -1355,7 +1355,7 @@ const RR_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {GameOrCarClassNullableFunctionRecord} */
 const WEAR_TRANSFORMATION_PER_GAME_MAP = {
-  Generic: (wear) => wear,
+  Generic: (wear) => 100 - wear,
   LMU: { Generic: (wear) => wear },
   AssettoCorsaCompetizione: { Generic: (wear) => 100 - wear },
 };
