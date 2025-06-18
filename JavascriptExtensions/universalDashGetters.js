@@ -49,7 +49,8 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * - Game and/or car class specific label maps, which map the value coming from the game to human-readable text
  * - Global label maps, which maps game names to their respective game specific label maps
  * - Global game property maps, which maps game names to the specific game property that supplies that value for that game
- * - Global transformation maps, which maps game properties to whatever transformation should be performed on them to normalize the value
+ * - Global transformation maps, which maps game properties to whatever transformation should be performed on them to normalize the value.
+ *   These are actually higher order functions, which take in the current game, current class, and current car ID as parameters and then decide which transformation to apply based on that.
  * - Global UI property maps, which maps game and/or car class names to the UI labels for dashboard elements. These control the visibility of the subsection.
  *   To make the segment invisible, just set it to an empty string. Setting a nullish value will cause a fallback to the generic value
  * - Global popup property maps, which maps game and/or car class names to the UI labels for the popup elements when the property is modified. These control the enabled state of the popup
@@ -1137,7 +1138,7 @@ const FL_TYRE_PRES_TRANSFORMATION_MAP = {
      * @param {number} temp
      */
     (temp) =>
-      Number.parseInt(temp.toFixed(0)),
+      Number.parseFloat(temp.toFixed(1)),
 };
 
 /**
@@ -1209,7 +1210,7 @@ const FR_TYRE_PRES_TRANSFORMATION_MAP = {
      * @param {number} temp
      */
     (temp) =>
-      Number.parseInt(temp.toFixed(0)),
+      Number.parseFloat(temp.toFixed(1)),
 };
 
 /**
@@ -1281,7 +1282,7 @@ const RL_TYRE_PRES_TRANSFORMATION_MAP = {
      * @param {number} temp
      */
     (temp) =>
-      Number.parseInt(temp.toFixed(0)),
+      Number.parseFloat(temp.toFixed(1)),
 };
 
 /**
@@ -1296,12 +1297,15 @@ const RR_TYRE_TEMP_GAME_PROPERTY_MAP = {
 const RR_TYRE_TEMP_UI_PROPERTY_MAP = {
   Generic: "°RR",
 };
-/** @type {FunctionRecord} */
+/** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_TEMP_TRANSFORMATION_MAP = {
-  /**
-   * @param {number} temp
-   */
-  TyreTemperatureRearRight: (temp) => Number.parseInt(temp.toFixed(0)),
+  TyreTemperatureRearRight:
+    () =>
+    /**
+     * @param {number} temp
+     */
+    (temp) =>
+      Number.parseInt(temp.toFixed(0)),
 };
 /**
  * ---- 5.k RR WEAR SECTION ----
@@ -1342,12 +1346,15 @@ const RR_TYRE_PRES_GAME_PROPERTY_MAP = {
 const RR_TYRE_PRES_UI_PROPERTY_MAP = {
   Generic: "%RR",
 };
-/** @type {FunctionRecord} */
+/** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_PRES_TRANSFORMATION_MAP = {
-  /**
-   * @param {number} temp
-   */
-  TyrePressureRearRight: (temp) => Number.parseInt(temp.toFixed(0)),
+  TyrePressureRearRight:
+    () =>
+    /**
+     * @param {number} pres
+     */
+    (pres) =>
+      Number.parseFloat(pres.toFixed(1)),
 };
 /**
  * ---- 5.m WEAR TRANSFORMATION ----
