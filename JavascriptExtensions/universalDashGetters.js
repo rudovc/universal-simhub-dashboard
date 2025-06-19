@@ -392,6 +392,8 @@ function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, curren
   let resultEstimate = undefined;
 
   root.previousLapNumber = root.previousLapNumber ?? 0;
+  root.totalMeasurementTimeSeconds = root.totalMeasurementTimeSeconds ?? 0;
+  root.valueAverageOverTimeSpan = root.valueAverageOverTimeSpan ?? 0;
 
   if (root.previousLapNumber !== currentLapNumber) {
     root.totalMeasurementTimeSeconds = (root.totalMeasurementTimeSeconds + lastLapTimeSeconds) / 2;
