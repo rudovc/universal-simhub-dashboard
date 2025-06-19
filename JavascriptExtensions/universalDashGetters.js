@@ -108,6 +108,10 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 5.l RR PRES
  *  - 5.m WEAR TRANSFORMATION (Wear might be reported inverted depending on game. Some games report maximum wear as 100%, some as 0%)
  *  - 5.n IDEAL RANGES
+ *  - 5.o FL TYRE
+ *  - 5.p FR TYRE
+ *  - 5.q RL TYRE
+ *  - 5.r RR TYRE
  * -------------
  *  6. BRAKES
  *  - 6.a FL TEMP
@@ -508,8 +512,9 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
  * @param {string | undefined} currentCarClass
  * @param {GameOrCarClassNullableStringRecord} map
  * @param {string | undefined} currentCarId
+ * @param {string | undefined} currentTyre
  */
-function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId) {
+function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId, currentTyre = undefined) {
   if (currentGame in map) {
     const gameMap = map[currentGame];
     if (!gameMap || typeof gameMap === "string") {
@@ -517,24 +522,66 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
     }
 
     if (currentCarId && currentCarId in gameMap) {
+      if (
+        currentTyre &&
+        gameMap[currentCarId] &&
+        typeof gameMap[currentCarId] !== "string" &&
+        currentTyre in gameMap[currentCarId]
+      ) {
+        return gameMap[currentCarId][currentTyre];
+      }
+
       return gameMap[currentCarId];
     }
 
     if (currentCarClass && currentCarClass in gameMap) {
+      if (
+        currentTyre &&
+        gameMap[currentCarClass] &&
+        typeof gameMap[currentCarClass] !== "string" &&
+        currentTyre in gameMap[currentCarClass]
+      ) {
+        return gameMap[currentCarClass][currentTyre];
+      }
+
       return gameMap[currentCarClass];
     }
 
+    if (currentTyre && gameMap[currentTyre]) {
+      return gameMap[currentTyre];
+    }
+
     if ("Generic" in gameMap) {
+      if (currentTyre && gameMap.Generic && typeof gameMap.Generic !== "string" && currentTyre in gameMap.Generic) {
+        return gameMap.Generic[currentTyre];
+      }
+
       return gameMap.Generic;
     }
   }
 
   if (currentCarClass && currentCarClass in map) {
+    if (
+      currentTyre &&
+      map[currentCarClass] &&
+      typeof map[currentCarClass] !== "string" &&
+      currentTyre in map[currentCarClass]
+    ) {
+      return map[currentCarClass][currentTyre];
+    }
+
     return map[currentCarClass];
   }
 
   if ("Generic" in map) {
+    if (currentTyre && map.Generic && typeof map.Generic !== "string" && currentTyre in map.Generic) {
+      return map.Generic[currentTyre];
+    }
+
     return map.Generic;
+  }
+  if (currentTyre && currentTyre in map) {
+    return map[currentTyre];
   }
 
   return null;
@@ -1686,9 +1733,25 @@ const WEAR_TRANSFORMATION_PER_GAME_MAP = {
  * Everything in a `criticalThreshold` around optimal is considered bad, but not extreme
  * Everything outside of `badThreshold` is displayed as critical
  */
+/** @type {GameOrCarClassNullableStringRecord} */
+const PRIMARY_TYRE_METRIC_PER_GAME_MAP = {
+  Generic: "Temp",
+  AssettoCorsaCompetizione: "Pres",
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const IDEAL_TYRE_TEMP_GAME_PROPERTY_MAP = {
+  Generic: null,
+  LMU: {
+    Hard: "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Hard",
+    Medium: "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Medium",
+    Soft: "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Soft",
+    Wet: "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Wet",
+  },
+};
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_TYRE_TEMP_RANGES_MAP = {
   Generic: null,
+  LMU: { Generic: { optimal: 90, goodThreshold: 10, criticalThreshold: 25 } },
 };
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_TYRE_WEAR_RANGES_MAP = {
@@ -1701,9 +1764,41 @@ const IDEAL_TYRE_WEAR_RANGES_MAP = {
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_TYRE_PRES_RANGES_MAP = {
   Generic: null,
-  LMU: { Generic: { optimal: 23, goodThreshold: 1, criticalThreshold: 3 } },
   AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
 };
+/**
+ * ---- 5.o FL TYRE SECTION ----
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const FL_TYRE_TYPE_GAME_PROPERTY_MAP = {
+  Generic: null,
+  LMU: "LMU_NeoRedPlugin.Tyre.FL_TyreCompound_Name",
+};
+/**
+ * ---- 5.p FR TYRE SECTION ----
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const FR_TYRE_TYPE_GAME_PROPERTY_MAP = {
+  Generic: null,
+  LMU: "LMU_NeoRedPlugin.Tyre.FR_TyreCompound_Name",
+};
+/**
+ * ---- 5.q RL TYRE SECTION ----
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const RL_TYRE_TYPE_GAME_PROPERTY_MAP = {
+  Generic: null,
+  LMU: "LMU_NeoRedPlugin.Tyre.RL_TyreCompound_Name",
+};
+/**
+ * ---- 5.r RR TYRE SECTION ----
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const RR_TYRE_TYPE_GAME_PROPERTY_MAP = {
+  Generic: null,
+  LMU: "LMU_NeoRedPlugin.Tyre.RR_TyreCompound_Name",
+};
+
 /**
  *  6. BRAKES
  *  - 6.a FL TEMP
@@ -2252,6 +2347,20 @@ function getTelemetryLabelsAndValues(
     currentCarId
   );
   // 5.n
+  const primaryTyreMetric = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    PRIMARY_TYRE_METRIC_PER_GAME_MAP,
+    currentCarId,
+    currentTyre
+  );
+  const optimalTyreTempProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    IDEAL_TYRE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId,
+    currentTyre
+  );
   const optimalTyreTempRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
@@ -2272,6 +2381,34 @@ function getTelemetryLabelsAndValues(
     IDEAL_TYRE_PRES_RANGES_MAP,
     currentCarId,
     currentTyre
+  );
+  // 5.o
+  const frontLeftTyreTypeProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FL_TYRE_TYPE_GAME_PROPERTY_MAP,
+    currentCarClass
+  );
+  // 5.p
+  const frontRightTyreTypeProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FR_TYRE_TYPE_GAME_PROPERTY_MAP,
+    currentCarClass
+  );
+  // 5.q
+  const rearLeftTyreTypeProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    RL_TYRE_TYPE_GAME_PROPERTY_MAP,
+    currentCarClass
+  );
+  // 5.r
+  const rearRightTyreTypeProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    RR_TYRE_TYPE_GAME_PROPERTY_MAP,
+    currentCarClass
   );
 
   // 6.a
@@ -2413,6 +2550,10 @@ function getTelemetryLabelsAndValues(
         frPres: frontRightPressureGameProperty,
         rlPres: rearLeftPressureGameProperty,
         rrPres: rearRightPressureGameProperty,
+        flType: frontLeftTyreTypeProperty,
+        frType: frontLeftTyreTypeProperty,
+        rlType: frontLeftTyreTypeProperty,
+        rrType: frontLeftTyreTypeProperty,
       },
       brake: {
         flTemp: frontLeftBrakeTemperatureGameProperty,
@@ -2579,6 +2720,9 @@ function getTelemetryLabelsAndValues(
     },
     optimalRanges: {
       tyre: {
+        primaryTyreMetric,
+        optimalTyreTempGameProperty: optimalTyreTempProperty,
+        optimalTyrePresGameProperty: null,
         flTemp: optimalTyreTempRanges,
         frTemp: optimalTyreTempRanges,
         rlTemp: optimalTyreTempRanges,
@@ -2705,7 +2849,6 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
   if (debugMode) {
     return telemetry.availableValues;
   }
-
   const propertyKey = telemetry.gameProperties[section][property];
 
   if (propertyKey === undefined) {
@@ -2715,12 +2858,17 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
   }
 
   const labelMap = telemetry.labelMaps[section][property];
-
   // Return identity function if transformation is undefined. Transformations are higher order functions that return a transform depending on the current game/class/car
   /** @type function(any): any */
-  const transformation = telemetry.transformations[section][property][propertyKey]
-    ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-    : (prop) => prop;
+  const transformation =
+    section in telemetry.transformations &&
+    telemetry.transformations[section] &&
+    property in telemetry.transformations[section] &&
+    telemetry.transformations[section][property] &&
+    propertyKey in telemetry.transformations[section][property] &&
+    telemetry.transformations[section][property][propertyKey]
+      ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
+      : (prop) => prop;
 
   return { property: propertyKey, transformation, labelMap };
 }
@@ -2748,18 +2896,49 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
     );
   }
-
   const optimalRanges = telemetry.optimalRanges[section][property];
 
   // Return identity function if transformation is undefined. Transformations are higher order functions that return a transform depending on the current game/class/car
   /** @type function(any): any */
-  const transformation = telemetry.transformations[section][property][propertyKey]
-    ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-    : (prop) => prop;
+  const transformation =
+    section in telemetry.transformations &&
+    telemetry.transformations[section] &&
+    property in telemetry.transformations[section] &&
+    telemetry.transformations[section][property] &&
+    propertyKey in telemetry.transformations[section][property] &&
+    telemetry.transformations[section][property][propertyKey]
+      ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
+      : (prop) => prop;
 
   return {
     property: propertyKey,
     transformation,
-    optimalRanges,
+    optimalRanges: optimalRanges,
+  };
+}
+
+/**
+ * @param {string} currentGame
+ * @param {string | undefined} currentCarClass
+ * @param {string | undefined} currentTyre
+ * @param {string | undefined} selectedTyre
+ * @param {boolean} debugMode
+ * @param {string | undefined} currentCarId
+ */
+function getPrimaryTyreMetric(currentGame, currentCarClass, selectedTyre, debugMode, currentCarId, currentTyre) {
+  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId, currentTyre);
+
+  if (debugMode) {
+    return telemetry.availableValues;
+  }
+
+  const tyreMetric = telemetry.optimalRanges.tyre.primaryTyreMetric;
+  const tyreMetricGameProperty = telemetry.optimalRanges.tyre[`optimalTyre${tyreMetric}GameProperty`];
+  const selectedTyreProperty = `${selectedTyre}${tyreMetric}`;
+
+  return {
+    tyreMetric,
+    tyreMetricGameProperty,
+    selectedProperty: selectedTyreProperty,
   };
 }
