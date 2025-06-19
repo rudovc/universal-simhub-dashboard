@@ -2092,6 +2092,7 @@ function getTelemetryLabelsAndValues(
   );
   const tcCutPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_POPUP_MAP, currentCarId);
   // 2.d
+  const absLabelMap = getGameOrClassLabelMapOverrides(currentGame, currentCarClass, ABS_LABEL_MAP, currentCarId);
   const absGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
@@ -2481,7 +2482,7 @@ function getTelemetryLabelsAndValues(
         tc: null,
         tcCut: null,
         tcSlip: null,
-        abs: null,
+        abs: absLabelMap,
         brakeBias: null,
         brakeMigration: null,
       },
