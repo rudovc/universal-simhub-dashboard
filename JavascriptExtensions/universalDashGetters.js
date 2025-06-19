@@ -106,13 +106,14 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 5.m WEAR TRANSFORMATION (Wear might be reported inverted depending on game. Some games report maximum wear as 100%, some as 0%)
  *  - 5.n IDEAL RANGES
  * -------------
- *  TODO: ------ Everything below this is not yet implemented ------
  *  6. BRAKES
  *  - 6.a FL TEMP
  *  - 6.b FR TEMP
  *  - 6.c RL TEMP
  *  - 6.d RR TEMP
+ *  - 6.e IDEAL RANGES
  * --------------
+ *  TODO: ------ Everything below this is not yet implemented ------
  *  7. DAMAGE
  *  - 7.a FRONT BODY
  *  - 7.b FL BODY
@@ -1429,6 +1430,109 @@ const IDEAL_TYRE_PRES_RANGES_MAP = {
   AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
 };
 /**
+ *  6. BRAKES
+ *  - 6.a FL TEMP
+ *  - 6.b FR TEMP
+ *  - 6.c RL TEMP
+ *  - 6.d RR TEMP
+ */
+/**
+ * ---- 6.a FL TEMP SECTION ----
+ */
+/** @type {StringRecord} */
+const FL_BRAKE_TEMP_GAME_PROPERTY_MAP = {
+  Generic: "BrakeTemperatureFrontLeft",
+};
+
+/** @type {GameOrCarClassNullableStringRecord} */
+const FL_BRAKE_TEMP_UI_PROPERTY_MAP = {
+  Generic: "°FL",
+};
+/** @type {HigherOrderFunctionRecord} */
+const FL_BRAKE_TEMP_TRANSFORMATION_MAP = {
+  BrakeTemperatureFrontLeft:
+    () =>
+    /**
+     * @param {number} temp
+     */
+    (temp) =>
+      Number.parseInt(temp.toFixed(0)),
+};
+/**
+ * ---- 6.b FR TEMP SECTION ----
+ */
+/** @type {StringRecord} */
+const FR_BRAKE_TEMP_GAME_PROPERTY_MAP = {
+  Generic: "BrakeTemperatureFrontLeft",
+};
+
+/** @type {GameOrCarClassNullableStringRecord} */
+const FR_BRAKE_TEMP_UI_PROPERTY_MAP = {
+  Generic: "°FR",
+};
+/** @type {HigherOrderFunctionRecord} */
+const FR_BRAKE_TEMP_TRANSFORMATION_MAP = {
+  BrakeTemperatureFrontLeft:
+    () =>
+    /**
+     * @param {number} temp
+     */
+    (temp) =>
+      Number.parseInt(temp.toFixed(0)),
+};
+/**
+ * ---- 6.c FL TEMP SECTION ----
+ */
+/** @type {StringRecord} */
+const RL_BRAKE_TEMP_GAME_PROPERTY_MAP = {
+  Generic: "BrakeTemperatureFrontLeft",
+};
+
+/** @type {GameOrCarClassNullableStringRecord} */
+const RL_BRAKE_TEMP_UI_PROPERTY_MAP = {
+  Generic: "°RL",
+};
+/** @type {HigherOrderFunctionRecord} */
+const RL_BRAKE_TEMP_TRANSFORMATION_MAP = {
+  BrakeTemperatureFrontLeft:
+    () =>
+    /**
+     * @param {number} temp
+     */
+    (temp) =>
+      Number.parseInt(temp.toFixed(0)),
+};
+/**
+ * ---- 6.d RR TEMP SECTION ----
+ */
+/** @type {StringRecord} */
+const RR_BRAKE_TEMP_GAME_PROPERTY_MAP = {
+  Generic: "BrakeTemperatureFrontLeft",
+};
+
+/** @type {GameOrCarClassNullableStringRecord} */
+const RR_BRAKE_TEMP_UI_PROPERTY_MAP = {
+  Generic: "°RR",
+};
+/** @type {HigherOrderFunctionRecord} */
+const RR_BRAKE_TEMP_TRANSFORMATION_MAP = {
+  BrakeTemperatureFrontLeft:
+    () =>
+    /**
+     * @param {number} temp
+     */
+    (temp) =>
+      Number.parseInt(temp.toFixed(0)),
+};
+/**
+ * ---- 6.e IDEAL RANGES ----
+ */
+/** @type {GameOrCarClassOptimalRangeRecord} */
+const IDEAL_BRAKE_TEMP_RANGES_MAP = {
+  Generic: null,
+  LMU: { Generic: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 } },
+};
+/**
  * ==== 10. OUTPUT SECTION ====
  * Master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file.
  * !!! YOU **MUST** ADD NEW VALUES TO THE OUTPUT OF `getTelemetryLabelsAndValues` IF YOU ADD NEW MAPPING SECTIONS !!!
@@ -1446,7 +1550,9 @@ function getTelemetryLabelsAndValues(
   currentCarClass,
   debugMode = false,
   currentCarId = undefined,
-  currentTyre = undefined
+  currentTyre = undefined,
+  currentLap = undefined,
+  root = undefined
 ) {
   // 1
   const ersMasterSectionUiLabels = getGameOrClassStringOverrides(
@@ -1849,6 +1955,43 @@ function getTelemetryLabelsAndValues(
     currentTyre
   );
 
+  // 6.a
+  const frontLeftBrakeTemperatureGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FL_BRAKE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  // 6.b
+  const frontRightBrakeTemperatureGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FR_BRAKE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  // 6.c
+  const rearLeftBrakeTemperatureGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    RL_BRAKE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  // 6.d
+  const rearRightBrakeTemperatureGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    RR_BRAKE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  // 6.e
+  const optimalBrakeTempRanges = getGameOrClassNumberOverrides(
+    currentGame,
+    currentCarClass,
+    IDEAL_BRAKE_TEMP_RANGES_MAP,
+    currentCarId,
+    currentTyre
+  );
+
   const resultMaps = {
     masterSectionUiLabels: {
       ers: ersMasterSectionUiLabels,
@@ -1882,6 +2025,27 @@ function getTelemetryLabelsAndValues(
       temperature: {
         oil: null,
         water: null,
+        engine: null,
+      },
+      tyre: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
+        flWear: null,
+        frWear: null,
+        rlWear: null,
+        rrWear: null,
+        flPres: null,
+        frPres: null,
+        rlPres: null,
+        rrPres: null,
+      },
+      brake: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
       },
     },
     gameProperties: {
@@ -1924,6 +2088,12 @@ function getTelemetryLabelsAndValues(
         frPres: frontRightPressureGameProperty,
         rlPres: rearLeftPressureGameProperty,
         rrPres: rearRightPressureGameProperty,
+      },
+      brake: {
+        flTemp: frontLeftBrakeTemperatureGameProperty,
+        frTemp: frontRightBrakeTemperatureGameProperty,
+        rlTemp: rearLeftBrakeTemperatureGameProperty,
+        rrTemp: rearRightBrakeTemperatureGameProperty,
       },
     },
     transformations: {
@@ -1968,6 +2138,12 @@ function getTelemetryLabelsAndValues(
         rrPres: RR_TYRE_PRES_TRANSFORMATION_MAP,
         wear: WEAR_TRANSFORMATION_PER_GAME_MAP,
       },
+      brake: {
+        flTemp: FL_BRAKE_TEMP_TRANSFORMATION_MAP,
+        frTemp: FR_BRAKE_TEMP_TRANSFORMATION_MAP,
+        rlTemp: RL_BRAKE_TEMP_TRANSFORMATION_MAP,
+        rrTemp: RR_BRAKE_TEMP_TRANSFORMATION_MAP,
+      },
     },
     uiLabels: {
       ers: {
@@ -1997,15 +2173,35 @@ function getTelemetryLabelsAndValues(
         water: waterTempUiProperty,
         engine: engineTempUiProperty,
       },
+      tyre: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
+        flWear: null,
+        frWear: null,
+        rlWear: null,
+        rrWear: null,
+        flPres: null,
+        frPres: null,
+        rlPres: null,
+        rrPres: null,
+      },
+      brake: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
+      },
     },
     popupLabels: {
       ers: {
         ersMode: ersModePopupMap,
-        ersSoc: {},
-        ersCurrent: {},
+        ersSoc: null,
+        ersCurrent: null,
         ersRecovery: ersRecoveryPopupMap,
-        ersDelta: {},
-        ersLap: {},
+        ersDelta: null,
+        ersLap: null,
       },
       carControl: {
         tc: tcPopup,
@@ -2016,14 +2212,35 @@ function getTelemetryLabelsAndValues(
         brakeMigration: brakeMigrationPopup,
       },
       fuel: {
-        fuelState: {},
-        fuelUsage: {},
-        fuelTime: {},
-        fuelLaps: {},
+        fuelState: null,
+        fuelUsage: null,
+        fuelTime: null,
+        fuelLaps: null,
       },
       temperature: {
-        oil: {},
-        water: {},
+        oil: null,
+        water: null,
+        engine: null,
+      },
+      tyre: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
+        flWear: null,
+        frWear: null,
+        rlWear: null,
+        rrWear: null,
+        flPres: null,
+        frPres: null,
+        rlPres: null,
+        rrPres: null,
+      },
+      brake: {
+        flTemp: null,
+        frTemp: null,
+        rlTemp: null,
+        rrTemp: null,
       },
     },
     optimalRanges: {
@@ -2040,6 +2257,12 @@ function getTelemetryLabelsAndValues(
         frPres: optimalTyrePresRanges,
         rlPres: optimalTyrePresRanges,
         rrPres: optimalTyrePresRanges,
+      },
+      brake: {
+        flTemp: optimalBrakeTempRanges,
+        frTemp: optimalBrakeTempRanges,
+        rlTemp: optimalBrakeTempRanges,
+        rrTemp: optimalBrakeTempRanges,
       },
     },
   };
