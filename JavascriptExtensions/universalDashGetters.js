@@ -748,10 +748,10 @@ const ERS_RECOVERY_TRANSFORMATION_MAP = {
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_RECOVERY_UI_PROPERTY_MAP = {
-  Generic: "RCV",
-  Automobilista2: "RCV",
-  AssettoCorsa: "RCV",
-  Hyper: "RGN",
+  Generic: "Recovery",
+  Automobilista2: "Recovery",
+  AssettoCorsa: "Recovery",
+  Hyper: "Regen",
   GTE: "",
   GT3: "",
 };
