@@ -877,7 +877,6 @@ const TC_SLIP_UI_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_POPUP_MAP = {
   Generic: "TC SLIP LEVEL",
-  AssettoCorsaCompetizione: "TC1 LEVEL",
   iRacing: "TC1 LEVEL",
 };
 /**
@@ -2296,7 +2295,7 @@ function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode,
 
   const label = telemetry.masterSectionUiLabels[section];
 
-  if (label === undefined || label === null) {
+  if (label === undefined) {
     throw new Error(
       `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
     );
@@ -2322,7 +2321,7 @@ function getPropertyPopupLabel(currentGame, currentCarClass, section, property, 
 
   const label = telemetry.popupLabels[section][property];
 
-  if (label === undefined || label === null) {
+  if (label === undefined) {
     throw new Error(
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``
     );
@@ -2348,7 +2347,7 @@ function getPropertyUILabel(currentGame, currentCarClass, section, property, deb
 
   const label = telemetry.uiLabels[section][property];
 
-  if (label === undefined || label === null) {
+  if (label === undefined) {
     throw new Error(
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``
     );
@@ -2374,7 +2373,7 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
 
   const propertyKey = telemetry.gameProperties[section][property];
 
-  if (propertyKey === undefined || propertyKey === null) {
+  if (propertyKey === undefined) {
     throw new Error(
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
     );
@@ -2409,7 +2408,7 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
 
   const propertyKey = telemetry.gameProperties[section][property];
 
-  if (propertyKey === undefined || propertyKey === null) {
+  if (propertyKey === undefined) {
     throw new Error(
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
     );
