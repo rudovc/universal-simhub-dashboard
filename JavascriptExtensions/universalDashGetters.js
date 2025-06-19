@@ -428,8 +428,9 @@ function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, curr
  * @param {string | undefined} currentCarClass
  * @param {GameOrCarClassOptimalRangeRecord} map
  * @param {string | undefined} currentCarId
+ * @param {string | undefined} currentTyre
  */
-function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, currentCarId) {
+function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, currentCarId, currentTyre) {
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
@@ -438,23 +439,47 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
     }
 
     if (currentCarId && currentCarId in gameMap) {
+      if (currentTyre && currentTyre in gameMap[currentCarId]) {
+        return gameMap[currentCarId][currentTyre];
+      }
+
       return gameMap[currentCarId];
     }
 
     if (currentCarClass && currentCarClass in gameMap) {
+      if (currentTyre && currentTyre in gameMap[currentCarClass]) {
+        return gameMap[currentCarClass][currentTyre];
+      }
+
       return gameMap[currentCarClass];
     }
 
     if ("Generic" in gameMap) {
+      if (gameMap.Generic && currentTyre && currentTyre in gameMap.Generic) {
+        return gameMap.Generic[currentTyre];
+      }
+
       return gameMap.Generic;
     }
   }
 
   if (currentCarClass && currentCarClass in map) {
+    if (map[currentCarClass] && currentTyre && currentTyre in map[currentCarClass]) {
+      return map[currentCarClass][currentTyre];
+    }
+
     return map[currentCarClass];
   }
 
+  if (currentTyre && map && currentTyre in map) {
+    return map[currentTyre];
+  }
+
   if ("Generic" in map) {
+    if (map.Generic && currentTyre && currentTyre in map.Generic) {
+      return map.Generic[currentTyre];
+    }
+
     return map.Generic;
   }
 
@@ -1391,7 +1416,7 @@ const IDEAL_TYRE_WEAR_RANGES_MAP = {
 const IDEAL_TYRE_PRES_RANGES_MAP = {
   Generic: null,
   LMU: { Generic: { optimal: 23, goodThreshold: 1, criticalThreshold: 3 } },
-  AssettoCorsaCompetizione: { Generic: { optimal: 26, goodThreshold: 1, criticalThreshold: 3 } },
+  AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
 };
 /**
  * ==== 10. OUTPUT SECTION ====
@@ -1404,8 +1429,15 @@ const IDEAL_TYRE_PRES_RANGES_MAP = {
  * @param {string | undefined} currentCarClass
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
+ * @param {string | undefined} currentTyre
  */
-function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = false, currentCarId = undefined) {
+function getTelemetryLabelsAndValues(
+  currentGame,
+  currentCarClass,
+  debugMode = false,
+  currentCarId = undefined,
+  currentTyre = undefined
+) {
   // 1
   const ersMasterSectionUiLabels = getGameOrClassStringOverrides(
     currentGame,
@@ -1782,19 +1814,22 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     IDEAL_TYRE_TEMP_RANGES_MAP,
-    currentCarId
+    currentCarId,
+    currentTyre
   );
   const optimalTyreWearRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
     IDEAL_TYRE_WEAR_RANGES_MAP,
-    currentCarId
+    currentCarId,
+    currentTyre
   );
   const optimalTyrePresRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
     IDEAL_TYRE_PRES_RANGES_MAP,
-    currentCarId
+    currentCarId,
+    currentTyre
   );
 
   const resultMaps = {
