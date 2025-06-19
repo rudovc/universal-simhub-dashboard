@@ -81,6 +81,9 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 3.b FUEL USAGE
  *  - 3.c FUEL TIME
  *  - 3.d FUEL LAPS
+ *  - 3.e FUEL DELTA
+ *  - 3.f NRG STATE
+ *  - 3.g NRG USAGE
  * -----------------
  *  4. TEMPS
  *  - 4.a OIL TEMP
@@ -769,7 +772,6 @@ const ERS_RECOVERY_POPUP_MAP = {
   AssettoCorsa: "ERS RECOVERY",
   LMU: { Hyper: "REGEN LEVEL" },
 };
-
 /**
  * ---- 1.e ERS DELTA SECTION ----
  * Describes ERS delta to last lap
@@ -783,6 +785,7 @@ const ERS_DELTA_UI_PROPERTY_MAP = {
   Generic: "Δ",
   Automobilista2: "Δ",
   AssettoCorsa: "Δ",
+  LMP1: "Δ",
   Hyper: "Δ",
   GT3: "",
   GTE: "",
@@ -791,7 +794,6 @@ const ERS_DELTA_UI_PROPERTY_MAP = {
  * Use the SOC as the base for the ERS LLap calculation
  *  */
 const ERS_DELTA_TRANSFORMATION_MAP = ERS_SOC_TRANSFORMATION_MAP;
-
 /**
  * ---- 1.f ERS LAP SECTION ----
  * Describes state of ERS at the moment of the last lap
@@ -943,6 +945,9 @@ const ABS_TRANSFORMATION_MAP = {
 const ABS_UI_PROPERTY_MAP = {
   Generic: "ABS",
   Hyper: "",
+  LMP1: "",
+  LMP2: "",
+  GTE: "",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ABS_POPUP_MAP = {
@@ -970,12 +975,12 @@ const BB_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const BM_GAME_PROPERTY_MAP = {
-  Generic: "LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION",
+  LMU: "LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BM_UI_PROPERTY_MAP = {
   Generic: "",
-  LMU: { GTE: "BM", GT3: "BM" },
+  LMU: { Hyper: "BM" },
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BM_POPUP_MAP = {
@@ -992,6 +997,7 @@ const FUEL_MASTER_SECTION_UI_LABELS = {
   Generic: "Fuel",
   GTE: "Fuel",
   GT3: "Fuel",
+  Hyper: "F/NRG",
 };
 /**
  * ---- 3.a FUEL STATE SECTION ----
@@ -1030,7 +1036,7 @@ const FUEL_TIME_UI_PROPERTY_MAP = {
   Generic: "ETime",
 };
 /**
- * ---- 3.c FUEL LAPS SECTION ----
+ * ---- 3.d FUEL LAPS SECTION ----
  * Projected remaining laps number at the current fuel usage rate
  */
 /** @type {StringRecord} */
@@ -1040,6 +1046,71 @@ const FUEL_LAPS_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const FUEL_LAPS_UI_PROPERTY_MAP = {
   Generic: "ELaps",
+};
+/**
+ * ---- 3.e FUEL DELTA SECTION ----
+ * Describes fuel delta to last lap
+ */
+const FUEL_DELTA_GAME_PROPERTY_MAP = {
+  ...FUEL_STATE_GAME_PROPERTY_MAP,
+  LMU: {
+    Hyper: "LMU_NeoRedPlugin.Energy.VE.Current_%",
+  },
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const FUEL_DELTA_UI_PROPERTY_MAP = {
+  Generic: "Δ",
+};
+const FUEL_DELTA_TRANSFORMATION_MAP = {
+  Fuel: () => (/** @type {number} */ fuel) => fuel.toFixed(2),
+  "LMU_NeoRedPlugin.Energy.VE.Current_%": () => (/** @type {number} */ nrg) => nrg.toFixed(2),
+};
+/**
+ * ---- 3.f NRG STATE SECTION ----
+ * Current Virtual Energy allowance state
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const NRG_STATE_GAME_PROPERTY_MAP = {
+  Generic: null,
+  AssettoCorsa: "ERSPercent",
+  LMU: {
+    Hyper: "LMU_NeoRedPlugin.Energy.VE.Current_%",
+    Generic: "Fuel",
+  },
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const NRG_STATE_UI_PROPERTY_MAP = {
+  Generic: "",
+  AssettoCorsa: "ERS Max",
+  LMU: {
+    Generic: "",
+    Hyper: "NRG",
+  },
+};
+const NRG_STATE_TRANSFORMATION_MAP = {
+  ERSPercent: () => (/** @type {number} */ ers) => ers.toFixed(2),
+  "LMU_NeoRedPlugin.Energy.VE.Current_%": () => (/** @type {number} */ nrg) => nrg.toFixed(2),
+};
+/**
+ * ---- 3.f NRG USAGE SECTION ----
+ * Current NRG usage per lap
+ */
+/** @type {GameOrCarClassNullableStringRecord} */
+const NRG_USAGE_GAME_PROPERTY_MAP = {
+  LMU: {
+    Hyper: "LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%",
+  },
+};
+/** @type {GameOrCarClassNullableStringRecord} */
+const NRG_USAGE_UI_PROPERTY_MAP = {
+  Generic: "",
+  LMU: {
+    Generic: "",
+    Hyper: "Laps",
+  },
+};
+const NRG_USAGE_TRANSFORMATION_MAP = {
+  "LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%": () => (/** @type {number} */ nrg) => nrg.toFixed(2),
 };
 /**
  * ==== 3. TEMPERATURES SECTION ====
@@ -1811,6 +1882,45 @@ function getTelemetryLabelsAndValues(
     FUEL_LAPS_UI_PROPERTY_MAP,
     currentCarId
   );
+  // 3.e
+  const fuelDeltaGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_DELTA_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const fuelDeltaUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    FUEL_DELTA_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  // 3.f
+  const nrgStateGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    NRG_STATE_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const nrgStateUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    NRG_STATE_UI_PROPERTY_MAP,
+    currentCarId
+  );
+  // 3.g
+  const nrgUsageGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    NRG_USAGE_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const nrgUsageUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    NRG_USAGE_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 4
   const tempMasterSectionUILabels = getGameOrClassStringOverrides(
@@ -2032,6 +2142,9 @@ function getTelemetryLabelsAndValues(
         fuelUsage: null,
         fuelTime: null,
         fuelLaps: null,
+        fuelDelta: null,
+        nrgState: null,
+        nrgUsage: null,
       },
       temperature: {
         oil: null,
@@ -2081,6 +2194,9 @@ function getTelemetryLabelsAndValues(
         fuelUsage: fuelUsageGameProperty,
         fuelTime: fuelTimeGameProperty,
         fuelLaps: fuelLapsGameProperty,
+        fuelDelta: fuelDeltaGameProperty,
+        nrgState: nrgStateGameProperty,
+        nrgUsage: nrgUsageGameProperty,
       },
       temperature: {
         oil: oilTempGameProperty,
@@ -2129,6 +2245,9 @@ function getTelemetryLabelsAndValues(
         fuelUsage: {},
         fuelTime: {},
         fuelLaps: {},
+        fuelDelta: FUEL_DELTA_TRANSFORMATION_MAP,
+        nrgState: NRG_STATE_TRANSFORMATION_MAP,
+        nrgUsage: NRG_USAGE_TRANSFORMATION_MAP,
       },
       temperature: {
         oil: OIL_TEMP_TRANSFORMATION_MAP,
@@ -2178,6 +2297,9 @@ function getTelemetryLabelsAndValues(
         fuelUsage: fuelUsageUiProperty,
         fuelTime: fuelTimeUiProperty,
         fuelLaps: fuelLapsUiProperty,
+        fuelDelta: fuelDeltaUiProperty,
+        nrgState: nrgStateUiProperty,
+        nrgUsage: nrgUsageUiProperty,
       },
       temperature: {
         oil: oilTempUiProperty,
@@ -2227,6 +2349,9 @@ function getTelemetryLabelsAndValues(
         fuelUsage: null,
         fuelTime: null,
         fuelLaps: null,
+        fuelDelta: null,
+        nrgState: null,
+        nrgUsage: null,
       },
       temperature: {
         oil: null,
