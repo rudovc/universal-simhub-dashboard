@@ -1,5 +1,7 @@
 // @ts-check
 
+import { LabelMap } from './private/0ainternalHelpers.js';
+
 /**
  _    _         _                                _   _____  _             _             _      _____               _      _                             _ 
 | |  | |       (_)                              | | / ____|(_)           | |           | |    |  __ \             | |    | |                           | |
@@ -44,15 +46,23 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * Every section consists of constants in the following order:
  * - Game and/or car class specific labels for the outline of the full section on the dashboard, if any such are necessary. These control the visibility of the whole section.
  *   To make the segment invisible, just set it to an empty string. Setting a nullish value will cause a fallback to the generic value
+ *
  * - Misc. game specific maps, which map the value coming from the game to arbitrary useful values
+ *
  * - Global misc. maps, which maps game and/or car class names to their respective game specific misc. maps
+ *
  * - Game and/or car class specific label maps, which map the value coming from the game to human-readable text
+ *
  * - Global label maps, which maps game names to their respective game specific label maps
+ *
  * - Global game property maps, which maps game names to the specific game property that supplies that value for that game
+ *
  * - Global transformation maps, which maps game properties to whatever transformation should be performed on them to normalize the value.
  *   These are actually higher order functions, which take in the current game, current class, and current car ID as parameters and then decide which transformation to apply based on that.
+ *
  * - Global UI property maps, which maps game and/or car class names to the UI labels for dashboard elements. These control the visibility of the subsection.
  *   To make the segment invisible, just set it to an empty string. Setting a nullish value will cause a fallback to the generic value
+ *
  * - Global popup property maps, which maps game and/or car class names to the UI labels for the popup elements when the property is modified. These control the enabled state of the popup
  *   To make the popup invisible, just set it to an empty string. Setting a nullish value will cause a fallback to the generic value
  *
@@ -61,15 +71,15 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * - 0.b SIMHUB HELPERS (you might want to call these from SimHub. They include things like calculating a delta from the previous lap)
  * --------
  * 1. ERS
- *	- 1.a ERS MODE
- *	- 1.b ERS SOC
- *	- 1.c ERS CURRENT
- *	- 1.d ERS RECOVERY
+ *  - 1.a ERS MODE
+ *  - 1.b ERS SOC
+ *  - 1.c ERS CURRENT
+ *  - 1.d ERS RECOVERY
  *  - 1.e ERS DELTA
  *  - 1.e ERS LAP
  *   ------------
  *  2. CAR CONTROL
- *	- 2.a TRACTION CONTROL
+ *  - 2.a TRACTION CONTROL
  *  - 2.b TC SLIP
  *  - 2.c TC CUT
  *  - 2.d ABS
@@ -133,10 +143,13 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * -----------------
  *  9. MISCELLANEOUS
  *  - 9.a PIT LIMITER
+ */
+
+/**
  * ------------------
  *  10. OUTPUTS
  *  - 10.a getTelemetryLabelsAndValues (master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file)
- *    !!! YOU **MUST** ADD NEW VALUES TO THE OUTPUT OF `getTelemetryLabelsAndValues` IF YOU ADD NEW MAPPING SECTIONS !!!
+ *    WARN: !!! YOU **MUST** ADD NEW VALUES TO THE OUTPUT OF `getTelemetryLabelsAndValues` IF YOU ADD NEW MAPPING SECTIONS !!!
  *  - 10.b HELPERS (functions that have more specific uses, to simplify calling form SimHub. For example: "getMasterSectionLabel" will just return the label of the master section instead of a bunch of unneeded details)
  * ===========================
  */
@@ -147,243 +160,22 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * It's very likely you don't have to change anything in this section
  * ========================
  */
-
 /**
- * @typedef {string | number} GamePropertyKey
- */
-
+ * [0.a INTERNAL HELPERS](./internalHelpers.js)
+ * [0.b SIMHUB HELPERS](./simhubHelpers.js)
+ * */
 /**
- * @typedef {{[key: GamePropertyKey]: string}} StringRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: string | null}} NullableStringRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: {[key: GamePropertyKey]: FunctionRecord} | (function(...any): any) | GameOrCarClassNullableFunctionRecord}} GameOrCarClassNullableFunctionRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: NullableStringRecord | string | null}} GameOrCarClassNullableStringRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: null | { optimal: number, goodThreshold: number, criticalThreshold: number } | GameOrCarClassOptimalRangeRecord}} GameOrCarClassOptimalRangeRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: function(...any): string | number}} FunctionRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: function(...any): function(...any): string | number}} HigherOrderFunctionRecord
- */
-
-/**
- * @typedef {{ label: string; color: string | null; } | string} LabelColor
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: { label: string; color: string | null; } | string}} LabelColorRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: LabelMap | {[key: GamePropertyKey]: LabelMap}}} GameOrCarClassLabelMapRecord
- */
-
-/**
- * @typedef {{[key: GamePropertyKey]: null | LabelMap | {[key: GamePropertyKey]: LabelMap }}} NullableGameOrCarClassLabelMapRecord
- */
-
-/**
- * @param {LabelColor} map
- */
-function getOrCreateLabelAndColor(map) {
-  if (typeof map === "string") {
-    // TODO: Consider replacing `null` with `#FFFFFFFF` in case `null` breaks dashboard styling
-    return { label: map, color: null };
-  }
-
-  return map;
-}
-
-class LabelMap {
-  /** @type {LabelColorRecord} */
-  _map;
-
-  /**
-   * @param {LabelColorRecord} map
-   */
-  constructor(map) {
-    this._map = Object.fromEntries(Object.entries(map).map(([key, value]) => [key, getOrCreateLabelAndColor(value)]));
-  }
-
-  /**
-   * @param {string} key
-   */
-  getLabel(key) {
-    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].label;
-  }
-  /**
-   * @param {string} key
-   */
-  getColor(key) {
-    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].color;
-  }
-}
-
-/**
- * @param {number} value
- * @param {number} decimalPrecision
- */
-function numberToFixed(value, decimalPrecision = 2) {
-  return Number.parseFloat(value.toFixed(decimalPrecision));
-}
-
-/**
- * @param {number | string} currentValue
- * @param {string} currentFormattedTime
- * @param {{ [x: string]: string | number | null | undefined; }} root
- * @param {number} delayInMS
- */
-function changedSinceTimeMs(currentValue, currentFormattedTime, root, delayInMS = 2000) {
-  if (!root) {
-    throw new Error(
-      `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
-    );
-  }
-
-  if (currentFormattedTime === null || currentFormattedTime === undefined) {
-    throw new Error("You must enable System Info plugin in Simhub Settings for this function to work!");
-  }
-
-  const currentTimeMs = Date.parse(currentFormattedTime);
-
-  root.time = currentTimeMs;
-  root.oldState = root.oldState === null || root.oldState === undefined ? currentValue : root.newState;
-  root.newState = currentValue;
-
-  if (root.newState !== root.oldState) {
-    root.triggerTime = root.time;
-  }
-
-  return root.triggerTime === null || root.triggerTime === undefined
-    ? false
-    : // @ts-expect-error Time is always a number, it's ok
-      root.time - root.triggerTime <= delayInMS;
-}
-
-/**
- * @param {number} currentLapNumber
- * @param {number | string} currentValue
- * @param {{ previousLapNumber: number | null | undefined, valuesToCycle: (string | number)[] | null | undefined }} root
- * @param {number} nValues
- */
-function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3) {
-  if (!root) {
-    throw new Error(
-      `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
-    );
-  }
-
-  root.previousLapNumber = root.previousLapNumber ?? currentLapNumber;
-
-  if (root.valuesToCycle === null || root.valuesToCycle === undefined) {
-    cycleValuesOverNEntries(currentValue, root, nValues);
-  }
-
-  if (root.previousLapNumber !== currentLapNumber) {
-    root.previousLapNumber = currentLapNumber;
-    cycleValuesOverNEntries(currentValue, root, nValues);
-  }
-
-  // biome-ignore lint/complexity/useLiteralKeys: <explanation>
-  return root["valuesToCycle"];
-}
-
-/**
- * @param {number | string} currentValue
- * @param {{ valuesToCycle: (string | number)[] | null | undefined }} root
- * @param {number} nValues
- */
-function cycleValuesOverNEntries(currentValue, root, nValues = 3) {
-  root.valuesToCycle = root.valuesToCycle ?? Array(nValues).fill(null);
-  root.valuesToCycle.shift();
-  root.valuesToCycle.push(currentValue);
-
-  return root.valuesToCycle;
-}
-
-/**
- * @param {number} currentLapNumber
- * @param {number} currentValue
- * @param {{ [x: string]: number | null | undefined; }} root
- * @param {number} decimalPrecision
- */
-function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision = 2) {
-  const inputValue = Number(currentValue);
-
-  if (!root) {
-    throw new Error(
-      `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
-    );
-  }
-
-  if (root.previousLapNumber === undefined || root.previousLapNumber === null) {
-    root.previousLapNumber = currentLapNumber;
-  }
-
-  if (root.previousValue === undefined || root.previousValue === null) {
-    root.previousValue = inputValue;
-  }
-
-  if (root.previousDiff === undefined || root.previousDiff === null) {
-    root.previousDiff = 0;
-  }
-
-  const previousLapNumber = root.previousLapNumber;
-  const previousValue = root.previousValue;
-  const previousDiff = root.previousDiff;
-
-  if (previousLapNumber !== currentLapNumber) {
-    const valueDiff = inputValue - previousValue;
-
-    root.previousValue = inputValue;
-    root.previousLapNumber = currentLapNumber;
-    root.previousDiff = valueDiff;
-
-    return numberToFixed(valueDiff, decimalPrecision);
-  }
-
-  return numberToFixed(previousDiff, decimalPrecision);
-}
-
-/**
- * @param {number} currentLapNumber
- * @param {number} lastLapTimeSeconds
- * @param {number} currentValue
- * @param {number} previousValue
- * @param {number} timeSpan
- * @param {{ previousLapNumber: number; totalMeasurementTimeSeconds: number; valueAverageOverTimeSpan: number; }} root
- */
-function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, currentValue, previousValue, timeSpan, root) {
-  let resultEstimate = undefined;
-
-  root.previousLapNumber = root.previousLapNumber ?? 0;
-
-  if (root.previousLapNumber !== currentLapNumber) {
-    root.totalMeasurementTimeSeconds = (root.totalMeasurementTimeSeconds + lastLapTimeSeconds) / 2;
-    root.valueAverageOverTimeSpan = (root.valueAverageOverTimeSpan + previousValue) / 2;
-
-    const calcTime = timeSpan / root.totalMeasurementTimeSeconds;
-
-    resultEstimate = calcTime * root.valueAverageOverTimeSpan - currentValue + previousValue;
-    root.previousLapNumber = currentLapNumber;
-  }
-
-  return Math.ceil(resultEstimate || 0) || "-";
-}
+ * @ts-ignore
+ * @typedef {import('./private/0atypeDefs.js').StringRecord} StringRecord
+ * @typedef {import('./private/0atypeDefs.js').FunctionRecord} FunctionRecord
+ * @typedef {import('./private/0atypeDefs.js').HigherOrderFunctionRecord} HigherOrderFunctionRecord
+ * @typedef {import('./private/0atypeDefs.js').GameOrCarClassNullableFunctionRecord} GameOrCarClassNullableFunctionRecord
+ * @typedef {import('./private/0atypeDefs.js').GameOrCarClassOptimalRangeRecord} GameOrCarClassOptimalRangeRecord
+ * @typedef {import('./private/0atypeDefs.js').GameOrCarClassNullableStringRecord} GameOrCarClassNullableStringRecord
+ * @typedef {import('./private/0atypeDefs.js').NullableGameOrCarClassLabelMapRecord} NullableGameOrCarClassLabelMapRecord
+ * @typedef {import('./private/0atypeDefs.js').LabelColorRecord} LabelColorRecord
+ * @typedef {import('./private/0atypeDefs.js').GameOrCarClassLabelMapRecord} GameOrCarClassLabelMapRecord
+ * */
 
 /**
  * @param {string} currentGame
@@ -395,7 +187,7 @@ function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, curr
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
-    if (!gameMap || typeof gameMap === "number") {
+    if (!gameMap || typeof gameMap === 'number') {
       return gameMap;
     }
 
@@ -407,7 +199,7 @@ function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, curr
       return gameMap[currentCarClass];
     }
 
-    if ("Generic" in gameMap) {
+    if ('Generic' in gameMap) {
       return gameMap.Generic;
     }
   }
@@ -416,7 +208,7 @@ function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, curr
     return map[currentCarClass];
   }
 
-  if ("Generic" in map) {
+  if ('Generic' in map) {
     return map.Generic;
   }
 
@@ -433,7 +225,7 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
-    if (!gameMap || typeof gameMap === "number") {
+    if (!gameMap || typeof gameMap === 'number') {
       return gameMap;
     }
 
@@ -445,7 +237,7 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
       return gameMap[currentCarClass];
     }
 
-    if ("Generic" in gameMap) {
+    if ('Generic' in gameMap) {
       return gameMap.Generic;
     }
   }
@@ -454,7 +246,7 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
     return map[currentCarClass];
   }
 
-  if ("Generic" in map) {
+  if ('Generic' in map) {
     return map.Generic;
   }
 
@@ -470,7 +262,7 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
 function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId) {
   if (currentGame in map) {
     const gameMap = map[currentGame];
-    if (!gameMap || typeof gameMap === "string") {
+    if (!gameMap || typeof gameMap === 'string') {
       return gameMap;
     }
 
@@ -482,7 +274,7 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
       return gameMap[currentCarClass];
     }
 
-    if ("Generic" in gameMap) {
+    if ('Generic' in gameMap) {
       return gameMap.Generic;
     }
   }
@@ -491,7 +283,7 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
     return map[currentCarClass];
   }
 
-  if ("Generic" in map) {
+  if ('Generic' in map) {
     return map.Generic;
   }
 
@@ -526,7 +318,7 @@ function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map, curr
     return map[currentCarClass];
   }
 
-  if ("Generic" in map && map.Generic) {
+  if ('Generic' in map && map.Generic) {
     // @ts-expect-error
     return map.Generic;
   }
@@ -535,263 +327,15 @@ function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map, curr
 }
 
 /**
- * ==== 1. ERS SECTION ====
- * All hardcoded maps, labels and game properties related to ERS functionality go here
- * ========================
- */
-/** @type {StringRecord} */
-const ERS_MASTER_SECTION_UI_LABELS = {
-  Generic: "Motor",
-  Hyper: "ERS",
-  AssettoCorsaCompetizione: "Engine",
-  GT3: "Sett",
-  GTE: "Sett",
-};
-
-/**
- * ---- 1.a ERS MODE SECTION ----
- * Describes current ERS deployment mode
- */
-/** @type {StringRecord} */
-const AMS_ERS_MODE_LABEL_MAP = {
-  1: "Off",
-  2: "Build",
-  3: "Balanced",
-  4: "Attack",
-  5: "Quali",
-};
-/** @type {StringRecord} */
-const AC1_ERS_MODE_LABEL_MAP = {
-  0: "Charging",
-  1: "Low 1",
-  2: "Low 2",
-  3: "High 1",
-  4: "High 2",
-  5: "Quali",
-};
-/** @type {StringRecord} */
-const ACC_DRY_WET_PACE_CAR_MAPS = {
-  1: "1 - DRY FAST",
-  2: "2 - DRY",
-  3: "3 - DRY",
-  4: "4 - DRY FUEL SAVE",
-  5: "5 - WET",
-  6: "6 - WET FUEL SAVE",
-  7: "7 - WET FUEL SAVE",
-  8: "8 - SAFETY CAR",
-};
-/** @type {NullableGameOrCarClassLabelMapRecord} */
-const ERS_MODE_LABEL_MAP = {
-  Automobilista2: new LabelMap(AMS_ERS_MODE_LABEL_MAP),
-  AssettoCorsa: new LabelMap(AC1_ERS_MODE_LABEL_MAP),
-  AssettoCorsaCompetizione: {
-    ferrari_488_gt3: new LabelMap(ACC_DRY_WET_PACE_CAR_MAPS),
-  },
-  LMU: null,
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_MODE_GAME_PROPERTY_MAP = {
-  Generic: "EngineMap",
-  Automobilista2: "GameRawData.mErsDeploymentMode",
-  AssettoCorsa: "GameRawData.Physics.ErsPowerLevel",
-  LMU: {
-    Hyper: "LMU_NeoRedPlugin.Extended.VM_ELECTRIC_MOTOR_MAP",
-    Generic: "LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE",
-  },
-};
-/** @type {HigherOrderFunctionRecord} */
-const ERS_MODE_TRANSFORMATION_MAP = {
-  "LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE": () => (/** @type {string} */ word) => {
-    if (word.length <= 6) {
-      return word.toUpperCase();
-    }
-
-    const wordSections = word.split(/[-_ ,.]/);
-
-    return wordSections.map((word) => word.charAt(0).toUpperCase()).join("");
-  },
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_MODE_UI_PROPERTY_MAP = {
-  Generic: "Mode",
-  Automobilista2: "Mode",
-  AssettoCorsa: "Mode",
-  LMU: { Hyper: "Map" },
-  AssettoCorsaCompetizione: "Map",
-  GT3: "Map",
-  GTE: "Mix",
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_MODE_POPUP_MAP = {
-  Generic: "MODE",
-  Automobilista2: "MODE",
-  AssettoCorsa: "MODE",
-  LMU: { Hyper: "MOTOR MAP" },
-  AssettoCorsaCompetizione: "ENGINE MAP",
-  GT3: "MOTOR MAP",
-  GTE: "ENGINE MIX",
-};
-
-/**
- * ---- 1.b ERS SOC SECTION ----
- * Describes current ERS state of charge in % units
- */
-/** @type {StringRecord} */
-const ERS_SOC_GAME_PROPERTY_MAP = {
-  Generic: "ERSPercent",
-  Automobilista2: "ERSPercent",
-  AssettoCorsa: "GameRawData.Physics.KersCharge",
-  LMU: "GameRawData.CurrentPlayerTelemetry.mBatteryChargeFraction",
-};
-/** @type {HigherOrderFunctionRecord} */
-const ERS_SOC_TRANSFORMATION_MAP = {
-  "GameRawData.Physics.KersCharge": () => (/** @type {number} */ charge) => charge * 100,
-  "GameRawData.CurrentPlayerTelemetry.mBatteryChargeFraction": () => (/** @type {number} */ charge) => charge * 100,
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_SOC_UI_PROPERTY_MAP = {
-  Generic: "SoC",
-  Automobilista2: "SoC",
-  AssettoCorsa: "SoC",
-  Hyper: "SoC",
-  GT3: "",
-  GTE: "",
-};
-
-/**
- * ---- 1.c ERS CURRENT SECTION ----
- * Describes current state of hybrid system, e.g. whether it is deploying/recharging
- */
-/** @type {Object.<string | number, string>} */
-const AMS2_ERS_CURRENT_LABEL_MAP = {
-  1: { label: "Idle", color: "#FFFFFFFF" },
-  2: { label: "Regen", color: "#FF40E0D0" },
-  3: { label: "Deploy", color: "#FFFFD700" },
-};
-/** @type {LabelColorRecord} */
-const AC1_ERS_CURRENT_LABEL_MAP = {
-  1: { label: "Idle", color: "#FFFFFFFF" },
-  2: { label: "unimplemented", color: "#FFFFD700" },
-  3: { label: "unimplemented", color: "#FF40E0D0" },
-  4: { label: "unimplemented", color: "#FFE82222" },
-  5: { label: "unimplemented", color: "#FF4B0082" },
-};
-/** @type {LabelColorRecord} */
-const LMU_ERS_CURRENT_LABEL_MAP = {
-  1: { label: "Idle", color: "#FFFFFFFF" },
-  2: { label: "Deploy", color: "#FFFFD700" },
-  3: { label: "Regen", color: "#FF40E0D0" },
-};
-/** @type {GameOrCarClassLabelMapRecord} */
-const ERS_CURRENT_LABEL_MAP = {
-  // TODO: Implement generic label map
-  Generic: new LabelMap({}),
-  Automobilista2: new LabelMap(AMS2_ERS_CURRENT_LABEL_MAP),
-  AssettoCorsa: new LabelMap(AC1_ERS_CURRENT_LABEL_MAP),
-  LMU: new LabelMap(LMU_ERS_CURRENT_LABEL_MAP),
-};
-/** @type {StringRecord} */
-const ERS_CURRENT_GAME_PROPERTY_MAP = {
-  Generic: "unimplemented",
-  Automobilista2: "GameRawData.mErsDeploymentMode",
-  AssettoCorsa: "GameRawData.mErsDeploymentMode",
-  LMU: "GameRawData.CurrentPlayerTelemetry.mElectricBoostMotorState",
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_CURRENT_UI_PROPERTY_MAP = {
-  Generic: "ERS",
-  Automobilista2: "ERS",
-  AssettoCorsa: "ERS",
-  Hyper: "ERS",
-  GTE: "",
-  GT3: "",
-};
-
-/**
- * ---- 1.d ERS RECOVERY SECTION ----
- * Describes current ERS deployment mode
- */
-
-/** @type {StringRecord} */
-const ERS_RECOVERY_GAME_PROPERTY_MAP = {
-  Generic: "unimplemented",
-  LMU: "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL",
-};
-/** @type {HigherOrderFunctionRecord} */
-const ERS_RECOVERY_TRANSFORMATION_MAP = {
-  "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL": () => (/** @type {string} */ charge) => charge === "N/A" ? "-" : charge,
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_RECOVERY_UI_PROPERTY_MAP = {
-  Generic: "RCV",
-  Automobilista2: "RCV",
-  AssettoCorsa: "RCV",
-  Hyper: "RGN",
-  GTE: "",
-  GT3: "",
-};
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_RECOVERY_POPUP_MAP = {
-  Generic: "ERS RECOVERY",
-  Automobilista2: "ERS RECOVERY",
-  AssettoCorsa: "ERS RECOVERY",
-  LMU: { Hyper: "REGEN LEVEL" },
-};
-
-/**
- * ---- 1.e ERS DELTA SECTION ----
- * Describes ERS delta to last lap
- */
-/**
- * Use the SOC as the base for the ERS Delta calculation
- *  */
-const ERS_DELTA_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_DELTA_UI_PROPERTY_MAP = {
-  Generic: "Δ",
-  Automobilista2: "Δ",
-  AssettoCorsa: "Δ",
-  Hyper: "Δ",
-  GT3: "",
-  GTE: "",
-};
-/**
- * Use the SOC as the base for the ERS LLap calculation
- *  */
-const ERS_DELTA_TRANSFORMATION_MAP = ERS_SOC_TRANSFORMATION_MAP;
-
-/**
- * ---- 1.f ERS LAP SECTION ----
- * Describes state of ERS at the moment of the last lap
- */
-/**
- * Use the SOC as the base for the ERS LLap calculation
- *  */
-const ERS_LAP_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
-/** @type {GameOrCarClassNullableStringRecord} */
-const ERS_LAP_UI_PROPERTY_MAP = {
-  Generic: "Lap",
-  Automobilista2: "LLap",
-  AssettoCorsa: "Lap",
-  Hyper: "LLap",
-  GTE: "",
-  GT3: "",
-};
-/**
- * Use the SOC as the base for the ERS LLap calculation
- *  */
-const ERS_LAP_TRANSFORMATION_MAP = ERS_SOC_TRANSFORMATION_MAP;
-
-/**
  * ==== 2. CAR CONTROL SECTION ====
  * All hardcoded maps, labels and game properties related to car control functionality go here
  * ========================
  */
 /** @type {StringRecord} */
 const CAR_CONTROL_MASTER_SECTION_UI_LABELS = {
-  Generic: "Control",
-  GTE: "Elec",
-  GT3: "Elec",
+  Generic: 'Control',
+  GTE: 'Elec',
+  GT3: 'Elec',
 };
 /**
  * ---- 2.a TRACTION CONTROL SECTION ----
@@ -799,37 +343,37 @@ const CAR_CONTROL_MASTER_SECTION_UI_LABELS = {
  */
 /** @type {StringRecord} */
 const TC_GAME_PROPERTY_MAP = {
-  Generic: "TCLevel",
-  Automobilista2: "TCLevel",
-  AssettoCorsa: "TCLevel",
-  LMU: "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP",
+  Generic: 'TCLevel',
+  Automobilista2: 'TCLevel',
+  AssettoCorsa: 'TCLevel',
+  LMU: 'LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_UI_PROPERTY_MAP = {
-  Generic: "TC",
+  Generic: 'TC',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_POPUP_MAP = {
-  Generic: "TC LEVEL",
+  Generic: 'TC LEVEL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const TC_TRANSFORMATION_MAP = {
-  "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP":
+  'LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP':
     () =>
     /**
      * @param {string} rawTcLevel
      */
-    (rawTcLevel) => {
-      if (rawTcLevel.includes("OFF")) {
-        return "OFF";
+    rawTcLevel => {
+      if (rawTcLevel.includes('OFF')) {
+        return 'OFF';
       }
 
-      const labelIndex = rawTcLevel.indexOf("(");
+      const labelIndex = rawTcLevel.indexOf('(');
       const label = rawTcLevel[labelIndex + 1];
       const tcLevel = Number.parseInt(rawTcLevel);
 
       if (!tcLevel) {
-        return "OFF";
+        return 'OFF';
       }
 
       return labelIndex > 0 ? `${tcLevel} (${label})` : tcLevel;
@@ -841,19 +385,19 @@ const TC_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const TC_SLIP_GAME_PROPERTY_MAP = {
-  LMU: "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLSLIPANGLEMAP",
+  LMU: 'LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLSLIPANGLEMAP',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_UI_PROPERTY_MAP = {
-  Generic: "SLIP",
-  AssettoCorsaCompetizione: "",
-  iRacing: "TC1",
+  Generic: 'SLIP',
+  AssettoCorsaCompetizione: '',
+  iRacing: 'TC1',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_POPUP_MAP = {
-  Generic: "TC SLIP LEVEL",
-  AssettoCorsaCompetizione: "TC1 LEVEL",
-  iRacing: "TC1 LEVEL",
+  Generic: 'TC SLIP LEVEL',
+  AssettoCorsaCompetizione: 'TC1 LEVEL',
+  iRacing: 'TC1 LEVEL',
 };
 /**
  * ---- 2.c TC CUT SECTION ----
@@ -861,20 +405,20 @@ const TC_SLIP_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const TC_CUT_GAME_PROPERTY_MAP = {
-  AssettoCorsaCompetizione: "GameRawData.Graphics.TCCut",
-  LMU: "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLPOWERCUTMAP",
+  AssettoCorsaCompetizione: 'GameRawData.Graphics.TCCut',
+  LMU: 'LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLPOWERCUTMAP',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_CUT_UI_PROPERTY_MAP = {
-  Generic: "CUT",
-  AssettoCorsaCompetizione: "Cut",
-  iRacing: "TC2",
+  Generic: 'CUT',
+  AssettoCorsaCompetizione: 'Cut',
+  iRacing: 'TC2',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_CUT_POPUP_MAP = {
-  Generic: "TC CUT LEVEL",
-  AssettoCorsaCompetizione: "TC CUT LEVEL",
-  iRacing: "TC2 LEVEL",
+  Generic: 'TC CUT LEVEL',
+  AssettoCorsaCompetizione: 'TC CUT LEVEL',
+  iRacing: 'TC2 LEVEL',
 };
 /**
  * ---- 2.d ABS SECTION ----
@@ -882,27 +426,27 @@ const TC_CUT_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const ABS_GAME_PROPERTY_MAP = {
-  Generic: "ABSLevel",
-  LMU: "LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP",
+  Generic: 'ABSLevel',
+  LMU: 'LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP',
 };
 /** @type {HigherOrderFunctionRecord} */
 const ABS_TRANSFORMATION_MAP = {
-  "LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP":
+  'LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP':
     () =>
     /**
      * @param {string} rawAbsLevel
      */
-    (rawAbsLevel) => {
-      if (rawAbsLevel.includes("OFF")) {
-        return "OFF";
+    rawAbsLevel => {
+      if (rawAbsLevel.includes('OFF')) {
+        return 'OFF';
       }
 
-      const labelIndex = rawAbsLevel.indexOf("(");
+      const labelIndex = rawAbsLevel.indexOf('(');
       const label = rawAbsLevel[labelIndex + 1];
       const absLevel = Number.parseInt(rawAbsLevel);
 
       if (!absLevel) {
-        return "OFF";
+        return 'OFF';
       }
 
       return labelIndex > 0 ? `${absLevel} (${label})` : absLevel;
@@ -910,12 +454,12 @@ const ABS_TRANSFORMATION_MAP = {
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ABS_UI_PROPERTY_MAP = {
-  Generic: "ABS",
-  Hyper: "",
+  Generic: 'ABS',
+  Hyper: '',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ABS_POPUP_MAP = {
-  Generic: "ABS LEVEL",
+  Generic: 'ABS LEVEL',
 };
 /**
  * ---- 2.e BRAKE BIAS SECTION ----
@@ -923,15 +467,15 @@ const ABS_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const BB_GAME_PROPERTY_MAP = {
-  Generic: "BrakeBias",
+  Generic: 'BrakeBias',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BB_UI_PROPERTY_MAP = {
-  Generic: "BB",
+  Generic: 'BB',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BB_POPUP_MAP = {
-  Generic: "BRAKE BIAS",
+  Generic: 'BRAKE BIAS',
 };
 /**
  * ---- 2.f BRAKE MIGRATION SECTION ----
@@ -939,16 +483,16 @@ const BB_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const BM_GAME_PROPERTY_MAP = {
-  Generic: "LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION",
+  Generic: 'LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BM_UI_PROPERTY_MAP = {
-  Generic: "",
-  LMU: { GTE: "BM", GT3: "BM" },
+  Generic: '',
+  LMU: { GTE: 'BM', GT3: 'BM' },
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const BM_POPUP_MAP = {
-  Generic: "BRK MIGRATION",
+  Generic: 'BRK MIGRATION',
 };
 
 /**
@@ -958,9 +502,9 @@ const BM_POPUP_MAP = {
  */
 /** @type {StringRecord} */
 const FUEL_MASTER_SECTION_UI_LABELS = {
-  Generic: "Fuel",
-  GTE: "Fuel",
-  GT3: "Fuel",
+  Generic: 'Fuel',
+  GTE: 'Fuel',
+  GT3: 'Fuel',
 };
 /**
  * ---- 3.a FUEL STATE SECTION ----
@@ -968,11 +512,11 @@ const FUEL_MASTER_SECTION_UI_LABELS = {
  */
 /** @type {StringRecord} */
 const FUEL_STATE_GAME_PROPERTY_MAP = {
-  Generic: "Fuel",
+  Generic: 'Fuel',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const FUEL_STATE_UI_PROPERTY_MAP = {
-  Generic: "Tank",
+  Generic: 'Tank',
 };
 /**
  * ---- 3.b FUEL USAGE SECTION ----
@@ -980,11 +524,11 @@ const FUEL_STATE_UI_PROPERTY_MAP = {
  */
 /** @type {StringRecord} */
 const FUEL_USAGE_GAME_PROPERTY_MAP = {
-  Generic: "DataCorePlugin.Computed.Fuel_CurrentLapConsumption",
+  Generic: 'DataCorePlugin.Computed.Fuel_CurrentLapConsumption',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const FUEL_USAGE_UI_PROPERTY_MAP = {
-  Generic: "TLap",
+  Generic: 'TLap',
 };
 /**
  * ---- 3.c FUEL TIME SECTION ----
@@ -992,11 +536,11 @@ const FUEL_USAGE_UI_PROPERTY_MAP = {
  */
 /** @type {StringRecord} */
 const FUEL_TIME_GAME_PROPERTY_MAP = {
-  Generic: "DataCorePlugin.Computed.Fuel_RemainingTime",
+  Generic: 'DataCorePlugin.Computed.Fuel_RemainingTime',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const FUEL_TIME_UI_PROPERTY_MAP = {
-  Generic: "ETime",
+  Generic: 'ETime',
 };
 /**
  * ---- 3.c FUEL LAPS SECTION ----
@@ -1004,11 +548,11 @@ const FUEL_TIME_UI_PROPERTY_MAP = {
  */
 /** @type {StringRecord} */
 const FUEL_LAPS_GAME_PROPERTY_MAP = {
-  Generic: "DataCorePlugin.Computed.Fuel_RemainingLaps",
+  Generic: 'DataCorePlugin.Computed.Fuel_RemainingLaps',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const FUEL_LAPS_UI_PROPERTY_MAP = {
-  Generic: "ELaps",
+  Generic: 'ELaps',
 };
 /**
  * ==== 3. TEMPERATURES SECTION ====
@@ -1017,7 +561,7 @@ const FUEL_LAPS_UI_PROPERTY_MAP = {
  */
 /** @type {StringRecord} */
 const TEMP_MASTER_SECTION_UI_LABELS = {
-  Generic: "Temp",
+  Generic: 'Temp',
 };
 /**
  * ---- 4.a OIL TEMP SECTION ----
@@ -1025,12 +569,12 @@ const TEMP_MASTER_SECTION_UI_LABELS = {
  */
 /** @type {StringRecord} */
 const OIL_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "OilTemperature",
+  Generic: 'OilTemperature',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const OIL_TEMP_UI_PROPERTY_MAP = {
-  Generic: "Oil",
+  Generic: 'Oil',
 };
 /** @type {HigherOrderFunctionRecord} */
 const OIL_TEMP_TRANSFORMATION_MAP = {
@@ -1039,7 +583,7 @@ const OIL_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1048,11 +592,11 @@ const OIL_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const WATER_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "WaterTemperature",
+  Generic: 'WaterTemperature',
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const WATER_TEMP_UI_PROPERTY_MAP = {
-  Generic: "Water",
+  Generic: 'Water',
 };
 /** @type {HigherOrderFunctionRecord} */
 const WATER_TEMP_TRANSFORMATION_MAP = {
@@ -1061,7 +605,7 @@ const WATER_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1074,12 +618,12 @@ const WATER_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FL_TYRE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "TyreTemperatureFrontLeft",
+  Generic: 'TyreTemperatureFrontLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FL_TYRE_TEMP_UI_PROPERTY_MAP = {
-  Generic: "°FL",
+  Generic: '°FL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FL_TYRE_TEMP_TRANSFORMATION_MAP = {
@@ -1088,7 +632,7 @@ const FL_TYRE_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1096,12 +640,12 @@ const FL_TYRE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FL_TYRE_WEAR_GAME_PROPERTY_MAP = {
-  Generic: "TyreWearFrontLeft",
+  Generic: 'TyreWearFrontLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FL_TYRE_WEAR_UI_PROPERTY_MAP = {
-  Generic: "%FL",
+  Generic: '%FL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FL_TYRE_WEAR_TRANSFORMATION_MAP = {
@@ -1110,12 +654,12 @@ const FL_TYRE_WEAR_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       getGameOrClassFunctionOverrides(
         currentGame,
         carClass,
         WEAR_TRANSFORMATION_PER_GAME_MAP,
-        carId
+        carId,
       )(Number.parseInt(temp.toFixed(0))),
 };
 /**
@@ -1123,12 +667,12 @@ const FL_TYRE_WEAR_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FL_TYRE_PRES_GAME_PROPERTY_MAP = {
-  Generic: "TyrePressureFrontLeft",
+  Generic: 'TyrePressureFrontLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FL_TYRE_PRES_UI_PROPERTY_MAP = {
-  Generic: "%FL",
+  Generic: '%FL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FL_TYRE_PRES_TRANSFORMATION_MAP = {
@@ -1137,7 +681,7 @@ const FL_TYRE_PRES_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseFloat(temp.toFixed(1)),
 };
 
@@ -1146,12 +690,12 @@ const FL_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FR_TYRE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "TyreTemperatureFrontRight",
+  Generic: 'TyreTemperatureFrontRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FR_TYRE_TEMP_UI_PROPERTY_MAP = {
-  Generic: "°FR",
+  Generic: '°FR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FR_TYRE_TEMP_TRANSFORMATION_MAP = {
@@ -1160,7 +704,7 @@ const FR_TYRE_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1168,12 +712,12 @@ const FR_TYRE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FR_TYRE_WEAR_GAME_PROPERTY_MAP = {
-  Generic: "TyreWearFrontRight",
+  Generic: 'TyreWearFrontRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FR_TYRE_WEAR_UI_PROPERTY_MAP = {
-  Generic: "%FR",
+  Generic: '%FR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FR_TYRE_WEAR_TRANSFORMATION_MAP = {
@@ -1182,12 +726,12 @@ const FR_TYRE_WEAR_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       getGameOrClassFunctionOverrides(
         currentGame,
         carClass,
         WEAR_TRANSFORMATION_PER_GAME_MAP,
-        carId
+        carId,
       )(Number.parseInt(temp.toFixed(0))),
 };
 /**
@@ -1195,12 +739,12 @@ const FR_TYRE_WEAR_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FR_TYRE_PRES_GAME_PROPERTY_MAP = {
-  Generic: "TyrePressureFrontRight",
+  Generic: 'TyrePressureFrontRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const FR_TYRE_PRES_UI_PROPERTY_MAP = {
-  Generic: "%FR",
+  Generic: '%FR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const FR_TYRE_PRES_TRANSFORMATION_MAP = {
@@ -1209,7 +753,7 @@ const FR_TYRE_PRES_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseFloat(temp.toFixed(1)),
 };
 
@@ -1218,12 +762,12 @@ const FR_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RL_TYRE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "TyreTemperatureRearLeft",
+  Generic: 'TyreTemperatureRearLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RL_TYRE_TEMP_UI_PROPERTY_MAP = {
-  Generic: "°RL",
+  Generic: '°RL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RL_TYRE_TEMP_TRANSFORMATION_MAP = {
@@ -1232,7 +776,7 @@ const RL_TYRE_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1240,12 +784,12 @@ const RL_TYRE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RL_TYRE_WEAR_GAME_PROPERTY_MAP = {
-  Generic: "TyreWearRearLeft",
+  Generic: 'TyreWearRearLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RL_TYRE_WEAR_UI_PROPERTY_MAP = {
-  Generic: "%RL",
+  Generic: '%RL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RL_TYRE_WEAR_TRANSFORMATION_MAP = {
@@ -1254,12 +798,12 @@ const RL_TYRE_WEAR_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       getGameOrClassFunctionOverrides(
         currentGame,
         carClass,
         WEAR_TRANSFORMATION_PER_GAME_MAP,
-        carId
+        carId,
       )(Number.parseInt(temp.toFixed(0))),
 };
 /**
@@ -1267,12 +811,12 @@ const RL_TYRE_WEAR_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RL_TYRE_PRES_GAME_PROPERTY_MAP = {
-  Generic: "TyrePressureRearLeft",
+  Generic: 'TyrePressureRearLeft',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RL_TYRE_PRES_UI_PROPERTY_MAP = {
-  Generic: "%RL",
+  Generic: '%RL',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RL_TYRE_PRES_TRANSFORMATION_MAP = {
@@ -1281,7 +825,7 @@ const RL_TYRE_PRES_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseFloat(temp.toFixed(1)),
 };
 
@@ -1290,12 +834,12 @@ const RL_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RR_TYRE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "TyreTemperatureRearRight",
+  Generic: 'TyreTemperatureRearRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RR_TYRE_TEMP_UI_PROPERTY_MAP = {
-  Generic: "°RR",
+  Generic: '°RR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_TEMP_TRANSFORMATION_MAP = {
@@ -1304,7 +848,7 @@ const RR_TYRE_TEMP_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       Number.parseInt(temp.toFixed(0)),
 };
 /**
@@ -1312,12 +856,12 @@ const RR_TYRE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RR_TYRE_WEAR_GAME_PROPERTY_MAP = {
-  Generic: "TyreWearRearRight",
+  Generic: 'TyreWearRearRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RR_TYRE_WEAR_UI_PROPERTY_MAP = {
-  Generic: "%RR",
+  Generic: '%RR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_WEAR_TRANSFORMATION_MAP = {
@@ -1326,12 +870,12 @@ const RR_TYRE_WEAR_TRANSFORMATION_MAP = {
     /**
      * @param {number} temp
      */
-    (temp) =>
+    temp =>
       getGameOrClassFunctionOverrides(
         currentGame,
         carClass,
         WEAR_TRANSFORMATION_PER_GAME_MAP,
-        carId
+        carId,
       )(Number.parseInt(temp.toFixed(0))),
 };
 /**
@@ -1339,12 +883,12 @@ const RR_TYRE_WEAR_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RR_TYRE_PRES_GAME_PROPERTY_MAP = {
-  Generic: "TyrePressureRearRight",
+  Generic: 'TyrePressureRearRight',
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
 const RR_TYRE_PRES_UI_PROPERTY_MAP = {
-  Generic: "%RR",
+  Generic: '%RR',
 };
 /** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_PRES_TRANSFORMATION_MAP = {
@@ -1353,7 +897,7 @@ const RR_TYRE_PRES_TRANSFORMATION_MAP = {
     /**
      * @param {number} pres
      */
-    (pres) =>
+    pres =>
       Number.parseFloat(pres.toFixed(1)),
 };
 /**
@@ -1362,9 +906,9 @@ const RR_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {GameOrCarClassNullableFunctionRecord} */
 const WEAR_TRANSFORMATION_PER_GAME_MAP = {
-  Generic: (wear) => 100 - wear,
-  LMU: { Generic: (wear) => wear },
-  AssettoCorsaCompetizione: { Generic: (wear) => 100 - wear },
+  Generic: wear => 100 - wear,
+  LMU: { Generic: wear => wear },
+  AssettoCorsaCompetizione: { Generic: wear => 100 - wear },
 };
 /**
  * ---- 5.n IDEAL RANGES ----
@@ -1393,6 +937,9 @@ const IDEAL_TYRE_PRES_RANGES_MAP = {
   LMU: { Generic: { optimal: 23, goodThreshold: 1, criticalThreshold: 3 } },
   AssettoCorsaCompetizione: { Generic: { optimal: 26, goodThreshold: 1, criticalThreshold: 3 } },
 };
+
+import { getErsTelemetry } from './configuration/1ers.js';
+
 /**
  * ==== 10. OUTPUT SECTION ====
  * Master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file.
@@ -1406,130 +953,22 @@ const IDEAL_TYRE_PRES_RANGES_MAP = {
  * @param {string | undefined} currentCarId
  */
 function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = false, currentCarId = undefined) {
-  // 1
-  const ersMasterSectionUiLabels = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MASTER_SECTION_UI_LABELS,
-    currentCarId
-  );
-
-  // 1.a
-  const ersModeGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersModeLabelMap = getGameOrClassLabelMapOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_LABEL_MAP,
-    currentCarId
-  );
-  const ersModeUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersModePopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_POPUP_MAP, currentCarId);
-
-  // 1.b
-  const ersSocGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_SOC_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersSocUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_SOC_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
-  // 1.c
-  const ersCurrentGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersCurrentLabel = getGameOrClassLabelMapOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_LABEL_MAP,
-    currentCarId
-  );
-  const ersCurrentUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
-  // 1.d
-  const ersRecoveryGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersRecoveryUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersRecoveryPopupMap = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_POPUP_MAP,
-    currentCarId
-  );
-
-  // 1.e
-  const ersDeltaGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_DELTA_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersDeltaUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_DELTA_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
-  // 1.f
-  const ersLapGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_LAP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersLapUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_LAP_UI_PROPERTY_MAP,
-    currentCarId
-  );
+  //1
+  const ersTelemetry = getErsTelemetry(currentGame, currentCarClass, currentCarId);
 
   // 2
   const carControlMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     CAR_CONTROL_MASTER_SECTION_UI_LABELS,
-    currentCarId
+    currentCarId,
   );
   // 2.a
   const tcGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     TC_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const tcUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_UI_PROPERTY_MAP, currentCarId);
   const tcPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_POPUP_MAP, currentCarId);
@@ -1538,13 +977,13 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     TC_SLIP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const tcSlipUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     TC_SLIP_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const tcSlipPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_POPUP_MAP, currentCarId);
   // 2.c
@@ -1552,13 +991,13 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     TC_CUT_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const tcCutUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     TC_CUT_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const tcCutPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_POPUP_MAP, currentCarId);
   // 2.d
@@ -1566,7 +1005,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     ABS_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const absUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_UI_PROPERTY_MAP, currentCarId);
   const absPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_POPUP_MAP, currentCarId);
@@ -1575,13 +1014,13 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     BB_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const brakeBiasUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     BB_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const brakeBiasPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_POPUP_MAP, currentCarId);
   // 2.f
@@ -1589,13 +1028,13 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     BM_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const brakeMigrationUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     BM_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const brakeMigrationPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_POPUP_MAP, currentCarId);
 
@@ -1604,59 +1043,59 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     FUEL_MASTER_SECTION_UI_LABELS,
-    currentCarId
+    currentCarId,
   );
   // 3.a
   const fuelStateGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_STATE_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const fuelStateUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_STATE_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 3.b
   const fuelUsageGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_USAGE_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const fuelUsageUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_USAGE_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 3.c
   const fuelTimeGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_TIME_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const fuelTimeUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_TIME_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 3.d
   const fuelLapsGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_LAPS_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const fuelLapsUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FUEL_LAPS_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
 
   // 4
@@ -1664,33 +1103,33 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     TEMP_MASTER_SECTION_UI_LABELS,
-    currentCarId
+    currentCarId,
   );
   // 4.a
   const oilTempGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     OIL_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const oilTempUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     OIL_TEMP_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 4.b
   const waterTempGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     WATER_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   const waterTempUiProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     WATER_TEMP_UI_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
 
   // 5.a
@@ -1698,121 +1137,114 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
     currentGame,
     currentCarClass,
     FL_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.b
   const frontLeftWearGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FL_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.c
   const frontLeftPressureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FL_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.d
   const frontRightTemperatureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FR_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.e
   const frontRightWearGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FR_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.f
   const frontRightPressureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     FR_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.g
   const rearLeftTemperatureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RL_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.h
   const rearLeftWearGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RL_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.i
   const rearLeftPressureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RL_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.j
   const rearRightTemperatureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RR_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.k
   const rearRightWearGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RR_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.l
   const rearRightPressureGameProperty = getGameOrClassStringOverrides(
     currentGame,
     currentCarClass,
     RR_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
+    currentCarId,
   );
   // 5.n
   const optimalTyreTempRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
     IDEAL_TYRE_TEMP_RANGES_MAP,
-    currentCarId
+    currentCarId,
   );
   const optimalTyreWearRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
     IDEAL_TYRE_WEAR_RANGES_MAP,
-    currentCarId
+    currentCarId,
   );
   const optimalTyrePresRanges = getGameOrClassNumberOverrides(
     currentGame,
     currentCarClass,
     IDEAL_TYRE_PRES_RANGES_MAP,
-    currentCarId
+    currentCarId,
   );
 
   const resultMaps = {
     masterSectionUiLabels: {
-      ers: ersMasterSectionUiLabels,
+      ers: ersTelemetry.masterSectionUiLabel,
       carControl: carControlMasterSectionUILabels,
       fuel: fuelMasterSectionUILabels,
       temperature: tempMasterSectionUILabels,
     },
     labelMaps: {
-      ers: {
-        ersMode: ersModeLabelMap,
-        ersSoc: null,
-        ersCurrent: ersCurrentLabel,
-        ersRecovery: null,
-        ersDelta: null,
-        ersLap: null,
-      },
+      ers: ersTelemetry.labelMaps,
       carControl: {
         tc: null,
         tcCut: null,
@@ -1833,14 +1265,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
       },
     },
     gameProperties: {
-      ers: {
-        ersMode: ersModeGameProperty ?? (ERS_MODE_GAME_PROPERTY_MAP.Generic || {}),
-        ersSoc: ersSocGameProperty ?? (ERS_SOC_GAME_PROPERTY_MAP.Generic || {}),
-        ersCurrent: ersCurrentGameProperty ?? (ERS_CURRENT_GAME_PROPERTY_MAP.Generic || {}),
-        ersRecovery: ersRecoveryGameProperty ?? (ERS_RECOVERY_GAME_PROPERTY_MAP.Generic || {}),
-        ersDelta: ersDeltaGameProperty ?? (ERS_DELTA_GAME_PROPERTY_MAP.Generic || {}),
-        ersLap: ersLapGameProperty ?? (ERS_LAP_GAME_PROPERTY_MAP.Generic || {}),
-      },
+      ers: ersTelemetry.gameProperties,
       carControl: {
         tc: tcGameProperty ?? (TC_GAME_PROPERTY_MAP.Generic || {}),
         tcSlip: tcSlipGameProperty ?? (TC_SLIP_GAME_PROPERTY_MAP.Generic || {}),
@@ -1875,14 +1300,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
       },
     },
     transformations: {
-      ers: {
-        ersMode: ERS_MODE_TRANSFORMATION_MAP,
-        ersSoc: ERS_SOC_TRANSFORMATION_MAP,
-        ersCurrent: {},
-        ersRecovery: ERS_RECOVERY_TRANSFORMATION_MAP,
-        ersDelta: ERS_DELTA_TRANSFORMATION_MAP,
-        ersLap: ERS_LAP_TRANSFORMATION_MAP,
-      },
+      ers: ersTelemetry.transformations,
       carControl: {
         tc: TC_TRANSFORMATION_MAP,
         tcCut: {},
@@ -1918,14 +1336,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
       },
     },
     uiLabels: {
-      ers: {
-        ersMode: ersModeUiProperty ?? (ERS_MODE_UI_PROPERTY_MAP.Generic || {}),
-        ersSoc: ersSocUiProperty ?? (ERS_SOC_UI_PROPERTY_MAP.Generic || {}),
-        ersCurrent: ersCurrentUiProperty ?? (ERS_CURRENT_UI_PROPERTY_MAP.Generic || {}),
-        ersRecovery: ersRecoveryUiProperty ?? (ERS_RECOVERY_UI_PROPERTY_MAP.Generic || {}),
-        ersDelta: ersDeltaUiProperty ?? (ERS_DELTA_UI_PROPERTY_MAP.Generic || {}),
-        ersLap: ersLapUiProperty ?? (ERS_LAP_UI_PROPERTY_MAP.Generic || {}),
-      },
+      ers: ersTelemetry.uiLabels,
       carControl: {
         tc: tcUiProperty ?? (TC_UI_PROPERTY_MAP.Generic || {}),
         tcCut: tcCutUiProperty ?? (TC_CUT_UI_PROPERTY_MAP.Generic || {}),
@@ -1946,14 +1357,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
       },
     },
     popupLabels: {
-      ers: {
-        ersMode: ersModePopupMap,
-        ersSoc: {},
-        ersCurrent: {},
-        ersRecovery: ersRecoveryPopupMap,
-        ersDelta: {},
-        ersLap: {},
-      },
+      ers: {},
       carControl: {
         tc: tcPopup ?? (TC_POPUP_MAP.Generic || {}),
         tcCut: tcCutPopup ?? (TC_CUT_POPUP_MAP.Generic || {}),
@@ -1994,7 +1398,7 @@ function getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode = f
   return {
     availableValues: debugMode
       ? JSON.stringify(resultMaps, null, 2)
-      : "To see possible mappings, activate debug mode by passing `debugMode = true` to this function, as such: `getTelemetryLabelsAndValues(currentGame, currentCar, true)`",
+      : 'To see possible mappings, activate debug mode by passing `debugMode = true` to this function, as such: `getTelemetryLabelsAndValues(currentGame, currentCar, true)`',
     ...resultMaps,
   };
 }
@@ -2022,7 +1426,7 @@ function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode,
 
   if (label === undefined || label === null) {
     throw new Error(
-      `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
+      `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -2048,7 +1452,7 @@ function getPropertyPopupLabel(currentGame, currentCarClass, section, property, 
 
   if (label === undefined || label === null) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -2074,7 +1478,7 @@ function getPropertyUILabel(currentGame, currentCarClass, section, property, deb
 
   if (label === undefined || label === null) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -2100,7 +1504,7 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
 
   if (propertyKey === undefined || propertyKey === null) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -2110,7 +1514,7 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
   /** @type function(any): any */
   const transformation = telemetry.transformations[section][property][propertyKey]
     ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-    : (prop) => prop;
+    : prop => prop;
 
   return { property: propertyKey, transformation, labelMap };
 }
@@ -2135,7 +1539,7 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
 
   if (propertyKey === undefined || propertyKey === null) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -2145,7 +1549,7 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
   /** @type function(any): any */
   const transformation = telemetry.transformations[section][property][propertyKey]
     ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-    : (prop) => prop;
+    : prop => prop;
 
   return {
     property: propertyKey,
