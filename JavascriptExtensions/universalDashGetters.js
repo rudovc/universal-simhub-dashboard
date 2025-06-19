@@ -363,6 +363,13 @@ function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision
 }
 
 /**
+ * @param {[]} value
+ */
+function debugArray(value) {
+  return value.join(", ");
+}
+
+/**
  * @param {{}} value
  */
 function debugObject(value) {
