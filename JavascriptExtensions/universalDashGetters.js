@@ -360,6 +360,13 @@ function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision
 }
 
 /**
+ * @param {{}} value
+ */
+function debugObject(value) {
+  return Object.keys(value).join(", ");
+}
+
+/**
  * @param {number} currentLapNumber
  * @param {number} lastLapTimeSeconds
  * @param {number} currentValue
@@ -1212,7 +1219,7 @@ const FR_TYRE_WEAR_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const FR_TYRE_WEAR_TRANSFORMATION_MAP = {
-  TyreWearFrontLeft:
+  TyreWearFrontRight:
     (currentGame, carClass, carId) =>
     /**
      * @param {number} temp
@@ -1284,7 +1291,7 @@ const RL_TYRE_WEAR_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const RL_TYRE_WEAR_TRANSFORMATION_MAP = {
-  TyreWearFrontLeft:
+  TyreWearRearLeft:
     (currentGame, carClass, carId) =>
     /**
      * @param {number} temp
@@ -1356,7 +1363,7 @@ const RR_TYRE_WEAR_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const RR_TYRE_WEAR_TRANSFORMATION_MAP = {
-  TyreWearFrontLeft:
+  TyreWearRearRight:
     (currentGame, carClass, carId) =>
     /**
      * @param {number} temp
@@ -1462,7 +1469,7 @@ const FL_BRAKE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const FR_BRAKE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "BrakeTemperatureFrontLeft",
+  Generic: "BrakeTemperatureFrontRight",
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
@@ -1471,7 +1478,7 @@ const FR_BRAKE_TEMP_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const FR_BRAKE_TEMP_TRANSFORMATION_MAP = {
-  BrakeTemperatureFrontLeft:
+  BrakeTemperatureFrontRight:
     () =>
     /**
      * @param {number} temp
@@ -1484,7 +1491,7 @@ const FR_BRAKE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RL_BRAKE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "BrakeTemperatureFrontLeft",
+  Generic: "BrakeTemperatureRearLeft",
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
@@ -1493,7 +1500,7 @@ const RL_BRAKE_TEMP_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const RL_BRAKE_TEMP_TRANSFORMATION_MAP = {
-  BrakeTemperatureFrontLeft:
+  BrakeTemperatureRearLeft:
     () =>
     /**
      * @param {number} temp
@@ -1506,7 +1513,7 @@ const RL_BRAKE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {StringRecord} */
 const RR_BRAKE_TEMP_GAME_PROPERTY_MAP = {
-  Generic: "BrakeTemperatureFrontLeft",
+  Generic: "BrakeTemperatureRearRight",
 };
 
 /** @type {GameOrCarClassNullableStringRecord} */
@@ -1515,7 +1522,7 @@ const RR_BRAKE_TEMP_UI_PROPERTY_MAP = {
 };
 /** @type {HigherOrderFunctionRecord} */
 const RR_BRAKE_TEMP_TRANSFORMATION_MAP = {
-  BrakeTemperatureFrontLeft:
+  BrakeTemperatureRearRight:
     () =>
     /**
      * @param {number} temp
