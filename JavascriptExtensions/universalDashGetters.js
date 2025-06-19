@@ -85,7 +85,6 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  4. TEMPS
  *  - 4.a OIL TEMP
  *  - 4.b WATER TEMP
- *  TODO: ------ Not yet implemented ------
  *  - 4.c ENGINE TEMP
  */
 
@@ -1046,7 +1045,7 @@ const TEMP_MASTER_SECTION_UI_LABELS = {
 };
 /**
  * ---- 4.a OIL TEMP SECTION ----
- * Projected remaining stint time at the current fuel usage rate
+ * Oil temperature
  */
 /** @type {StringRecord} */
 const OIL_TEMP_GAME_PROPERTY_MAP = {
@@ -1069,7 +1068,7 @@ const OIL_TEMP_TRANSFORMATION_MAP = {
 };
 /**
  * ---- 4.b WATER TEMP SECTION ----
- * Projected remaining stint time at the current fuel usage rate
+ * Water temperature
  */
 /** @type {StringRecord} */
 const WATER_TEMP_GAME_PROPERTY_MAP = {
@@ -1089,6 +1088,17 @@ const WATER_TEMP_TRANSFORMATION_MAP = {
     (temp) =>
       Number.parseInt(temp.toFixed(0)),
 };
+/**
+ * ---- 4.c ENGINE TEMP SECTION ----
+ * Engine temperature
+ */
+/** @type {StringRecord} */
+const ENGINE_TEMP_GAME_PROPERTY_MAP = {};
+/** @type {GameOrCarClassNullableStringRecord} */
+const ENGINE_TEMP_UI_PROPERTY_MAP = {};
+/** @type {HigherOrderFunctionRecord} */
+const ENGINE_TEMP_TRANSFORMATION_MAP = {};
+
 /**
  * ==== 5. TYRES SECTION ====
  * All information regarding tyre temperatures and wear goes here
@@ -1445,7 +1455,6 @@ function getTelemetryLabelsAndValues(
     ERS_MASTER_SECTION_UI_LABELS,
     currentCarId
   );
-
   // 1.a
   const ersModeGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1466,7 +1475,6 @@ function getTelemetryLabelsAndValues(
     currentCarId
   );
   const ersModePopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_POPUP_MAP, currentCarId);
-
   // 1.b
   const ersSocGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1480,7 +1488,6 @@ function getTelemetryLabelsAndValues(
     ERS_SOC_UI_PROPERTY_MAP,
     currentCarId
   );
-
   // 1.c
   const ersCurrentGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1500,7 +1507,6 @@ function getTelemetryLabelsAndValues(
     ERS_CURRENT_UI_PROPERTY_MAP,
     currentCarId
   );
-
   // 1.d
   const ersRecoveryGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1520,7 +1526,6 @@ function getTelemetryLabelsAndValues(
     ERS_RECOVERY_POPUP_MAP,
     currentCarId
   );
-
   // 1.e
   const ersDeltaGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1534,7 +1539,6 @@ function getTelemetryLabelsAndValues(
     ERS_DELTA_UI_PROPERTY_MAP,
     currentCarId
   );
-
   // 1.f
   const ersLapGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -1724,6 +1728,19 @@ function getTelemetryLabelsAndValues(
     WATER_TEMP_UI_PROPERTY_MAP,
     currentCarId
   );
+  // 4.c
+  const engineTempGameProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ENGINE_TEMP_GAME_PROPERTY_MAP,
+    currentCarId
+  );
+  const engineTempUiProperty = getGameOrClassStringOverrides(
+    currentGame,
+    currentCarClass,
+    ENGINE_TEMP_UI_PROPERTY_MAP,
+    currentCarId
+  );
 
   // 5.a
   const frontLeftTemperatureGameProperty = getGameOrClassStringOverrides(
@@ -1869,30 +1886,30 @@ function getTelemetryLabelsAndValues(
     },
     gameProperties: {
       ers: {
-        ersMode: ersModeGameProperty ?? (ERS_MODE_GAME_PROPERTY_MAP.Generic || {}),
-        ersSoc: ersSocGameProperty ?? (ERS_SOC_GAME_PROPERTY_MAP.Generic || {}),
-        ersCurrent: ersCurrentGameProperty ?? (ERS_CURRENT_GAME_PROPERTY_MAP.Generic || {}),
-        ersRecovery: ersRecoveryGameProperty ?? (ERS_RECOVERY_GAME_PROPERTY_MAP.Generic || {}),
-        ersDelta: ersDeltaGameProperty ?? (ERS_DELTA_GAME_PROPERTY_MAP.Generic || {}),
-        ersLap: ersLapGameProperty ?? (ERS_LAP_GAME_PROPERTY_MAP.Generic || {}),
+        ersMode: ersModeGameProperty,
+        ersSoc: ersSocGameProperty,
+        ersCurrent: ersCurrentGameProperty,
+        ersRecovery: ersRecoveryGameProperty,
+        ersDelta: ersDeltaGameProperty,
+        ersLap: ersLapGameProperty,
       },
       carControl: {
-        tc: tcGameProperty ?? (TC_GAME_PROPERTY_MAP.Generic || {}),
-        tcSlip: tcSlipGameProperty ?? (TC_SLIP_GAME_PROPERTY_MAP.Generic || {}),
-        tcCut: tcCutGameProperty ?? (TC_CUT_GAME_PROPERTY_MAP.Generic || {}),
-        abs: absGameProperty ?? (ABS_GAME_PROPERTY_MAP.Generic || {}),
-        brakeBias: brakeBiasGameProperty ?? (BB_GAME_PROPERTY_MAP.Generic || {}),
-        brakeMigration: brakeMigrationGameProperty ?? (BM_GAME_PROPERTY_MAP.Generic || {}),
+        tc: tcGameProperty,
+        tcSlip: tcSlipGameProperty,
+        tcCut: tcCutGameProperty,
+        abs: absGameProperty,
+        brakeBias: brakeBiasGameProperty,
+        brakeMigration: brakeMigrationGameProperty,
       },
       fuel: {
-        fuelState: fuelStateGameProperty ?? (FUEL_STATE_GAME_PROPERTY_MAP.Generic || {}),
-        fuelUsage: fuelUsageGameProperty ?? (FUEL_USAGE_GAME_PROPERTY_MAP.Generic || {}),
-        fuelTime: fuelTimeGameProperty ?? (FUEL_TIME_GAME_PROPERTY_MAP.Generic || {}),
-        fuelLaps: fuelLapsGameProperty ?? (FUEL_LAPS_GAME_PROPERTY_MAP.Generic || {}),
+        fuelState: fuelStateGameProperty,
+        fuelUsage: fuelUsageGameProperty,
+        fuelTime: fuelTimeGameProperty,
+        fuelLaps: fuelLapsGameProperty,
       },
       temperature: {
-        oil: oilTempGameProperty ?? (OIL_TEMP_GAME_PROPERTY_MAP.Generic || {}),
-        water: waterTempGameProperty ?? (WATER_TEMP_GAME_PROPERTY_MAP.Generic || {}),
+        oil: oilTempGameProperty,
+        water: waterTempGameProperty,
       },
       tyre: {
         flTemp: frontLeftTemperatureGameProperty,
@@ -1954,30 +1971,31 @@ function getTelemetryLabelsAndValues(
     },
     uiLabels: {
       ers: {
-        ersMode: ersModeUiProperty ?? (ERS_MODE_UI_PROPERTY_MAP.Generic || {}),
-        ersSoc: ersSocUiProperty ?? (ERS_SOC_UI_PROPERTY_MAP.Generic || {}),
-        ersCurrent: ersCurrentUiProperty ?? (ERS_CURRENT_UI_PROPERTY_MAP.Generic || {}),
-        ersRecovery: ersRecoveryUiProperty ?? (ERS_RECOVERY_UI_PROPERTY_MAP.Generic || {}),
-        ersDelta: ersDeltaUiProperty ?? (ERS_DELTA_UI_PROPERTY_MAP.Generic || {}),
-        ersLap: ersLapUiProperty ?? (ERS_LAP_UI_PROPERTY_MAP.Generic || {}),
+        ersMode: ersModeUiProperty,
+        ersSoc: ersSocUiProperty,
+        ersCurrent: ersCurrentUiProperty,
+        ersRecovery: ersRecoveryUiProperty,
+        ersDelta: ersDeltaUiProperty,
+        ersLap: ersLapUiProperty,
       },
       carControl: {
-        tc: tcUiProperty ?? (TC_UI_PROPERTY_MAP.Generic || {}),
-        tcCut: tcCutUiProperty ?? (TC_CUT_UI_PROPERTY_MAP.Generic || {}),
-        tcSlip: tcSlipUiProperty ?? (TC_SLIP_UI_PROPERTY_MAP.Generic || {}),
-        abs: absUiProperty ?? (ABS_UI_PROPERTY_MAP.Generic || {}),
-        brakeBias: brakeBiasUiProperty ?? (BB_UI_PROPERTY_MAP.Generic || {}),
-        brakeMigration: brakeMigrationUiProperty ?? (BM_UI_PROPERTY_MAP.Generic || {}),
+        tc: tcUiProperty,
+        tcCut: tcCutUiProperty,
+        tcSlip: tcSlipUiProperty,
+        abs: absUiProperty,
+        brakeBias: brakeBiasUiProperty,
+        brakeMigration: brakeMigrationUiProperty,
       },
       fuel: {
-        fuelState: fuelStateUiProperty ?? (FUEL_STATE_UI_PROPERTY_MAP.Generic || {}),
-        fuelUsage: fuelUsageUiProperty ?? (FUEL_STATE_UI_PROPERTY_MAP.Generic || {}),
-        fuelTime: fuelTimeUiProperty ?? (FUEL_TIME_UI_PROPERTY_MAP.Generic || {}),
-        fuelLaps: fuelLapsUiProperty ?? (FUEL_LAPS_UI_PROPERTY_MAP.Generic || {}),
+        fuelState: fuelStateUiProperty,
+        fuelUsage: fuelUsageUiProperty,
+        fuelTime: fuelTimeUiProperty,
+        fuelLaps: fuelLapsUiProperty,
       },
       temperature: {
-        oil: oilTempUiProperty ?? (OIL_TEMP_UI_PROPERTY_MAP.Generic || {}),
-        water: waterTempUiProperty ?? (WATER_TEMP_UI_PROPERTY_MAP.Generic || {}),
+        oil: oilTempUiProperty,
+        water: waterTempUiProperty,
+        engine: engineTempUiProperty,
       },
     },
     popupLabels: {
@@ -1990,12 +2008,12 @@ function getTelemetryLabelsAndValues(
         ersLap: {},
       },
       carControl: {
-        tc: tcPopup ?? (TC_POPUP_MAP.Generic || {}),
-        tcCut: tcCutPopup ?? (TC_CUT_POPUP_MAP.Generic || {}),
-        tcSlip: tcSlipPopup ?? (TC_SLIP_POPUP_MAP.Generic || {}),
-        abs: absPopup ?? (ABS_POPUP_MAP.Generic || {}),
-        brakeBias: brakeBiasPopup ?? (BB_POPUP_MAP.Generic || {}),
-        brakeMigration: brakeMigrationPopup ?? (BM_POPUP_MAP.Generic || {}),
+        tc: tcPopup,
+        tcCut: tcCutPopup,
+        tcSlip: tcSlipPopup,
+        abs: absPopup,
+        brakeBias: brakeBiasPopup,
+        brakeMigration: brakeMigrationPopup,
       },
       fuel: {
         fuelState: {},
