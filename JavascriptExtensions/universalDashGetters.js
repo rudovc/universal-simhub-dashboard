@@ -1535,8 +1535,13 @@ const RR_BRAKE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_BRAKE_TEMP_RANGES_MAP = {
-  Generic: null,
-  LMU: { Generic: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 } },
+  Generic: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
+  GT3: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
+  LMU: {
+    GT3: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
+    Hyper: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
+  },
+  AssettoCorsaCompetizione: { Generic: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 } },
 };
 /**
  * ==== 10. OUTPUT SECTION ====
