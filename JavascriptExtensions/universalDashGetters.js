@@ -329,7 +329,7 @@ function cycleValuesOverNEntries(currentValue, root, nValues = 3) {
  * @param {number} decimalPrecision
  */
 function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision = 2) {
-  const inputValue = Number(currentValue);
+  const inputValue = Number(currentValue ?? 0);
 
   if (!root) {
     throw new Error(
