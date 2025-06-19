@@ -386,10 +386,10 @@ function debugObject(value) {
  * @param {number} currentValue
  * @param {number} previousValue
  * @param {number} timeSpan
- * @param {{ previousLapNumber: number; totalMeasurementTimeSeconds: number; valueAverageOverTimeSpan: number; }} root
+ * @param {{ resultEstimate: number | null, previousLapNumber: number | null; totalMeasurementTimeSeconds: number | null; valueAverageOverTimeSpan: number | null; }} root
  */
 function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, currentValue, previousValue, timeSpan, root) {
-  let resultEstimate = undefined;
+  root.resultEstimate = root.resultEstimate ?? 0;
 
   root.previousLapNumber = root.previousLapNumber ?? 0;
   root.totalMeasurementTimeSeconds = root.totalMeasurementTimeSeconds ?? 0;
@@ -401,11 +401,11 @@ function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, curren
 
     const calcTime = timeSpan / root.totalMeasurementTimeSeconds;
 
-    resultEstimate = calcTime * root.valueAverageOverTimeSpan - currentValue + previousValue;
+    root.resultEstimate = calcTime * root.valueAverageOverTimeSpan - currentValue + previousValue;
     root.previousLapNumber = currentLapNumber;
   }
 
-  return Math.ceil(resultEstimate || 0) || "-";
+  return Math.ceil(root.resultEstimate || 0) || "-";
 }
 
 /**
@@ -634,6 +634,7 @@ function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map, curr
 const ERS_MASTER_SECTION_UI_LABELS = {
   Generic: "Motor",
   Hyper: "ERS",
+  LMP1: "ERS",
   AssettoCorsaCompetizione: "Engine",
   GT3: "Sett",
   GTE: "Sett",
@@ -888,6 +889,7 @@ const ERS_MODE_UI_PROPERTY_MAP = {
   Automobilista2: "Mode",
   AssettoCorsa: "Mode",
   LMU: { Hyper: "Map" },
+  LMP1: "Deploy",
   AssettoCorsaCompetizione: "Map",
   GT3: "Map",
   GTE: "Mix",
@@ -921,10 +923,11 @@ const ERS_SOC_TRANSFORMATION_MAP = {
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_SOC_UI_PROPERTY_MAP = {
-  Generic: "SoC",
+  Generic: "",
   Automobilista2: "SoC",
   AssettoCorsa: "SoC",
   Hyper: "SoC",
+  LMP2: "",
   GT3: "",
   GTE: "",
 };
@@ -994,10 +997,11 @@ const ERS_RECOVERY_TRANSFORMATION_MAP = {
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_RECOVERY_UI_PROPERTY_MAP = {
-  Generic: "Recovery",
+  Generic: "",
   Automobilista2: "Recovery",
   AssettoCorsa: "Recovery",
   Hyper: "Regen",
+  LMP2: "",
   GTE: "",
   GT3: "",
 };
@@ -1018,11 +1022,12 @@ const ERS_RECOVERY_POPUP_MAP = {
 const ERS_DELTA_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_DELTA_UI_PROPERTY_MAP = {
-  Generic: "Δ",
+  Generic: "",
   Automobilista2: "Δ",
   AssettoCorsa: "Δ",
   LMP1: "Δ",
   Hyper: "Δ",
+  LMP2: "",
   GT3: "",
   GTE: "",
 };
@@ -1040,10 +1045,12 @@ const ERS_DELTA_TRANSFORMATION_MAP = ERS_SOC_TRANSFORMATION_MAP;
 const ERS_LAP_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_LAP_UI_PROPERTY_MAP = {
-  Generic: "Lap",
+  Generic: "",
   Automobilista2: "LLap",
-  AssettoCorsa: "Lap",
+  AssettoCorsa: "LLap",
   Hyper: "LLap",
+  LMP1: "LLap",
+  LMP2: "",
   GTE: "",
   GT3: "",
 };
@@ -1118,6 +1125,10 @@ const TC_SLIP_UI_PROPERTY_MAP = {
   Generic: "SLIP",
   AssettoCorsaCompetizione: "",
   iRacing: "TC1",
+  LMU: {
+    Generic: "SLIP",
+    LMP2: "",
+  },
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_POPUP_MAP = {
