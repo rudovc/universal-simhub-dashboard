@@ -634,6 +634,7 @@ function getGameOrClassLabelMapOverrides(currentGame, currentCarClass, map, curr
 const ERS_MASTER_SECTION_UI_LABELS = {
   Generic: "Motor",
   Hyper: "ERS",
+  LMDh: "ERS",
   LMP1: "ERS",
   AssettoCorsaCompetizione: "Engine",
   GT3: "Sett",
@@ -886,7 +887,7 @@ const ERS_MODE_TRANSFORMATION_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_UI_PROPERTY_MAP = {
   Generic: "Mode",
-  Automobilista2: "Mode",
+  Automobilista2: { Generic: "Mode", LMDh: "Mode" },
   AssettoCorsa: "Mode",
   LMU: { Hyper: "Map" },
   LMP1: "Deploy",
@@ -988,7 +989,7 @@ const ERS_CURRENT_UI_PROPERTY_MAP = {
 
 /** @type {StringRecord} */
 const ERS_RECOVERY_GAME_PROPERTY_MAP = {
-  Generic: "unimplemented",
+  Generic: "",
   LMU: "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL",
 };
 /** @type {HigherOrderFunctionRecord} */
@@ -1123,6 +1124,7 @@ const TC_SLIP_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_SLIP_UI_PROPERTY_MAP = {
   Generic: "SLIP",
+  Automobilista2: "",
   AssettoCorsaCompetizione: "",
   iRacing: "TC1",
   LMU: {
@@ -1147,6 +1149,7 @@ const TC_CUT_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const TC_CUT_UI_PROPERTY_MAP = {
   Generic: "CUT",
+  Automobilista2: "",
   AssettoCorsaCompetizione: "Cut",
   iRacing: "TC2",
 };
@@ -1733,7 +1736,7 @@ const RR_TYRE_PRES_TRANSFORMATION_MAP = {
  */
 /** @type {GameOrCarClassNullableFunctionRecord} */
 const WEAR_TRANSFORMATION_PER_GAME_MAP = {
-  Generic: (wear) => 100 - wear,
+  Generic: (wear) => wear,
   LMU: { Generic: (wear) => wear },
   AssettoCorsaCompetizione: { Generic: (wear) => 100 - wear },
 };
@@ -1748,8 +1751,7 @@ const WEAR_TRANSFORMATION_PER_GAME_MAP = {
  */
 /** @type {GameOrCarClassNullableStringRecord} */
 const PRIMARY_TYRE_METRIC_PER_GAME_MAP = {
-  Generic: "Temp",
-  AssettoCorsaCompetizione: "Pres",
+  Generic: "Pres",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const IDEAL_TYRE_TEMP_GAME_PROPERTY_MAP = {
@@ -1778,6 +1780,14 @@ const IDEAL_TYRE_WEAR_RANGES_MAP = {
 const IDEAL_TYRE_PRES_RANGES_MAP = {
   Generic: null,
   AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
+  Hyper: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
+  LMDh: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
+  LMU: {
+    GT3: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
+    GTE: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
+    Hyper: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
+    LMP2: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
+  },
 };
 /**
  * ---- 5.o FL TYRE SECTION ----
@@ -1918,6 +1928,8 @@ const IDEAL_BRAKE_TEMP_RANGES_MAP = {
     GT3: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
     Hyper: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
   },
+  Hyper: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
+  LMDh: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
   AssettoCorsaCompetizione: { Generic: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 } },
 };
 /**
