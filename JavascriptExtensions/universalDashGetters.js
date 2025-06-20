@@ -517,6 +517,9 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
  * @param {string | undefined} currentTyre
  */
 function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId, currentTyre = undefined) {
+  /** @type {string | null} */
+  let gameFallback = null;
+
   if (currentGame in map) {
     const gameMap = map[currentGame];
     if (!gameMap || typeof gameMap === "string") {
@@ -558,7 +561,7 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
         return gameMap.Generic[currentTyre];
       }
 
-      return gameMap.Generic;
+      gameFallback = gameMap.Generic;
     }
   }
 
@@ -575,6 +578,10 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
     return map[currentCarClass];
   }
 
+  if (gameFallback) {
+    return gameFallback;
+  }
+
   if ("Generic" in map) {
     if (currentTyre && map.Generic && typeof map.Generic !== "string" && currentTyre in map.Generic) {
       return map.Generic[currentTyre];
@@ -582,6 +589,7 @@ function getGameOrClassStringOverrides(currentGame, currentCarClass, map, curren
 
     return map.Generic;
   }
+
   if (currentTyre && currentTyre in map) {
     return map[currentTyre];
   }
@@ -638,6 +646,8 @@ const ERS_MASTER_SECTION_UI_LABELS = {
   LMP1: "ERS",
   AssettoCorsaCompetizione: "Engine",
   GT3: "Sett",
+  GT3_Gen1: "Sett",
+  GT3_Gen2: "Sett",
   GTE: "Sett",
 };
 
@@ -865,7 +875,12 @@ const ERS_MODE_LABEL_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_GAME_PROPERTY_MAP = {
   Generic: "EngineMap",
-  Automobilista2: "GameRawData.mErsDeploymentMode",
+  Automobilista2: {
+    Generic: "GameRawData.mErsDeploymentMode",
+    // TODO: Figure out game property for GT fuel mix
+    GT3_Gen1: "",
+    GT3_Gen2: "",
+  },
   AssettoCorsa: "GameRawData.Physics.ErsPowerLevel",
   LMU: {
     Hyper: "LMU_NeoRedPlugin.Extended.VM_ELECTRIC_MOTOR_MAP",
@@ -887,18 +902,20 @@ const ERS_MODE_TRANSFORMATION_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_UI_PROPERTY_MAP = {
   Generic: "Mode",
-  Automobilista2: { Generic: "Mode", LMDh: "Mode" },
+  Automobilista2: { Generic: "Mode", LMDh: "Mode", "F-Reiza": "" },
   AssettoCorsa: "Mode",
   LMU: { Hyper: "Map" },
   LMP1: "Deploy",
   AssettoCorsaCompetizione: "Map",
   GT3: "Map",
+  GT3_Gen1: "Map",
+  GT3_Gen2: "Map",
   GTE: "Mix",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_MODE_POPUP_MAP = {
   Generic: "MODE",
-  Automobilista2: "MODE",
+  Automobilista2: { Generic: "MODE", GT3_Gen1: "ENGINE MAP", GT3_Gen2: "ENGINE MAP" },
   AssettoCorsa: "MODE",
   LMU: { Hyper: "MOTOR MAP" },
   AssettoCorsaCompetizione: "ENGINE MAP",
@@ -925,11 +942,13 @@ const ERS_SOC_TRANSFORMATION_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_SOC_UI_PROPERTY_MAP = {
   Generic: "",
-  Automobilista2: "SoC",
   AssettoCorsa: "SoC",
   Hyper: "SoC",
+  LMDh: "SoC",
   LMP2: "",
   GT3: "",
+  GT3_Gen1: "",
+  GT3_Gen2: "",
   GTE: "",
 };
 
@@ -975,11 +994,14 @@ const ERS_CURRENT_GAME_PROPERTY_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_CURRENT_UI_PROPERTY_MAP = {
   Generic: "ERS",
-  Automobilista2: "ERS",
   AssettoCorsa: "ERS",
+  LMP1: "ERS",
+  LMDh: "ERS",
   Hyper: "ERS",
   GTE: "",
   GT3: "",
+  GT3_Gen1: "",
+  GT3_Gen2: "",
 };
 
 /**
@@ -1005,6 +1027,8 @@ const ERS_RECOVERY_UI_PROPERTY_MAP = {
   LMP2: "",
   GTE: "",
   GT3: "",
+  GT3_Gen1: "",
+  GT3_Gen2: "",
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_RECOVERY_POPUP_MAP = {
@@ -1024,12 +1048,14 @@ const ERS_DELTA_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_DELTA_UI_PROPERTY_MAP = {
   Generic: "",
-  Automobilista2: "Δ",
   AssettoCorsa: "Δ",
   LMP1: "Δ",
   Hyper: "Δ",
+  LMDh: "Δ",
   LMP2: "",
   GT3: "",
+  GT3_Gen1: "",
+  GT3_Gen2: "",
   GTE: "",
 };
 /**
@@ -1047,13 +1073,15 @@ const ERS_LAP_GAME_PROPERTY_MAP = ERS_SOC_GAME_PROPERTY_MAP;
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_LAP_UI_PROPERTY_MAP = {
   Generic: "",
-  Automobilista2: "LLap",
   AssettoCorsa: "LLap",
   Hyper: "LLap",
   LMP1: "LLap",
+  LMDh: "LLap",
   LMP2: "",
   GTE: "",
   GT3: "",
+  GT3_Gen1: "",
+  GT3_Gen2: "",
 };
 /**
  * Use the SOC as the base for the ERS LLap calculation
@@ -1070,6 +1098,8 @@ const CAR_CONTROL_MASTER_SECTION_UI_LABELS = {
   Generic: "Control",
   GTE: "Elec",
   GT3: "Elec",
+  GT3_Gen1: "Elec",
+  GT3_Gen2: "Elec",
 };
 /**
  * ---- 2.a TRACTION CONTROL SECTION ----
@@ -1209,6 +1239,11 @@ const ABS_UI_PROPERTY_MAP = {
   LMP1: "",
   LMP2: "",
   GTE: "",
+  Automobilista2: {
+    "F-Ultimate_Gen1": "",
+    "F-Ultimate_Gen2": "",
+    "F-Reiza": "",
+  },
 };
 /** @type {GameOrCarClassNullableStringRecord} */
 const ABS_POPUP_MAP = {
@@ -1779,7 +1814,12 @@ const IDEAL_TYRE_WEAR_RANGES_MAP = {
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_TYRE_PRES_RANGES_MAP = {
   Generic: null,
-  Automobilista2: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
+  Automobilista2: {
+    Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
+    "F-Ultimate_Gen1": { optimal: 24, goodThreshold: 1, criticalThreshold: 3 },
+    "F-Ultimate_Gen2": { optimal: 24, goodThreshold: 1, criticalThreshold: 3 },
+    "F-Reiza": { optimal: 24, goodThreshold: 1, criticalThreshold: 3 },
+  },
   AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
   Hyper: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
   LMDh: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
@@ -1923,8 +1963,10 @@ const RR_BRAKE_TEMP_TRANSFORMATION_MAP = {
  */
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_BRAKE_TEMP_RANGES_MAP = {
-  Generic: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
+  Generic: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
   GT3: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
+  GT3_Gen1: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
+  GT3_Gen2: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
   LMU: {
     GT3: { optimal: 500, goodThreshold: 250, criticalThreshold: 250 },
     Hyper: { optimal: 550, goodThreshold: 200, criticalThreshold: 300 },
