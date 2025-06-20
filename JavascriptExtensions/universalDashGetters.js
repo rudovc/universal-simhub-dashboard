@@ -999,7 +999,7 @@ const ERS_RECOVERY_TRANSFORMATION_MAP = {
 /** @type {GameOrCarClassNullableStringRecord} */
 const ERS_RECOVERY_UI_PROPERTY_MAP = {
   Generic: "",
-  Automobilista2: "Recovery",
+  Automobilista2: "",
   AssettoCorsa: "Recovery",
   Hyper: "Regen",
   LMP2: "",
@@ -1779,9 +1779,10 @@ const IDEAL_TYRE_WEAR_RANGES_MAP = {
 /** @type {GameOrCarClassOptimalRangeRecord} */
 const IDEAL_TYRE_PRES_RANGES_MAP = {
   Generic: null,
+  Automobilista2: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
   AssettoCorsaCompetizione: { Generic: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 } },
   Hyper: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
-  LMDh: { optimal: 25, goodThreshold: 1, criticalThreshold: 3 },
+  LMDh: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
   LMU: {
     GT3: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
     GTE: { optimal: 28, goodThreshold: 1, criticalThreshold: 3 },
