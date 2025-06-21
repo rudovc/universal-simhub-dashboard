@@ -12,9 +12,9 @@ for different types of car, class or game.
   [SimHub NeoRed Plugins](https://www.overtake.gg/downloads/lmu-neosuperdash.77210/)
   by Haagel -
   only needed if you want to use this dash for Le Mans Ultimate.
-  (ideally I want to minimize dependency on
-  third-party plugins, LMU is still building up native support for SimHub
-  and may not ever have all of the needed properties)
+  (originally I wanted to use just native SimHub properties,
+  but LMU is still building up native support for
+  SimHub and may not ever have all of the needed propertie)
 
 ## Installation
 
