@@ -34,12 +34,26 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 /**
  * ==== TABLE OF CONTENTS ====
  * When a "game name" is referred to, it means the [CurrentGame] property in SimHub.
+ * When a "car class" is referred to, it means the [CarClass] property in SimHub.
+ * When a "car" is referred to, it means the [CarId] property in SimHub.
  * When a "label map" is referred to, it means an object with one of the following shapes:
  * {
  *   [key]: string | { label: string, color: string }
  * }
  * It can include only a string label, or a label and color for text display.
  * Colors are formatted as ARGB hex, as such: `#AARRGGBB`
+ *
+ * Almost everything can be configured per game, per class, or per car id, with a fallback value in case no matches are found.
+ * This is an example of a map that sets the Dashboard label for the displayed "ERS Mode" depending on the game/class:
+ * {
+ *   Generic: "Mode", In case there is no better match, display the label: "Mode"
+ *   Automobilista2: { Generic: "Mode", LMDh: "Mode", "F-Reiza": "" }, In case the game is AMS2, display the label "Mode" for classes except "F-Reiza", in which case do not display the section at all. In case there is no exact match, display the label "Mode" for AMS2
+ *   AssettoCorsa: "Mode", In case the game is AC1, display the label "Mode"
+ *   LMU: { Hyper: "Map" }, In case the game is LMU and the class is Hyper, display the label "Map"
+ *   LMP1: "Deploy", In case the car class is an LMP1, display the label "Deploy"
+ *   AssettoCorsaCompetizione: "Map", In case the game is ACC, display the label "Map"
+ *   GTE: "Mix", In case the car class is GTE, display the label "Mix"
+ * }
  *
  * Every section consists of constants in the following order:
  * - Game and/or car class specific labels for the outline of the full section on the dashboard, if any such are necessary. These control the visibility of the whole section.
