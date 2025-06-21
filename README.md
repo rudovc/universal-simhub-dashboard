@@ -2,7 +2,7 @@
 
 This is a hacky attempt at creating an easily configurable universal SimHub dashboard,
 because I was annoyed at having to create new dashes and/or create conditions
-for different types of car, class or game.
+for different types of car, class or games that I play.
 
 ## Dependencies
 
