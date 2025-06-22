@@ -96,7 +96,7 @@ function deepStringAccess(accessorString, value) {
  * @param {string} configInput
  */
 function parseConfig(configInput) {
-  const MASTER_SECTION_REQUIRED_KEYS = ["section_label"];
+  const MASTER_SECTION_REQUIRED_KEYS = ["master_label"];
   const MASTER_SECTION_OPTIONAL_KEYS = [];
 
   const SUB_SECTION_REQUIRED_KEYS = ["property", "label"];
@@ -308,7 +308,7 @@ function constructOutputResultMap(parsedConfigSections) {
     if (cur === "masterSectionUiLabels") {
       acc.masterSectionUiLabels = {
         ...acc.masterSectionUiLabels,
-        ...Object.fromEntries(sectionsEntries.map(([sectionKey, section]) => [sectionKey, section.section_label])),
+        ...Object.fromEntries(sectionsEntries.map(([sectionKey, section]) => [sectionKey, section.master_label])),
       };
     } else {
       acc[cur] = {
@@ -343,7 +343,7 @@ function constructOutputResultMap(parsedConfigSections) {
 function constructSectionResultMap(section, parsedConfig = undefined) {
   return Object.fromEntries(
     Object.entries(section).flatMap(([subSectionKey, subSection]) =>
-      subSectionKey !== "section_label" ? [[subSectionKey, constructSubsectionResultMap(subSection, parsedConfig)]] : []
+      subSectionKey !== "master_label" ? [[subSectionKey, constructSubsectionResultMap(subSection, parsedConfig)]] : []
     )
   );
 }

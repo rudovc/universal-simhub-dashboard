@@ -1,5 +1,6 @@
 # Use this utility to generate the `configuration.js` file from which the configuration is loaded into memory
 import os
+import re
 import shutil
 import sys
 from datetime import datetime
@@ -89,6 +90,7 @@ def main():
 
     with open(INPUT_FILE, "r", encoding="utf-8") as f:
         toml_contents = f.read()
+        toml_contents = re.sub(r"${([a-zA-Z0-9]+)}", r"${\1}", toml_contents)
 
     js_header = """// @ts-check
 /**

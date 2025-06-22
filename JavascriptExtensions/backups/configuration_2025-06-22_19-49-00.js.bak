@@ -1,12 +1,17 @@
-#:schema file://./JavascriptExtensions/configUtils/schema.json
-# Set up your own editor to validate based on the schema in this directory, or run an external validation tool against it
-
+// @ts-check
+/**
+ * This is a horrible hack used because we can't access the file system from JS using SimHub
+ * It's going to stay here for a while, but I'm planning to replace it with a SimHub plugin
+ * The plugin should read the configuration file into memory and share it with the JS extension
+ * Eventually, it might contain a GUI that would allow the user to modify the configuration directly in SimHub
+ */
+const ERS_CONFIG = `
 # ==== 1. ERS SECTION ====
 # All hardcoded maps labels and game properties related to ERS functionality go here
 # ========================
 
 # Name of the ERS (top-right) section in the dashboard
-[ers.master_label]
+[ers.section_label]
 Generic = "MOTOR"
 Hyper = "ERS"
 LMDh = "ERS"
@@ -472,146 +477,6 @@ reference = "ers.soc.property"
 [ers.lap.transformation]
 reference = "ers.soc.transformation"
 
-# ==== 2. CAR CONTROL SECTION ====
-# All hardcoded maps labels and game properties related to car control settings (TC, ABS, brake balance) go here
-# ========================
+`;
 
-[carControl.master_label]
-Generic = "Control"
-GTE = "Elec"
-GT3 = "Elec"
-GT3_Gen1 = "Elec"
-GT3_Gen2 = "Elec"
-
-# ---- 2.a TRACTION CONTROL SECTION ----
-# Describes current TC level
-[carControl.tc.property]
-Generic = "TCLevel"
-Automobilista2 = "TCLevel"
-AssettoCorsa = "TCLevel"
-LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP"
-
-[carControl.tc.label]
-Generic = "TC"
-
-[carControl.tc.popup]
-Generic = "TC LEVEL"
-
-[carControl.tc.transformation."LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP"]
-value = """
-{
-    if (<%value%>.includes("OFF")) {
-    return "OFF";
-    }
-
-    const labelIndex = <%value%>.indexOf("(");
-    const label = <%value%>[labelIndex + 1];
-    const tcLevel = Number.parseInt(<%value%>);
-
-    if (!tcLevel) {
-    return "OFF";
-    }
-
-    return labelIndex > 0 ? `${tcLevel} (${label})` : tcLevel;
-}
-"""
-# ---- 2.b TC SLIP SECTION ----
-# Describes current TC slip level
-[carControl.tcSlip.property]
-LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLSLIPANGLEMAP"
-
-[carControl.tcSlip.label]
-Generic = "SLIP"
-Automobilista2 = ""
-AssettoCorsaCompetizione = ""
-iRacing = "TC1"
-
-[carControl.tcSlip.label.LMU]
-Generic = "SLIP"
-LMP2 = ""
-
-[carControl.tcSlip.popup]
-Generic = "TC SLIP LEVEL"
-iRacing = "TC1 LEVEL"
-
-# ---- 2.c TC CUT SECTION ----
-# Describes current TC cut level
-
-[carControl.tcCut.property]
-AssettoCorsaCompetizione = "GameRawData.Graphics.TCCut"
-LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLPOWERCUTMAP"
-
-[carControl.tcCut.label]
-Generic = "CUT"
-Automobilista2 = ""
-AssettoCorsaCompetizione = "Cut"
-iRacing = "TC2"
-
-[carControl.tcCut.popup]
-Generic = "TC CUT LEVEL"
-AssettoCorsaCompetizione = "TC CUT LEVEL"
-iRacing = "TC2 LEVEL"
-
-# ---- 2.d ABS SECTION ----
-# Describes current ABS level
-
-[carControl.abs.property]
-Generic = "ABSLevel"
-LMU = "LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP"
-
-[carControl.abs.value.LMU]
-0 = "Off"
-1 = "o 1 (LO)"
-2 = "o 1 (MD)"
-3 = "o 1 (HI)"
-4 = "n 4 (LO)"
-5 = "n 5 (MD)"
-6 = "n 6 (HI)"
-7 = "u 7 (LO)"
-8 = "u 8 (MD)"
-9 = "u 9 (HI)"
-
-[carControl.abs.transformation."LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP"]
-value = "<%value%>.includes('OFF') ? 0 : parseInt(<%value%>)"
-
-[carControl.abs.label]
-Generic = "ABS"
-Hyper = ""
-LMP1 = ""
-LMP2 = ""
-GTE = ""
-
-[carControl.abs.label.Automobilista2]
-F-Ultimate_Gen1 = ""
-F-Ultimate_Gen2 = ""
-F-Reiza = ""
-
-[carControl.abs.popup]
-Generic = "ABS LEVEL"
-
-# ---- 2.e BRAKE BIAS SECTION ----
-# Describes current brake bias
-
-[carControl.bb.property]
-Generic = "BrakeBias"
-
-[carControl.bb.label]
-Generic = "BB"
-
-[carControl.bb.popup]
-Generic = "BRAKE BIAS"
-
-# ---- 2.f BRAKE MIGRATION SECTION ----
-# Describes current brake migration setting
-
-[carControl.bm.property]
-LMU = "LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION"
-
-[carControl.bm.label]
-Generic = ""
-
-[carControl.bm.label.LMU]
-Hyper = "BM"
-
-[carControl.bm.popup]
-Generic = "BRK MIGRATION"
+const configurationData = ERS_CONFIG;

@@ -2,3 +2,4 @@ _Backups
 _SHFonts
 *.carclasses
 ./JavascriptExtensions/backups/*
+./JavascriptExtensions/configUtils/configuration.json

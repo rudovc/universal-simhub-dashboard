@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string" },
+    "ers": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "patternProperties": {
+            "^.*$": { "type": "string" }
+          },
+          "minProperties": 1
+        }
+      },
+      "patternProperties": {
+        "(?!^master_label$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
+    },
+    "carControl": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "patternProperties": {
+            "^.*$": { "type": "string" }
+          }
+        }
+      },
+      "patternProperties": {
+        "(?!^master_label$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "subsection": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/nestedStringMaps"
+        },
+        "property": {
+          "$ref": "#/$defs/nestedStringMaps"
+        },
+        "transformation": {
+          "$ref": "#/$defs/nestedStringMaps"
+        },
+        "popup": {
+          "$ref": "#/$defs/nestedStringMaps"
+        },
+        "optimal": {
+          "$ref": "#/$defs/nestedStringMaps"
+        },
+        "value": {
+          "$ref": "#/$defs/nestedLabelMaps"
+        }
+      },
+      "required": ["property", "label"],
+      "additionalProperties": false
+    },
+    "stringMap": {
+      "type": "object",
+      "patternProperties": {
+        "Generic": { "type": "string" },
+        "^.*$": { "type": "string" }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "nestedStringMap": {
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/$defs/stringMap" },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "$ref": "#/$defs/stringMap" }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "propertyNestedStringMaps": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/$defs/nestedStringMap"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "nestedStringMaps": {
+      "oneOf": [
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/$defs/nestedStringMap"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "labelMap": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "properties": {
+            "label": { "type": "string" },
+            "color": { "type": "string" }
+          },
+          "required": ["label"],
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "nestedLabelMap": {
+      "oneOf": [
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "$ref": "#/$defs/labelMap" }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    },
+    "nestedLabelMaps": {
+      "oneOf": [
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/$defs/nestedLabelMap"
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/$defs/nestedLabelMap"
+                }
+              }
+            }
+          },
+          "minProperties": 1,
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

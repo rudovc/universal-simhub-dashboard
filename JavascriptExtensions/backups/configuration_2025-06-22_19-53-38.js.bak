@@ -1,3 +1,11 @@
+// @ts-check
+/**
+ * This is a horrible hack used because we can't access the file system from JS using SimHub
+ * It's going to stay here for a while, but I'm planning to replace it with a SimHub plugin
+ * The plugin should read the configuration file into memory and share it with the JS extension
+ * Eventually, it might contain a GUI that would allow the user to modify the configuration directly in SimHub
+ */
+const ERS_CONFIG = `
 #:schema file://./JavascriptExtensions/configUtils/schema.json
 # Set up your own editor to validate based on the schema in this directory, or run an external validation tool against it
 
@@ -512,7 +520,7 @@ value = """
     return "OFF";
     }
 
-    return labelIndex > 0 ? `${tcLevel} (${label})` : tcLevel;
+    return labelIndex > 0 ? \`${tcLevel} (${label})\` : tcLevel;
 }
 """
 # ---- 2.b TC SLIP SECTION ----
@@ -615,3 +623,7 @@ Hyper = "BM"
 
 [carControl.bm.popup]
 Generic = "BRK MIGRATION"
+
+`;
+
+const configurationData = ERS_CONFIG;
