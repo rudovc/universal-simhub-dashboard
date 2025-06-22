@@ -1,14 +1,38 @@
 # Use this utility to generate the `configuration.js` file from which the configuration is loaded into memory
 import os
 import shutil
+import sys
 from datetime import datetime
 
 
-def back_up_old_config(output_file):
+INPUT_FILE = "./configuration.toml"
+OUTPUT_FILE = "../configuration.js"
+BACKUP_DIR = os.path.join(os.path.dirname(OUTPUT_FILE), "backups")
+
+
+def restore_backup(backup_filename: str):
+    computed_filename = (
+        backup_filename
+        if backup_filename.endswith(".bak")
+        else backup_filename + ".bak"
+    )
+    backup_path = os.path.join(BACKUP_DIR, computed_filename)
+    if not os.path.isfile(backup_path):
+        print(f"Did not find backup '{computed_filename}' in path {backup_path}.")
+        return
+
+    if not confirm_overwrite():
+        return
+
+    shutil.copy2(backup_path, OUTPUT_FILE)
+    print(f"Restored backup '{computed_filename}' to '{OUTPUT_FILE}'")
+
+
+def back_up_old_config(output_file: str):
     if not os.path.isfile(output_file):
         return
 
-    backup_dir = os.path.join(os.path.dirname(output_file), "backups")
+    backup_dir = BACKUP_DIR
     os.makedirs(backup_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -29,7 +53,7 @@ def back_up_old_config(output_file):
         os.remove(old_path)
 
 
-def confirm_overwrite(hide_prompt=False):
+def confirm_overwrite(hide_prompt: bool = False) -> bool:
     if not hide_prompt:
         print(
             "\033[33mWARN: This will overwrite the existing '../configuration.js' file.\033[00m"
@@ -45,16 +69,25 @@ def confirm_overwrite(hide_prompt=False):
 
 
 def main():
-    input_file = "./configuration.toml"
-    output_file = "../configuration.js"
+    args = sys.argv[1:]
+
+    if args:
+        if args[0] != "--restore" or len(args) != 2:
+            print("Did not recognise command line arguments.")
+            print(
+                "Usage:\nUse the configuration from configuration.toml: No arguments\nRestore configuration file from a backup: --restore <backup_filename>"
+            )
+            return
+        restore_backup(args[1])
+        return
 
     if not confirm_overwrite():
         print("Ok. Exiting...")
         return
 
-    back_up_old_config(output_file)
+    back_up_old_config(OUTPUT_FILE)
 
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(INPUT_FILE, "r", encoding="utf-8") as f:
         toml_contents = f.read()
 
     js_header = """// @ts-check
@@ -68,7 +101,7 @@ const ERS_CONFIG = `"""
 
     js_footer = "`;\n\nconst configurationData = ERS_CONFIG;\n"
 
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(js_header)
         f.write("\n")
         f.write(toml_contents)
