@@ -6,7 +6,7 @@
  * Eventually, it might contain a GUI that would allow the user to modify the configuration directly in SimHub
  */
 const ERS_CONFIG = `
-#:schema file://./JavascriptExtensions/configUtils/schema.json
+#:schema /JavascriptExtensions/configUtils/schema.json
 # Set up your own editor to validate based on the schema in this directory, or run an external validation tool against it
 
 # ==== 1. ERS SECTION ====

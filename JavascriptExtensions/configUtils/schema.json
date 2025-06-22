@@ -56,7 +56,54 @@
           "$ref": "#/$defs/nestedStringMaps"
         },
         "value": {
-          "$ref": "#/$defs/nestedLabelMaps"
+          "anyOf": [
+            { "type": "string" },
+            {
+              "$ref": "#/$defs/stringMap"
+            },
+            {
+              "$ref": "#/$defs/labelMap"
+            },
+            {
+              "patternProperties": {
+                "^.*$": {
+                  "anyOf": [
+                    { "type": "string" },
+                    { "$ref": "#/$defs/stringMap" },
+                    {
+                      "$ref": "#/$defs/labelMap"
+                    },
+                    {
+                      "patternProperties": {
+                        "^.*$": {
+                          "anyOf": [
+                            { "type": "string" },
+                            { "$ref": "#/$defs/stringMap" },
+                            {
+                              "$ref": "#/$defs/labelMap"
+                            },
+                            {
+                              "patternProperties": {
+                                "^.*$": {
+                                  "anyOf": [
+                                    { "type": "string" },
+                                    { "$ref": "#/$defs/stringMap" },
+                                    {
+                                      "$ref": "#/$defs/labelMap"
+                                    }
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
         }
       },
       "required": ["property", "label"],
@@ -72,7 +119,7 @@
       "additionalProperties": false
     },
     "nestedStringMap": {
-      "oneOf": [
+      "anyOf": [
         { "type": "string" },
         { "$ref": "#/$defs/stringMap" },
         {
@@ -99,7 +146,13 @@
       "additionalProperties": false
     },
     "nestedStringMaps": {
-      "oneOf": [
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/$defs/stringMap"
+        },
         {
           "type": "object",
           "patternProperties": {
@@ -116,8 +169,7 @@
       ]
     },
     "labelMap": {
-      "oneOf": [
-        { "type": "string" },
+      "anyOf": [
         {
           "type": "object",
           "properties": {
@@ -125,46 +177,6 @@
             "color": { "type": "string" }
           },
           "required": ["label"],
-          "minProperties": 1,
-          "additionalProperties": false
-        }
-      ]
-    },
-    "nestedLabelMap": {
-      "oneOf": [
-        {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "$ref": "#/$defs/labelMap" }
-          },
-          "minProperties": 1,
-          "additionalProperties": false
-        }
-      ]
-    },
-    "nestedLabelMaps": {
-      "oneOf": [
-        {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": {
-              "$ref": "#/$defs/nestedLabelMap"
-            }
-          },
-          "minProperties": 1,
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": {
-              "patternProperties": {
-                "^.*$": {
-                  "$ref": "#/$defs/nestedLabelMap"
-                }
-              }
-            }
-          },
           "minProperties": 1,
           "additionalProperties": false
         }
