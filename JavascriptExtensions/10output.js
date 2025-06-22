@@ -28,111 +28,6 @@ function getTelemetryLabelsAndValues(
   currentLap = undefined,
   root = undefined
 ) {
-  // 1
-  const ersMasterSectionUiLabels = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MASTER_SECTION_UI_LABELS,
-    currentCarId
-  );
-  // 1.a
-  const ersModeGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersModeLabelMap = getGameOrClassLabelMapOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_LABEL_MAP,
-    currentCarId
-  );
-  const ersModeUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_MODE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersModePopupMap = getGameOrClassStringOverrides(currentGame, currentCarClass, ERS_MODE_POPUP_MAP, currentCarId);
-  // 1.b
-  const ersSocGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_SOC_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersSocUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_SOC_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 1.c
-  const ersCurrentGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersCurrentLabel = getGameOrClassLabelMapOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_LABEL_MAP,
-    currentCarId
-  );
-  const ersCurrentUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_CURRENT_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 1.d
-  const ersRecoveryGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersRecoveryUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersRecoveryPopupMap = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_RECOVERY_POPUP_MAP,
-    currentCarId
-  );
-  // 1.e
-  const ersDeltaGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_DELTA_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersDeltaUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_DELTA_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 1.f
-  const ersLapGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_LAP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const ersLapUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ERS_LAP_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
   // 2
   const carControlMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
@@ -550,20 +445,11 @@ function getTelemetryLabelsAndValues(
 
   const resultMaps = {
     masterSectionUiLabels: {
-      ers: ersMasterSectionUiLabels,
       carControl: carControlMasterSectionUILabels,
       fuel: fuelMasterSectionUILabels,
       temperature: tempMasterSectionUILabels,
     },
     labelMaps: {
-      ers: {
-        ersMode: ersModeLabelMap,
-        ersSoc: null,
-        ersCurrent: ersCurrentLabel,
-        ersRecovery: null,
-        ersDelta: null,
-        ersLap: null,
-      },
       carControl: {
         tc: null,
         tcCut: null,
@@ -608,14 +494,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     gameProperties: {
-      ers: {
-        ersMode: ersModeGameProperty,
-        ersSoc: ersSocGameProperty,
-        ersCurrent: ersCurrentGameProperty,
-        ersRecovery: ersRecoveryGameProperty,
-        ersDelta: ersDeltaGameProperty,
-        ersLap: ersLapGameProperty,
-      },
       carControl: {
         tc: tcGameProperty,
         tcSlip: tcSlipGameProperty,
@@ -715,14 +593,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     uiLabels: {
-      ers: {
-        ersMode: ersModeUiProperty,
-        ersSoc: ersSocUiProperty,
-        ersCurrent: ersCurrentUiProperty,
-        ersRecovery: ersRecoveryUiProperty,
-        ersDelta: ersDeltaUiProperty,
-        ersLap: ersLapUiProperty,
-      },
       carControl: {
         tc: tcUiProperty,
         tcCut: tcCutUiProperty,
@@ -767,14 +637,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     popupLabels: {
-      ers: {
-        ersMode: ersModePopupMap,
-        ersSoc: null,
-        ersCurrent: null,
-        ersRecovery: ersRecoveryPopupMap,
-        ersDelta: null,
-        ersLap: null,
-      },
       carControl: {
         tc: tcPopup,
         tcCut: tcCutPopup,
