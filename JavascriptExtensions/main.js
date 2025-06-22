@@ -169,14 +169,28 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * Functions that have more specific uses, to simplify calling form SimHub. For example: "getMasterSectionLabel" will just return the label of the master section instead of a bunch of unneeded details
  */
 /**
+ * @param {{ [key: string]: any }} configContents
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
+ * @param {string | undefined} currentCarId
  * @param {string} section
  * @param {boolean} debugMode
- * @param {string | undefined} currentCarId
  */
-function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode, currentCarId) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
+function getMasterSectionLabelFromConfig(
+  configContents,
+  currentGame,
+  currentCarClass,
+  currentCarId,
+  section,
+  debugMode
+) {
+  const telemetry = getTelemetryLabelsAndValuesFromConfig(
+    configContents,
+    currentGame,
+    currentCarClass,
+    debugMode,
+    currentCarId
+  );
 
   if (debugMode) {
     return telemetry.availableValues;
@@ -202,14 +216,14 @@ function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode,
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  */
-function getPropertyPopupLabelFromConfig(
+function getPopupLabelFromConfig(
   configContents,
   currentGame,
   currentCarClass,
+  currentCarId,
   section,
   property,
-  debugMode,
-  currentCarId
+  debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
