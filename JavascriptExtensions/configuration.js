@@ -476,6 +476,7 @@ GT3_Gen2 = ""
 reference = "ers.soc.property"
 [ers.lap.transformation]
 reference = "ers.soc.transformation"
+
 `;
 
 const configurationData = ERS_CONFIG;
