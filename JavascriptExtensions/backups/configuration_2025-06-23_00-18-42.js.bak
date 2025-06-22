@@ -520,7 +520,7 @@ value = """
     return "OFF";
     }
 
-    return labelIndex > 0 ? \`\$\{tcLevel\} (\$\{label\})\` : tcLevel;
+    return labelIndex > 0 ? `${tcLevel} (${label})` : tcLevel;
 }
 """
 # ---- 2.b TC SLIP SECTION ----

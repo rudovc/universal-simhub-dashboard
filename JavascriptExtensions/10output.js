@@ -769,7 +769,12 @@ function getTelemetryLabelsAndValuesFromConfig(
           ),
         ])
     ),
-    masterSectionUiLabels: configContents.masterSectionUiLabels,
+    masterSectionUiLabels: Object.fromEntries(
+      Object.entries(configContents.masterSectionUiLabels).map(([key, value]) => [
+        key,
+        getGameOrClassStringOverrides(currentGame, currentCarClass, value, currentCarId, currentTyre),
+      ])
+    ),
   };
 
   return {

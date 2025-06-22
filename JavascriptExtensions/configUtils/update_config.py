@@ -89,8 +89,8 @@ def main():
     back_up_old_config(OUTPUT_FILE)
 
     with open(INPUT_FILE, "r", encoding="utf-8") as f:
-        toml_contents = f.read()
-        toml_contents = re.sub(r"${([a-zA-Z0-9]+)}", r"${\1}", toml_contents)
+        toml_contents = f.read().replace("`", r"\`")
+        toml_contents = re.sub(r"\${([a-zA-Z0-9]+)}", r"\$\{\1\}", toml_contents)
 
     js_header = """// @ts-check
 /**
