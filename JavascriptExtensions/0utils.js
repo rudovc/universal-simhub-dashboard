@@ -246,21 +246,43 @@ function constructSubsectionResultMap(subSection, parsedConfig) {
 
 /**
  * @param {{}} inputObject
+ * @param {any} inputObject
+ * @returns {boolean}
  */
 function objectIsLabelMap(inputObject) {
-  return "label" in inputObject || typeof inputObject === "string";
+  if (!inputObject || typeof inputObject !== "object") return false;
+
+  const values = Object.values(inputObject);
+  return values.every((val) => typeof val === "string" || (val && typeof val === "object" && "label" in val));
 }
 
 /**
- * @param {{}} inputLabelMaps
+ * @param {Object} rawMap
+ * @returns {Object}
  */
-function constructLabelMapFromConfig(inputLabelMaps) {
-  Object.fromEntries(
-    Object.entries(inputLabelMaps).map(([key, value]) => {
-      // TODO: Convert to label maps from config
-      return [key, value];
-    })
-  );
+function constructLabelMapFromConfig(rawMap) {
+  if (!rawMap || typeof rawMap !== "object") return {};
+
+  const result = {};
+
+  for (const [gameKey, perGameValue] of Object.entries(rawMap)) {
+    if (!perGameValue || typeof perGameValue !== "object") {
+      result[gameKey] = null;
+      continue;
+    }
+
+    if (objectIsLabelMap(perGameValue)) {
+      result[gameKey] = new LabelMap(perGameValue);
+    } else {
+      result[gameKey] = {};
+
+      for (const [carKey, labelMap] of Object.entries(perGameValue)) {
+        result[gameKey][carKey] = objectIsLabelMap(labelMap) ? new LabelMap(labelMap) : null;
+      }
+    }
+  }
+
+  return result;
 }
 
 /**
@@ -371,13 +393,25 @@ class LabelMap {
    * @param {string} key
    */
   getLabel(key) {
-    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].label;
+    if (!this._map[key]) {
+      return null;
+    }
+
+    if (typeof this._map[key] === "string") {
+      return this._map[key];
+    }
+
+    return "label" in this._map[key] ? this._map[key].label : this._map[key];
   }
   /**
    * @param {string} key
    */
   getColor(key) {
-    return typeof this._map[key] === "string" ? this._map[key] : this._map[key].color;
+    if (typeof this._map[key] === "string") {
+      return this._map[key];
+    }
+
+    return "label" in this._map[key] ? this._map[key].color : null;
   }
 }
 

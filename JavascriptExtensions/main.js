@@ -242,7 +242,15 @@ function getPropertyPopupLabelFromConfig(
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  */
-function getPropertyUILabel(configContents, currentGame, currentCarClass, section, property, debugMode, currentCarId) {
+function getPropertyUILabelFromConfig(
+  configContents,
+  currentGame,
+  currentCarClass,
+  currentCarId,
+  section,
+  property,
+  debugMode
+) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
@@ -321,7 +329,7 @@ function getPropertyValueFromConfig(
     transformation,
     labelMap,
     getFinalValue,
-    availableValues: debugMode ? telemetry : "Set debugMode = true to see available values",
+    availableValues: debugMode ? configContents : "Set debugMode = true to see available values",
   };
 }
 
@@ -334,7 +342,7 @@ function getPropertyValueFromConfig(
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  */
-function getPropertyOptimalRanges(
+function getPropertyOptimalRangesFromConfig(
   configContents,
   currentGame,
   currentCarClass,
@@ -392,7 +400,7 @@ function getPropertyOptimalRanges(
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  */
-function getPrimaryTyreMetric(
+function getPrimaryTyreMetricFromConfig(
   configContents,
   currentGame,
   currentCarClass,

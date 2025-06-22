@@ -897,6 +897,12 @@ function getTelemetryLabelsAndValuesFromConfig(
 
                   const sectionGetter = GETTER_MAPPING[topLevelKey];
 
+                  if (typeof sectionGetter !== "function") {
+                    throw new Error(
+                      `Section getter does not exist for ${topLevelKey}:${subSectionKey}. Double-check the configuration file.`
+                    );
+                  }
+
                   return [
                     subSectionKey,
                     typeof subSection === "object"
