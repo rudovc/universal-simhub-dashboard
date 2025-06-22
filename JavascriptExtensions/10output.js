@@ -541,14 +541,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     transformations: {
-      ers: {
-        ersMode: ERS_MODE_TRANSFORMATION_MAP,
-        ersSoc: ERS_SOC_TRANSFORMATION_MAP,
-        ersCurrent: {},
-        ersRecovery: ERS_RECOVERY_TRANSFORMATION_MAP,
-        ersDelta: ERS_DELTA_TRANSFORMATION_MAP,
-        ersLap: ERS_LAP_TRANSFORMATION_MAP,
-      },
       carControl: {
         tc: TC_TRANSFORMATION_MAP,
         tcCut: {},
