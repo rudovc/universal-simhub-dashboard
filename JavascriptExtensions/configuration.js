@@ -600,28 +600,28 @@ Generic = "ABS LEVEL"
 # ---- 2.e BRAKE BIAS SECTION ----
 # Describes current brake bias
 
-[carControl.bb.property]
+[carControl.brakeBias.property]
 Generic = "BrakeBias"
 
-[carControl.bb.label]
+[carControl.brakeBias.label]
 Generic = "BB"
 
-[carControl.bb.popup]
+[carControl.brakeBias.popup]
 Generic = "BRAKE BIAS"
 
 # ---- 2.f BRAKE MIGRATION SECTION ----
 # Describes current brake migration setting
 
-[carControl.bm.property]
+[carControl.brakeMigration.property]
 LMU = "LMU_NeoRedPlugin.Extended.VM_BRAKE_MIGRATION"
 
-[carControl.bm.label]
+[carControl.brakeMigration.label]
 Generic = ""
 
-[carControl.bm.label.LMU]
+[carControl.brakeMigration.label.LMU]
 Hyper = "BM"
 
-[carControl.bm.popup]
+[carControl.brakeMigration.popup]
 Generic = "BRK MIGRATION"
 
 `;

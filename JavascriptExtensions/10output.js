@@ -28,89 +28,6 @@ function getTelemetryLabelsAndValues(
   currentLap = undefined,
   root = undefined
 ) {
-  // 2
-  const carControlMasterSectionUILabels = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    CAR_CONTROL_MASTER_SECTION_UI_LABELS,
-    currentCarId
-  );
-  // 2.a
-  const tcGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TC_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const tcUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_UI_PROPERTY_MAP, currentCarId);
-  const tcPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_POPUP_MAP, currentCarId);
-  // 2.b
-  const tcSlipGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TC_SLIP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const tcSlipUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TC_SLIP_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const tcSlipPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_SLIP_POPUP_MAP, currentCarId);
-  // 2.c
-  const tcCutGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TC_CUT_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const tcCutUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TC_CUT_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const tcCutPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, TC_CUT_POPUP_MAP, currentCarId);
-  // 2.d
-  const absLabelMap = getGameOrClassLabelMapOverrides(currentGame, currentCarClass, ABS_LABEL_MAP, currentCarId);
-  const absGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ABS_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const absUiProperty = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_UI_PROPERTY_MAP, currentCarId);
-  const absPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, ABS_POPUP_MAP, currentCarId);
-  // 2.e
-  const brakeBiasGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    BB_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const brakeBiasUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    BB_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const brakeBiasPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BB_POPUP_MAP, currentCarId);
-  // 2.f
-  const brakeMigrationGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    BM_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const brakeMigrationUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    BM_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  const brakeMigrationPopup = getGameOrClassStringOverrides(currentGame, currentCarClass, BM_POPUP_MAP, currentCarId);
-
   // 3
   const fuelMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
@@ -445,19 +362,10 @@ function getTelemetryLabelsAndValues(
 
   const resultMaps = {
     masterSectionUiLabels: {
-      carControl: carControlMasterSectionUILabels,
       fuel: fuelMasterSectionUILabels,
       temperature: tempMasterSectionUILabels,
     },
     labelMaps: {
-      carControl: {
-        tc: null,
-        tcCut: null,
-        tcSlip: null,
-        abs: absLabelMap,
-        brakeBias: null,
-        brakeMigration: null,
-      },
       fuel: {
         fuelState: null,
         fuelUsage: null,
@@ -494,14 +402,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     gameProperties: {
-      carControl: {
-        tc: tcGameProperty,
-        tcSlip: tcSlipGameProperty,
-        tcCut: tcCutGameProperty,
-        abs: absGameProperty,
-        brakeBias: brakeBiasGameProperty,
-        brakeMigration: brakeMigrationGameProperty,
-      },
       fuel: {
         fuelState: fuelStateGameProperty,
         fuelUsage: fuelUsageGameProperty,
@@ -541,14 +441,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     transformations: {
-      carControl: {
-        tc: TC_TRANSFORMATION_MAP,
-        tcCut: {},
-        tcSlip: {},
-        abs: ABS_TRANSFORMATION_MAP,
-        brakeBias: {},
-        brakeMigration: {},
-      },
       fuel: {
         fuelState: {},
         fuelUsage: {},
@@ -585,14 +477,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     uiLabels: {
-      carControl: {
-        tc: tcUiProperty,
-        tcCut: tcCutUiProperty,
-        tcSlip: tcSlipUiProperty,
-        abs: absUiProperty,
-        brakeBias: brakeBiasUiProperty,
-        brakeMigration: brakeMigrationUiProperty,
-      },
       fuel: {
         fuelState: fuelStateUiProperty,
         fuelUsage: fuelUsageUiProperty,
@@ -629,14 +513,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     popupLabels: {
-      carControl: {
-        tc: tcPopup,
-        tcCut: tcCutPopup,
-        tcSlip: tcSlipPopup,
-        abs: absPopup,
-        brakeBias: brakeBiasPopup,
-        brakeMigration: brakeMigrationPopup,
-      },
       fuel: {
         fuelState: null,
         fuelUsage: null,

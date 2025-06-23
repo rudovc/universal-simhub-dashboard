@@ -732,6 +732,57 @@ function cycleValuesOverNEntries(currentValue, root, nValues = 3) {
  * @param {{ [x: string]: number | null | undefined; }} root
  * @param {number} decimalPrecision
  */
+function formattedDeltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision = 2) {
+  let delta;
+  const inputValue = Number(currentValue ?? 0);
+
+  if (!root) {
+    throw new Error(
+      `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
+    );
+  }
+
+  if (root.previousLapNumber === undefined || root.previousLapNumber === null) {
+    root.previousLapNumber = currentLapNumber;
+  }
+
+  if (root.previousValue === undefined || root.previousValue === null) {
+    root.previousValue = inputValue;
+  }
+
+  if (root.previousDiff === undefined || root.previousDiff === null) {
+    root.previousDiff = 0;
+  }
+
+  const previousLapNumber = root.previousLapNumber;
+  const previousValue = root.previousValue;
+  const previousDiff = root.previousDiff;
+
+  if (previousLapNumber !== currentLapNumber) {
+    const valueDiff = inputValue - previousValue;
+
+    root.previousValue = inputValue;
+    root.previousLapNumber = currentLapNumber;
+    root.previousDiff = valueDiff;
+
+    delta = numberToFixed(valueDiff, decimalPrecision);
+  } else {
+    delta = numberToFixed(previousDiff, decimalPrecision);
+  }
+
+  if (parseInt(delta.toString()) === 0) {
+    return 0;
+  }
+
+  return delta > 0 ? `+${delta.toFixed(decimalPrecision)}` : delta.toFixed(decimalPrecision);
+}
+
+/**
+ * @param {number} currentLapNumber
+ * @param {number} currentValue
+ * @param {{ [x: string]: number | null | undefined; }} root
+ * @param {number} decimalPrecision
+ */
 function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision = 2) {
   const inputValue = Number(currentValue ?? 0);
 
