@@ -422,6 +422,10 @@ class LabelMap {
  * @param {string | undefined} currentCarId
  */
 function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, currentCarId) {
+  if (typeof map === "function") {
+    return map;
+  }
+
   if (currentGame in map) {
     const gameMap = map[currentGame];
 

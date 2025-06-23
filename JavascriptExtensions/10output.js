@@ -28,105 +28,6 @@ function getTelemetryLabelsAndValues(
   currentLap = undefined,
   root = undefined
 ) {
-  // 3
-  const fuelMasterSectionUILabels = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_MASTER_SECTION_UI_LABELS,
-    currentCarId
-  );
-  // 3.a
-  const fuelStateGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_STATE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const fuelStateUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_STATE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.b
-  const fuelUsageGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_USAGE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const fuelUsageUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_USAGE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.c
-  const fuelTimeGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_TIME_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const fuelTimeUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_TIME_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.d
-  const fuelLapsGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_LAPS_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const fuelLapsUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_LAPS_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.e
-  const fuelDeltaGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_DELTA_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const fuelDeltaUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FUEL_DELTA_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.f
-  const nrgStateGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    NRG_STATE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const nrgStateUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    NRG_STATE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 3.g
-  const nrgUsageGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    NRG_USAGE_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const nrgUsageUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    NRG_USAGE_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
   // 4
   const tempMasterSectionUILabels = getGameOrClassStringOverrides(
     currentGame,
@@ -362,7 +263,6 @@ function getTelemetryLabelsAndValues(
 
   const resultMaps = {
     masterSectionUiLabels: {
-      fuel: fuelMasterSectionUILabels,
       temperature: tempMasterSectionUILabels,
     },
     labelMaps: {
@@ -402,15 +302,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     gameProperties: {
-      fuel: {
-        fuelState: fuelStateGameProperty,
-        fuelUsage: fuelUsageGameProperty,
-        fuelTime: fuelTimeGameProperty,
-        fuelLaps: fuelLapsGameProperty,
-        fuelDelta: fuelDeltaGameProperty,
-        nrgState: nrgStateGameProperty,
-        nrgUsage: nrgUsageGameProperty,
-      },
       temperature: {
         oil: oilTempGameProperty,
         water: waterTempGameProperty,
@@ -441,15 +332,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     transformations: {
-      fuel: {
-        fuelState: {},
-        fuelUsage: {},
-        fuelTime: {},
-        fuelLaps: {},
-        fuelDelta: FUEL_DELTA_TRANSFORMATION_MAP,
-        nrgState: NRG_STATE_TRANSFORMATION_MAP,
-        nrgUsage: NRG_USAGE_TRANSFORMATION_MAP,
-      },
       temperature: {
         oil: OIL_TEMP_TRANSFORMATION_MAP,
         water: WATER_TEMP_TRANSFORMATION_MAP,
@@ -477,15 +359,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     uiLabels: {
-      fuel: {
-        fuelState: fuelStateUiProperty,
-        fuelUsage: fuelUsageUiProperty,
-        fuelTime: fuelTimeUiProperty,
-        fuelLaps: fuelLapsUiProperty,
-        fuelDelta: fuelDeltaUiProperty,
-        nrgState: nrgStateUiProperty,
-        nrgUsage: nrgUsageUiProperty,
-      },
       temperature: {
         oil: oilTempUiProperty,
         water: waterTempUiProperty,

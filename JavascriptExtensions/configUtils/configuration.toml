@@ -477,11 +477,11 @@ reference = "ers.soc.transformation"
 # ========================
 
 [carControl.master_label]
-Generic = "Control"
-GTE = "Elec"
-GT3 = "Elec"
-GT3_Gen1 = "Elec"
-GT3_Gen2 = "Elec"
+Generic = "CONTROL"
+GTE = "ELEC"
+GT3 = "ELEC"
+GT3_Gen1 = "ELEC"
+GT3_Gen2 = "ELEC"
 
 # ---- 2.a TRACTION CONTROL SECTION ----
 # Describes current TC level
@@ -615,3 +615,101 @@ Hyper = "BM"
 
 [carControl.brakeMigration.popup]
 Generic = "BRK MIGRATION"
+
+# ==== 3. FUEL SECTION ====
+# All fuel information and calculations go here
+# ========================
+
+[fuel.master_label]
+Generic = "FUEL"
+GTE = "FUEL"
+GT3 = "FUEL"
+Hyper = "F/NRG"
+
+# ---- 3.a FUEL STATE SECTION ----
+# Describes current Fuel state in liters
+[fuel.state.property]
+Generic = "Fuel"
+
+[fuel.state.label]
+Generic = "Tank"
+
+# ---- 3.b FUEL USAGE SECTION ----
+# Describes Fuel usage over the current lap
+[fuel.usage.property]
+Generic = "DataCorePlugin.Computed.Fuel_CurrentLapConsumption"
+
+[fuel.usage.label]
+Generic = "TLap"
+
+# ---- 3.c FUEL TIME SECTION ----
+# Projected remaining stint time at the current fuel usage rate
+[fuel.time.property]
+Generic = "DataCorePlugin.Computed.Fuel_RemainingTime"
+
+[fuel.time.label]
+Generic = "ETime"
+
+# ---- 3.d FUEL LAPS SECTION ----
+# Projected remaining laps number at the current fuel usage rate
+[fuel.laps.property]
+Generic = "DataCorePlugin.Computed.Fuel_RemainingLaps"
+
+[fuel.laps.label]
+Generic = "ELaps"
+
+# ---- 3.e FUEL DELTA SECTION ----
+# Describes fuel delta to last lap
+[fuel.delta.property]
+reference = "fuel.state.property"
+
+[fuel.delta.property.LMU]
+Hyper = "LMU_NeoRedPlugin.Energy.VE.Current_%"
+
+[fuel.delta.label]
+Generic = "Δ"
+
+[fuel.delta.transformation.Fuel]
+value = "Number(<%value%>).toFixed(2)"
+
+[fuel.delta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%"]
+value = "<%value%>.toFixed(2)"
+
+# ---- 3.f NRG STATE SECTION ----
+# Current Virtual Energy allowance state
+[fuel.nrgState.property]
+Generic = ""
+AssettoCorsa = "ERSPercent"
+
+[fuel.nrgState.property.LMU]
+Generic = "Fuel"
+Hyper = "LMU_NeoRedPlugin.Energy.VE.Current_%"
+
+[fuel.nrgState.label]
+Generic = ""
+AssettoCorsa = "ERS Max"
+
+[fuel.nrgState.label.LMU]
+Generic = ""
+Hyper = "NRG"
+
+[fuel.nrgState.transformation.ERSPercent]
+value = "<%value%>.toFixed(2)"
+
+[fuel.nrgState.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%"]
+value = "<%value%>.toFixed(2)"
+
+# ---- 3.g NRG USAGE SECTION ----
+# Current NRG usage per lap
+[fuel.nrgUsage.property.LMU]
+Hyper = "LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%"
+
+[fuel.nrgUsage.label]
+Generic = ""
+
+[fuel.nrgUsage.label.LMU]
+Generic = ""
+Hyper = "Laps"
+
+[fuel.nrgUsage.transformation."LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%"]
+value = "<%value%>.toFixed(2)"

@@ -331,7 +331,12 @@ function getPropertyValueFromConfig(
     telemetry.transformations[section][property] &&
     propertyKey in telemetry.transformations[section][property] &&
     telemetry.transformations[section][property][propertyKey]
-      ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
+      ? getGameOrClassFunctionOverrides(
+          currentGame,
+          currentCarClass,
+          telemetry.transformations[section][property][propertyKey],
+          currentCarId
+        )
       : (value) => value;
 
   const getFinalValue = (/** @type {string | number} */ rawValue) => {
