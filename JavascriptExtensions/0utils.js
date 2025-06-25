@@ -102,6 +102,8 @@ function parseConfig(configInput) {
   const SUB_SECTION_REQUIRED_KEYS = ["property", "label"];
   const SUB_SECTION_OPTIONAL_KEYS = ["value", "transformation", "popup", "optimal"];
 
+  const SPECIAL_EXCLUDED_SUB_SECTIONS = ["primary_metric", "ideal"];
+
   const parsedConfig = TOML.parse(configInput);
   const parsedConfigSections = Object.entries(parsedConfig);
 
@@ -125,6 +127,11 @@ function parseConfig(configInput) {
         return;
       }
 
+      // primary_metric and ideal ranges subsections are special, don't count them either
+      if (SPECIAL_EXCLUDED_SUB_SECTIONS.includes(subSectionKey)) {
+        return;
+      }
+
       SUB_SECTION_REQUIRED_KEYS.forEach((requiredChildKey) => {
         if (requiredChildKey in subSection) {
           return;
@@ -136,13 +143,18 @@ function parseConfig(configInput) {
       });
 
       Object.keys(subSection).forEach((subSectionChildKey) => {
+        if (subSectionKey === "ideal") {
+          return;
+        }
+
         if (
           !SUB_SECTION_REQUIRED_KEYS.includes(subSectionChildKey) &&
           !SUB_SECTION_OPTIONAL_KEYS.includes(subSectionChildKey)
         ) {
-          throw new Error(
-            `Subsection ${sectionKey}.${subSectionKey} includes unknown key ${subSectionChildKey}. Double-check the configuration.`
-          );
+          if (subSection)
+            throw new Error(
+              `Subsection ${sectionKey}.${subSectionKey} includes unknown key ${subSectionChildKey}. Double-check the configuration.`
+            );
         }
       });
     });

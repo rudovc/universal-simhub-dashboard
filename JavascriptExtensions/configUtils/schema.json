@@ -7,6 +7,7 @@
       "type": "object",
       "properties": {
         "master_label": {
+          "type": "object",
           "patternProperties": {
             "^.*$": { "type": "string" }
           },
@@ -23,6 +24,7 @@
       "type": "object",
       "properties": {
         "master_label": {
+          "type": "object",
           "patternProperties": {
             "^.*$": { "type": "string" }
           }
@@ -38,6 +40,7 @@
       "type": "object",
       "properties": {
         "master_label": {
+          "type": "object",
           "patternProperties": {
             "^.*$": { "type": "string" }
           }
@@ -53,6 +56,7 @@
       "type": "object",
       "properties": {
         "master_label": {
+          "type": "object",
           "patternProperties": {
             "^.*$": { "type": "string" }
           }
@@ -63,10 +67,131 @@
       },
       "required": ["master_label"],
       "additionalProperties": false
+    },
+    "tyres": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "type": "string" }
+          }
+        },
+        "ideal": { "$ref": "#/$defs/idealRangesSubsection" },
+        "primary_metric": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "enum": ["Temp", "Pres"]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "patternProperties": {
+        "(?!^master_label$|^ideal$|^primary_metric$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
   "$defs": {
+    "idealRangesSubsection": {
+      "type": "object",
+      "properties": {
+        "temp": {
+          "type": "object",
+          "properties": {
+            "property": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "range": {
+              "$ref": "#/$defs/nestedIdealRangeMaps"
+            }
+          },
+          "required": ["range"],
+          "additionalProperties": false
+        },
+        "wear": {
+          "type": "object",
+          "properties": {
+            "property": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "range": {
+              "$ref": "#/$defs/nestedIdealRangeMaps"
+            }
+          },
+          "required": ["range"],
+          "additionalProperties": false
+        },
+        "pres": {
+          "type": "object",
+          "properties": {
+            "property": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "range": {
+              "$ref": "#/$defs/nestedIdealRangeMaps"
+            }
+          },
+          "required": ["range"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "idealRangeMap": {
+      "type": "object",
+      "properties": {
+        "criticalThreshold": { "type": "number" },
+        "goodThreshold": { "type": "number" },
+        "optimal": { "type": "number" },
+        "offset": { "type": "number" }
+      },
+      "additionalProperties": false,
+      "required": ["optimal", "goodThreshold", "criticalThreshold"]
+    },
+    "idealRangeMaps": {
+      "type": "object",
+      "patternProperties": {
+        "Generic": { "$ref": "#/$defs/idealRangeMap" },
+        "^.*$": { "$ref": "#/$defs/idealRangeMap" }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "nestedIdealRangeMaps": {
+      "anyOf": [
+        { "$ref": "#/$defs/idealRangeMap" },
+        {
+          "$ref": "#/$defs/idealRangeMaps"
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/$defs/nestedIdealRangeMaps"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "patternProperties": {
+                "^.*$": {
+                  "$ref": "#/$defs/nestedIdealRangeMaps"
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "subsection": {
       "type": "object",
       "properties": {
@@ -182,6 +307,15 @@
         },
         {
           "$ref": "#/$defs/stringMap"
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "$ref": "#/$defs/nestedStringMap"
+            }
+          },
+          "additionalProperties": false
         },
         {
           "type": "object",

@@ -365,10 +365,10 @@ function getPropertyOptimalRangesFromConfig(
   configContents,
   currentGame,
   currentCarClass,
+  currentCarId,
   section,
   property,
-  debugMode,
-  currentCarId
+  debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
@@ -414,19 +414,17 @@ function getPropertyOptimalRangesFromConfig(
  * @param {{ [key: string]: any }} configContents
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
- * @param {string | undefined} currentTyre
- * @param {string | undefined} selectedTyre
- * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
+ * @param {string | undefined} currentTyre
+ * @param {boolean} debugMode
  */
 function getPrimaryTyreMetricFromConfig(
   configContents,
   currentGame,
   currentCarClass,
-  selectedTyre,
-  debugMode,
   currentCarId,
-  currentTyre
+  currentTyre,
+  debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
@@ -438,12 +436,12 @@ function getPrimaryTyreMetricFromConfig(
   );
 
   if (debugMode) {
-    return telemetry.availableValues;
+    return { availableValues: telemetry.availableValues };
   }
 
   const tyreMetric = telemetry.optimalRanges.tyre.primaryTyreMetric;
   const tyreMetricGameProperty = telemetry.optimalRanges.tyre[`optimalTyre${tyreMetric}GameProperty`];
-  const selectedTyreProperty = `${selectedTyre}${tyreMetric}`;
+  const selectedTyreProperty = `${currentTyre}${tyreMetric}`;
 
   return {
     tyreMetric,

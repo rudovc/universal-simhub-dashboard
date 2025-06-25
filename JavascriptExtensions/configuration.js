@@ -7,6 +7,7 @@
  */
 const ERS_CONFIG = `
 #:schema /JavascriptExtensions/configUtils/schema.json
+
 # Set up your own editor to validate based on the schema in this directory, or run an external validation tool against it
 
 # ==== 1. ERS SECTION ====
@@ -727,7 +728,7 @@ value = "<%value%>.toFixed(2)"
 # ========================
 
 [temperature.master_label]
-Generic = "Temp"
+Generic = "TEMP"
 
 # ---- 4.a OIL TEMP SECTION ----
 [temperature.oil.property]
@@ -750,11 +751,247 @@ Generic = "Water"
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 4.c ENGINE TEMP SECTION ----
+# TODO: Fill out the engine temp section for games that provide engine temp information
 [temperature.engine.property]
 
 [temperature.engine.label]
 
 [temperature.engine.transformation]
+
+# ==== 5. TYRES SECTION ====
+# All information regarding tyre temperatures and wear goes here
+# ========================
+
+[tyres.master_label]
+Generic = "TYRES"
+
+# ---- 5.a FL TEMP SECTION ----
+[tyres.fl_temp.property]
+Generic = "TyreTemperatureFrontLeft"
+
+[tyres.fl_temp.label]
+Generic = "°FL"
+
+[tyres.fl_temp.transformation.TyreTemperatureFrontLeft]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.b FL WEAR SECTION ----
+[tyres.fl_wear.property]
+Generic = "TyreWearFrontLeft"
+
+[tyres.fl_wear.label]
+Generic = "%FL"
+
+[tyres.fl_wear.transformation.TyreWearFrontLeft]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.c FL PRES SECTION ----
+[tyres.fl_pres.property]
+Generic = "TyrePressureFrontLeft"
+
+[tyres.fl_pres.label]
+Generic = "%FL"
+
+[tyres.fl_pres.transformation.TyrePressureFrontLeft]
+value = "Number.parseFloat(<%value%>.toFixed(1))"
+
+# ---- 5.d FR TEMP SECTION ----
+[tyres.fr_temp.property]
+Generic = "TyreTemperatureFrontRight"
+
+[tyres.fr_temp.label]
+Generic = "°FR"
+
+[tyres.fr_temp.transformation.TyreTemperatureFrontRight]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.e FR WEAR SECTION ----
+[tyres.fr_wear.property]
+Generic = "TyreWearFrontRight"
+
+[tyres.fr_wear.label]
+Generic = "%FR"
+
+[tyres.fr_wear.transformation.TyreWearFrontRight]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.f FR PRES SECTION ----
+[tyres.fr_pres.property]
+Generic = "TyrePressureFrontRight"
+
+[tyres.fr_pres.label]
+Generic = "%FR"
+
+[tyres.fr_pres.transformation.TyrePressureFrontRight]
+value = "Number.parseFloat(<%value%>.toFixed(1))"
+
+# ---- 5.g RL TEMP SECTION ----
+[tyres.rl_temp.property]
+Generic = "TyreTemperatureRearLeft"
+
+[tyres.rl_temp.label]
+Generic = "°RL"
+
+[tyres.rl_temp.transformation.TyreTemperatureRearLeft]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.h RL WEAR SECTION ----
+[tyres.rl_wear.property]
+Generic = "TyreWearRearLeft"
+
+[tyres.rl_wear.label]
+Generic = "%RL"
+
+[tyres.rl_wear.transformation.TyreWearRearLeft]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.i RL PRES SECTION ----
+[tyres.rl_pres.property]
+Generic = "TyrePressureRearLeft"
+
+[tyres.rl_pres.label]
+Generic = "%RL"
+
+[tyres.rl_pres.transformation.TyrePressureRearLeft]
+value = "Number.parseFloat(<%value%>.toFixed(1))"
+
+# ---- 5.j RR TEMP SECTION ----
+[tyres.rr_temp.property]
+Generic = "TyreTemperatureRearRight"
+
+[tyres.rr_temp.label]
+Generic = "°RR"
+
+[tyres.rr_temp.transformation.TyreTemperatureRearRight]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.k RR WEAR SECTION ----
+[tyres.rr_wear.property]
+Generic = "TyreWearRearRight"
+
+[tyres.rr_wear.label]
+Generic = "%RR"
+
+[tyres.rr_wear.transformation.TyreWearRearRight]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 5.l RR PRES SECTION ----
+[tyres.rr_pres.property]
+Generic = "TyrePressureRearRight"
+
+[tyres.rr_pres.label]
+Generic = "%RR"
+
+[tyres.rr_pres.transformation.TyrePressureRearRight]
+value = "Number.parseFloat(<%value%>.toFixed(1))"
+
+
+# ---- 5.m PRIMARY METRIC ----
+[tyres.primary_metric]
+Generic = "Pres"
+
+# ---- 5.n IDEAL TEMP GAME PROPERTY ----
+[tyres.ideal.temp.property.LMU]
+Hard = "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Hard"
+Medium = "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Medium"
+Soft = "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Soft"
+Wet = "LMU_NeoRedPlugin.Tyre.OptimalCompoundTemp_Wet"
+
+# ---- 5.n IDEAL TEMP RANGE ----
+[tyres.ideal.temp.range.LMU.Generic]
+optimal = 90
+goodThreshold = 10
+criticalThreshold = 25
+
+# ---- 5.n IDEAL WEAR RANGE ----
+[tyres.ideal.wear.range.Generic]
+optimal = 100
+goodThreshold = 20
+criticalThreshold = 40
+
+# ---- 5.n IDEAL PRESSURE RANGE ----
+[tyres.ideal.pres.range.Automobilista2.Generic]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.Automobilista2.F-Ultimate_Gen1]
+optimal = 24
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.Automobilista2.F-Ultimate_Gen2]
+optimal = 24
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.Automobilista2.F-Reiza]
+optimal = 24
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.AssettoCorsaCompetizione.Generic]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.Hyper]
+optimal = 25
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMDh]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMU.GT3]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMU.GTE]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMU.Hyper]
+optimal = 25
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMU.LMP2]
+optimal = 25
+goodThreshold = 1
+criticalThreshold = 3
+
+# ---- 5.o FL TYRE SECTION ----
+[tyres.fl_type.property]
+LMU = "LMU_NeoRedPlugin.Tyre.FL_TyreCompound_Name"
+
+[tyres.fl_type.label]
+Generic = "FL"
+
+# ---- 5.p FR TYRE SECTION ----
+[tyres.fr_type.property]
+LMU = "LMU_NeoRedPlugin.Tyre.FR_TyreCompound_Name"
+
+[tyres.fr_type.label]
+Generic = "FR"
+
+# ---- 5.q RL TYRE SECTION ----
+[tyres.rl_type.property]
+LMU = "LMU_NeoRedPlugin.Tyre.RL_TyreCompound_Name"
+
+[tyres.rl_type.label]
+Generic = "RL"
+
+# ---- 5.r RR TYRE SECTION ----
+[tyres.rr_type.property]
+LMU = "LMU_NeoRedPlugin.Tyre.RR_TyreCompound_Name"
+
+[tyres.rr_type.label]
+Generic = "RR"
 
 `;
 

@@ -28,155 +28,6 @@ function getTelemetryLabelsAndValues(
   currentLap = undefined,
   root = undefined
 ) {
-  // 5.a
-  const frontLeftTemperatureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FL_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.b
-  const frontLeftWearGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FL_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.c
-  const frontLeftPressureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FL_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.d
-  const frontRightTemperatureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FR_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.e
-  const frontRightWearGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FR_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.f
-  const frontRightPressureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FR_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.g
-  const rearLeftTemperatureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RL_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.h
-  const rearLeftWearGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RL_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.i
-  const rearLeftPressureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RL_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.j
-  const rearRightTemperatureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RR_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.k
-  const rearRightWearGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RR_TYRE_WEAR_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.l
-  const rearRightPressureGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RR_TYRE_PRES_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  // 5.n
-  const primaryTyreMetric = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    PRIMARY_TYRE_METRIC_PER_GAME_MAP,
-    currentCarId,
-    currentTyre
-  );
-  const optimalTyreTempProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    IDEAL_TYRE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId,
-    currentTyre
-  );
-  const optimalTyreTempRanges = getGameOrClassNumberOverrides(
-    currentGame,
-    currentCarClass,
-    IDEAL_TYRE_TEMP_RANGES_MAP,
-    currentCarId,
-    currentTyre
-  );
-  const optimalTyreWearRanges = getGameOrClassNumberOverrides(
-    currentGame,
-    currentCarClass,
-    IDEAL_TYRE_WEAR_RANGES_MAP,
-    currentCarId,
-    currentTyre
-  );
-  const optimalTyrePresRanges = getGameOrClassNumberOverrides(
-    currentGame,
-    currentCarClass,
-    IDEAL_TYRE_PRES_RANGES_MAP,
-    currentCarId,
-    currentTyre
-  );
-  // 5.o
-  const frontLeftTyreTypeProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FL_TYRE_TYPE_GAME_PROPERTY_MAP,
-    currentCarClass
-  );
-  // 5.p
-  const frontRightTyreTypeProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    FR_TYRE_TYPE_GAME_PROPERTY_MAP,
-    currentCarClass
-  );
-  // 5.q
-  const rearLeftTyreTypeProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RL_TYRE_TYPE_GAME_PROPERTY_MAP,
-    currentCarClass
-  );
-  // 5.r
-  const rearRightTyreTypeProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    RR_TYRE_TYPE_GAME_PROPERTY_MAP,
-    currentCarClass
-  );
-
   // 6.a
   const frontLeftBrakeTemperatureGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -247,24 +98,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     gameProperties: {
-      tyre: {
-        flTemp: frontLeftTemperatureGameProperty,
-        frTemp: frontRightTemperatureGameProperty,
-        rlTemp: rearLeftTemperatureGameProperty,
-        rrTemp: rearRightTemperatureGameProperty,
-        flWear: frontLeftWearGameProperty,
-        frWear: frontRightWearGameProperty,
-        rlWear: rearLeftWearGameProperty,
-        rrWear: rearRightWearGameProperty,
-        flPres: frontLeftPressureGameProperty,
-        frPres: frontRightPressureGameProperty,
-        rlPres: rearLeftPressureGameProperty,
-        rrPres: rearRightPressureGameProperty,
-        flType: frontLeftTyreTypeProperty,
-        frType: frontLeftTyreTypeProperty,
-        rlType: frontLeftTyreTypeProperty,
-        rrType: frontLeftTyreTypeProperty,
-      },
       brake: {
         flTemp: frontLeftBrakeTemperatureGameProperty,
         frTemp: frontRightBrakeTemperatureGameProperty,
@@ -349,23 +182,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     optimalRanges: {
-      tyre: {
-        primaryTyreMetric,
-        optimalTyreTempGameProperty: optimalTyreTempProperty,
-        optimalTyrePresGameProperty: null,
-        flTemp: optimalTyreTempRanges,
-        frTemp: optimalTyreTempRanges,
-        rlTemp: optimalTyreTempRanges,
-        rrTemp: optimalTyreTempRanges,
-        flWear: optimalTyreWearRanges,
-        frWear: optimalTyreWearRanges,
-        rlWear: optimalTyreWearRanges,
-        rrWear: optimalTyreWearRanges,
-        flPres: optimalTyrePresRanges,
-        frPres: optimalTyrePresRanges,
-        rlPres: optimalTyrePresRanges,
-        rrPres: optimalTyrePresRanges,
-      },
       brake: {
         flTemp: optimalBrakeTempRanges,
         frTemp: optimalBrakeTempRanges,
