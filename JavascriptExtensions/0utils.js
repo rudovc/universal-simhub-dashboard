@@ -102,7 +102,7 @@ function parseConfig(configInput) {
   const SUB_SECTION_REQUIRED_KEYS = ["property", "label"];
   const SUB_SECTION_OPTIONAL_KEYS = ["value", "transformation", "popup", "optimal"];
 
-  const SPECIAL_EXCLUDED_SUB_SECTIONS = ["primary_metric", "ideal"];
+  const SPECIAL_EXCLUDED_SUB_SECTIONS = ["ideal"];
 
   const parsedConfig = TOML.parse(configInput);
   const parsedConfigSections = Object.entries(parsedConfig);
@@ -127,7 +127,7 @@ function parseConfig(configInput) {
         return;
       }
 
-      // primary_metric and ideal ranges subsections are special, don't count them either
+      // ideal ranges subsections is special, don't count it either
       if (SPECIAL_EXCLUDED_SUB_SECTIONS.includes(subSectionKey)) {
         return;
       }
@@ -215,20 +215,21 @@ function constructAndParseTransformations(transformationMap, parsedConfig = unde
   );
 }
 
+const CONFIG_SUBSECTION_MAP = {
+  value: "labelMaps",
+  property: "gameProperties",
+  transformation: "transformations",
+  label: "uiLabels",
+  popup: "popupLabels",
+  ideal: "optimalRanges",
+};
+
 /**
  * @param {{}} subSection
  * @param {{} | undefined} parsedConfig
+ * @param {boolean} isIdealRanges
  */
-function constructSubsectionResultMap(subSection, parsedConfig) {
-  const CONFIG_SUBSECTION_MAP = {
-    value: "labelMaps",
-    property: "gameProperties",
-    transformation: "transformations",
-    label: "uiLabels",
-    popup: "popupLabels",
-    optimal: "optimalRanges",
-  };
-
+function constructSubsectionResultMap(subSection, parsedConfig, isIdealRanges = false) {
   return Object.fromEntries(
     Object.entries(subSection).map(([key, value]) => {
       let resultValue = value;
@@ -249,6 +250,14 @@ function constructSubsectionResultMap(subSection, parsedConfig) {
             resultValue = referencedValue;
           }
         }
+      }
+
+      if (isIdealRanges) {
+        if (key === "primary_metric") {
+          return ["primaryMetric", resultValue];
+        }
+
+        return [key, resultValue];
       }
 
       return [CONFIG_SUBSECTION_MAP[key], key === "value" ? constructLabelMapFromConfig(resultValue) : resultValue];
@@ -301,20 +310,21 @@ function constructLabelMapFromConfig(rawMap) {
  * @param {{}} parsedConfigSections
  */
 function constructOutputResultMap(parsedConfigSections) {
-  const CONFIG_SUBSECTION_MAP = {
-    value: "labelMaps",
-    property: "gameProperties",
-    transformation: "transformations",
-    label: "uiLabels",
-    popup: "popupLabels",
-    optimal: "optimalRanges",
-  };
   const RESULT_MAP_SECTIONS = ["masterSectionUiLabels", ...Object.values(CONFIG_SUBSECTION_MAP)];
   const sectionsEntries = Object.entries(parsedConfigSections);
   const sectionResultEntries = sectionsEntries.map(([sectionKey, section]) => [
     sectionKey,
     constructSectionResultMap(section, parsedConfigSections),
   ]);
+  const optimalRanges = sectionsEntries.flatMap(([sectionKey, section]) => {
+    const sectionResult = constructOptimalRangesResultMap(section, parsedConfigSections);
+
+    if (!sectionResult) {
+      return [];
+    }
+
+    return [[sectionKey, sectionResult]];
+  });
 
   const resultMap = RESULT_MAP_SECTIONS.reduce((acc, cur) => {
     if (cur === "masterSectionUiLabels") {
@@ -322,6 +332,8 @@ function constructOutputResultMap(parsedConfigSections) {
         ...acc.masterSectionUiLabels,
         ...Object.fromEntries(sectionsEntries.map(([sectionKey, section]) => [sectionKey, section.master_label])),
       };
+    } else if (cur === "optimalRanges") {
+      acc[cur] = Object.fromEntries(optimalRanges);
     } else {
       acc[cur] = {
         ...acc[cur],
@@ -352,10 +364,24 @@ function constructOutputResultMap(parsedConfigSections) {
  * @param {{}} section
  * @param {{} | undefined} parsedConfig
  */
+function constructOptimalRangesResultMap(section, parsedConfig = undefined) {
+  const entries = Object.entries(section).flatMap(([subSectionKey, subSection]) =>
+    subSectionKey === "ideal" ? [[subSectionKey, constructSubsectionResultMap(subSection, parsedConfig, true)]] : []
+  );
+
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
+}
+
+/**
+ * @param {{}} section
+ * @param {{} | undefined} parsedConfig
+ */
 function constructSectionResultMap(section, parsedConfig = undefined) {
   return Object.fromEntries(
     Object.entries(section).flatMap(([subSectionKey, subSection]) =>
-      subSectionKey !== "master_label" ? [[subSectionKey, constructSubsectionResultMap(subSection, parsedConfig)]] : []
+      subSectionKey !== "master_label" && subSectionKey !== "ideal"
+        ? [[subSectionKey, constructSubsectionResultMap(subSection, parsedConfig)]]
+        : []
     )
   );
 }

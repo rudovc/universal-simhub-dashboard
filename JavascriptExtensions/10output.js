@@ -220,8 +220,8 @@ function getTelemetryLabelsAndValuesFromConfig(
   configContents,
   currentGame,
   currentCarClass,
-  debugMode = false,
   currentCarId = undefined,
+  debugMode = false,
   currentTyre = undefined,
   currentLap = undefined,
   root = undefined
@@ -238,6 +238,14 @@ function getTelemetryLabelsAndValuesFromConfig(
               Object.fromEntries(
                 Object.entries(section).map(([subSectionKey, subSection]) => {
                   if (topLevelKey === "transformations") {
+                    return [subSectionKey, subSection];
+                  }
+
+                  if (topLevelKey === "optimalRanges") {
+                    // TODO: Finish optimal ranges mapping.
+                    // subSectionKey here is "ideal"
+                    // its children are "primaryMetric", "temp", "wear", "pres"
+                    // Handle the cases
                     return [subSectionKey, subSection];
                   }
 
@@ -268,6 +276,8 @@ function getTelemetryLabelsAndValuesFromConfig(
       ])
     ),
   };
+
+  return resultMaps;
 
   return {
     availableValues: debugMode

@@ -77,16 +77,7 @@
             "^.*$": { "type": "string" }
           }
         },
-        "ideal": { "$ref": "#/$defs/idealRangesSubsection" },
-        "primary_metric": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": {
-              "enum": ["Temp", "Pres"]
-            }
-          },
-          "additionalProperties": false
-        }
+        "ideal": { "$ref": "#/$defs/idealRangesSubsection" }
       },
       "patternProperties": {
         "(?!^master_label$|^ideal$|^primary_metric$)^.*$": { "$ref": "#/$defs/subsection" }
@@ -100,6 +91,15 @@
     "idealRangesSubsection": {
       "type": "object",
       "properties": {
+        "primary_metric": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": {
+              "enum": ["Temp", "Pres"]
+            }
+          },
+          "additionalProperties": false
+        },
         "temp": {
           "type": "object",
           "properties": {

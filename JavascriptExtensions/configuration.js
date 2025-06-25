@@ -887,7 +887,7 @@ value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 
 # ---- 5.m PRIMARY METRIC ----
-[tyres.primary_metric]
+[tyres.ideal.primary_metric]
 Generic = "Pres"
 
 # ---- 5.n IDEAL TEMP GAME PROPERTY ----
