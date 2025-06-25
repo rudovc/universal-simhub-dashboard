@@ -460,30 +460,6 @@ function getPrimaryTyreMetricFromConfig(
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {string} section
- * @param {boolean} debugMode
- * @param {string | undefined} currentCarId
- */
-function getMasterSectionLabel(currentGame, currentCarClass, section, debugMode, currentCarId) {
-  const telemetry = getTelemetryLabelsAndValues(currentGame, currentCarClass, debugMode, currentCarId);
-
-  if (debugMode) {
-    return telemetry.availableValues;
-  }
-
-  const label = telemetry.masterSectionUiLabels[section];
-
-  if (label === undefined) {
-    throw new Error(
-      `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
-    );
-  }
-
-  return label;
-}
-/**
- * @param {string} currentGame
- * @param {string | undefined} currentCarClass
- * @param {string} section
  * @param {string} property
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId

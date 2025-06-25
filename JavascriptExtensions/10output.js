@@ -28,53 +28,6 @@ function getTelemetryLabelsAndValues(
   currentLap = undefined,
   root = undefined
 ) {
-  // 4
-  const tempMasterSectionUILabels = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    TEMP_MASTER_SECTION_UI_LABELS,
-    currentCarId
-  );
-  // 4.a
-  const oilTempGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    OIL_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const oilTempUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    OIL_TEMP_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 4.b
-  const waterTempGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    WATER_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const waterTempUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    WATER_TEMP_UI_PROPERTY_MAP,
-    currentCarId
-  );
-  // 4.c
-  const engineTempGameProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ENGINE_TEMP_GAME_PROPERTY_MAP,
-    currentCarId
-  );
-  const engineTempUiProperty = getGameOrClassStringOverrides(
-    currentGame,
-    currentCarClass,
-    ENGINE_TEMP_UI_PROPERTY_MAP,
-    currentCarId
-  );
-
   // 5.a
   const frontLeftTemperatureGameProperty = getGameOrClassStringOverrides(
     currentGame,
@@ -262,9 +215,6 @@ function getTelemetryLabelsAndValues(
   );
 
   const resultMaps = {
-    masterSectionUiLabels: {
-      temperature: tempMasterSectionUILabels,
-    },
     labelMaps: {
       fuel: {
         fuelState: null,
@@ -274,11 +224,6 @@ function getTelemetryLabelsAndValues(
         fuelDelta: null,
         nrgState: null,
         nrgUsage: null,
-      },
-      temperature: {
-        oil: null,
-        water: null,
-        engine: null,
       },
       tyre: {
         flTemp: null,
@@ -302,10 +247,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     gameProperties: {
-      temperature: {
-        oil: oilTempGameProperty,
-        water: waterTempGameProperty,
-      },
       tyre: {
         flTemp: frontLeftTemperatureGameProperty,
         frTemp: frontRightTemperatureGameProperty,
@@ -332,10 +273,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     transformations: {
-      temperature: {
-        oil: OIL_TEMP_TRANSFORMATION_MAP,
-        water: WATER_TEMP_TRANSFORMATION_MAP,
-      },
       tyre: {
         flTemp: FL_TYRE_TEMP_TRANSFORMATION_MAP,
         frTemp: FR_TYRE_TEMP_TRANSFORMATION_MAP,
@@ -359,11 +296,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     uiLabels: {
-      temperature: {
-        oil: oilTempUiProperty,
-        water: waterTempUiProperty,
-        engine: engineTempUiProperty,
-      },
       tyre: {
         flTemp: null,
         frTemp: null,
@@ -394,11 +326,6 @@ function getTelemetryLabelsAndValues(
         fuelDelta: null,
         nrgState: null,
         nrgUsage: null,
-      },
-      temperature: {
-        oil: null,
-        water: null,
-        engine: null,
       },
       tyre: {
         flTemp: null,

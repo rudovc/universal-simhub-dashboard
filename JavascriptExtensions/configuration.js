@@ -678,7 +678,7 @@ Hyper = "LMU_NeoRedPlugin.Energy.VE.Current_%"
 Generic = "Δ"
 
 [fuel.delta.transformation.Fuel]
-value = "<%value%>.toFixed(2)"
+value = "Number(<%value%>).toFixed(2)"
 
 [fuel.delta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%"]
 value = "<%value%>.toFixed(2)"
@@ -721,6 +721,40 @@ Hyper = "Laps"
 
 [fuel.nrgUsage.transformation."LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%"]
 value = "<%value%>.toFixed(2)"
+
+# ==== 4. TEMPERATURES SECTION ====
+# Essential temperature information goes here
+# ========================
+
+[temperature.master_label]
+Generic = "Temp"
+
+# ---- 4.a OIL TEMP SECTION ----
+[temperature.oil.property]
+Generic = "OilTemperature"
+
+[temperature.oil.label]
+Generic = "Oil"
+
+[temperature.oil.transformation.OilTemperature]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 4.b WATER TEMP SECTION ----
+[temperature.water.property]
+Generic = "WaterTemperature"
+
+[temperature.water.label]
+Generic = "Water"
+
+[temperature.water.transformation.WaterTemperature]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 4.c ENGINE TEMP SECTION ----
+[temperature.engine.property]
+
+[temperature.engine.label]
+
+[temperature.engine.transformation]
 
 `;
 

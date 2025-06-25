@@ -48,6 +48,21 @@
       },
       "required": ["master_label"],
       "additionalProperties": false
+    },
+    "temperature": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "patternProperties": {
+            "^.*$": { "type": "string" }
+          }
+        }
+      },
+      "patternProperties": {
+        "(?!^master_label$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
