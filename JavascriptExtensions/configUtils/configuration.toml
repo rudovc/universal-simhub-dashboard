@@ -973,28 +973,28 @@ criticalThreshold = 3
 
 # ---- 5.o FL TYRE SECTION ----
 [tyres.flType.property]
-LMU = "LMU_NeoRedPlugin.Tyre.flTyreCompound_Name"
+LMU = "LMU_NeoRedPlugin.Tyre.FL_TyreCompound_Name"
 
 [tyres.flType.label]
 Generic = "FL"
 
 # ---- 5.p FR TYRE SECTION ----
 [tyres.frType.property]
-LMU = "LMU_NeoRedPlugin.Tyre.frTyreCompound_Name"
+LMU = "LMU_NeoRedPlugin.Tyre.FR_TyreCompound_Name"
 
 [tyres.frType.label]
 Generic = "FR"
 
 # ---- 5.q RL TYRE SECTION ----
 [tyres.rlType.property]
-LMU = "LMU_NeoRedPlugin.Tyre.rlTyreCompound_Name"
+LMU = "LMU_NeoRedPlugin.Tyre.RL_TyreCompound_Name"
 
 [tyres.rlType.label]
 Generic = "RL"
 
 # ---- 5.r RR TYRE SECTION ----
 [tyres.rrType.property]
-LMU = "LMU_NeoRedPlugin.Tyre.rrTyreCompound_Name"
+LMU = "LMU_NeoRedPlugin.Tyre.RR_TyreCompound_Name"
 
 [tyres.rrType.label]
 Generic = "RR"
