@@ -407,9 +407,11 @@ function loadFromConfig() {
  * @param {function(any): any} transformation
  */
 function calculateFinalValue(rawValue, labelMap, transformation) {
-  const value = (labelMap && labelMap.getLabel(String(rawValue))) ?? rawValue;
+  const transformedValue = transformation ? transformation(rawValue) : rawValue;
 
-  return (transformation ? transformation(value) : value) ?? "-";
+  const value = (labelMap && labelMap.getLabel(String(transformedValue))) ?? transformedValue;
+
+  return value ?? "-";
 }
 
 /**
@@ -911,4 +913,11 @@ function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, curren
   }
 
   return Math.ceil(root.resultEstimate || 0) || "-";
+}
+
+/**
+ * @param {string} value
+ */
+function capitalize(value) {
+  return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
 }

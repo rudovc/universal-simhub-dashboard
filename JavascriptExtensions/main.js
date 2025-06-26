@@ -459,7 +459,7 @@ function getPrimaryTyreMetricFromConfig(
 
   const tyreMetric = metricOverride ?? telemetry.optimalRanges.tyres.ideal.primaryMetric;
   const tyreMetricGameProperty = telemetry.optimalRanges.tyres.ideal[metricOverride ?? tyreMetric]?.property;
-  const selectedTyreProperty = `${selectedTyre}_${metricOverride ?? tyreMetric}`;
+  const selectedTyreProperty = `${selectedTyre}${metricOverride ? capitalize(metricOverride) : capitalize(tyreMetric)}`;
 
   return {
     usePressure: (metricOverride ?? tyreMetric) === "pres",

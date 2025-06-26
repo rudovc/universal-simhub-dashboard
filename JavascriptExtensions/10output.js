@@ -185,7 +185,7 @@ function getTelemetryLabelsAndValues(
 }
 
 const GETTER_MAPPING = {
-  labelMaps: getGameOrClassStringOverrides,
+  labelMaps: getGameOrClassLabelMapOverrides,
   gameProperties: getGameOrClassStringOverrides,
   uiLabels: getGameOrClassStringOverrides,
   popupLabels: getGameOrClassStringOverrides,
