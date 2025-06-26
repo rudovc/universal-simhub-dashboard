@@ -38,6 +38,7 @@ Alternatively, clone the repository directly into a folder in
 ## Usage
 
 The dashboard comes configured for some game/car combinations out of the box, but it is supposed to be configurable by the user according to their preferences.
-To configure the dashboard, refer to the [configuration.toml](./JavascriptExtensions/configUtils/configuration.toml) file, which contains a python script called `update_config.py`.
+To configure the dashboard, refer to the [configuration.toml](./JavascriptExtensions/configUtils/configuration.toml) file, alongside which is a python script called `update_config.py`.
+
 Modify the configuration file according to your preferences, and then run the script, which will update the [configuration.js](./JavascriptExtensions/configuration.js) file, and make a backup of the previous version if you're not happy.
 After that, you can just use the dashboard directly.
