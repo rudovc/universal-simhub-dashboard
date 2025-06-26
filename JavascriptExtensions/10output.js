@@ -106,21 +106,6 @@ function getTelemetryLabelsAndValues(
       },
     },
     transformations: {
-      tyre: {
-        flTemp: FL_TYRE_TEMP_TRANSFORMATION_MAP,
-        frTemp: FR_TYRE_TEMP_TRANSFORMATION_MAP,
-        rlTemp: RL_TYRE_TEMP_TRANSFORMATION_MAP,
-        rrTemp: RR_TYRE_TEMP_TRANSFORMATION_MAP,
-        flWear: FL_TYRE_WEAR_TRANSFORMATION_MAP,
-        frWear: FR_TYRE_WEAR_TRANSFORMATION_MAP,
-        rlWear: RL_TYRE_WEAR_TRANSFORMATION_MAP,
-        rrWear: RR_TYRE_WEAR_TRANSFORMATION_MAP,
-        flPres: FL_TYRE_PRES_TRANSFORMATION_MAP,
-        frPres: FR_TYRE_PRES_TRANSFORMATION_MAP,
-        rlPres: RL_TYRE_PRES_TRANSFORMATION_MAP,
-        rrPres: RR_TYRE_PRES_TRANSFORMATION_MAP,
-        wear: WEAR_TRANSFORMATION_PER_GAME_MAP,
-      },
       brake: {
         flTemp: FL_BRAKE_TEMP_TRANSFORMATION_MAP,
         frTemp: FR_BRAKE_TEMP_TRANSFORMATION_MAP,
@@ -212,7 +197,8 @@ const GETTER_MAPPING = {
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
  * @param {string | undefined} currentCarId
- * @param {string | undefined} currentTyre
+ * @param {string | undefined} selectedTyre
+ * @param {string | undefined} tyreType
  * @param {boolean} debugMode
  * @returns {any}
  */
@@ -222,7 +208,8 @@ function getTelemetryLabelsAndValuesFromConfig(
   currentCarClass,
   currentCarId = undefined,
   debugMode = false,
-  currentTyre = undefined,
+  selectedTyre = undefined,
+  tyreType = undefined,
   currentLap = undefined,
   root = undefined
 ) {
@@ -242,11 +229,49 @@ function getTelemetryLabelsAndValuesFromConfig(
                   }
 
                   if (topLevelKey === "optimalRanges") {
-                    // TODO: Finish optimal ranges mapping.
-                    // subSectionKey here is "ideal"
-                    // its children are "primaryMetric", "temp", "wear", "pres"
-                    // Handle the cases
-                    return [subSectionKey, subSection];
+                    const subSectionResult = Object.fromEntries(
+                      Object.entries(subSection).map(([optimalRangeKey, optimalRangeSection]) => {
+                        if (optimalRangeKey === "primaryMetric") {
+                          return [
+                            optimalRangeKey,
+                            getGameOrClassStringOverrides(
+                              currentGame,
+                              currentCarClass,
+                              optimalRangeSection,
+                              currentCarId,
+                              tyreType
+                            ),
+                          ];
+                        }
+
+                        const optimalRangeSubsectionResult = Object.fromEntries(
+                          Object.entries(optimalRangeSection).map(
+                            ([optimalRangeSectionKey, optimalRangeSubSection]) => [
+                              optimalRangeSectionKey,
+                              optimalRangeSectionKey === "property"
+                                ? getGameOrClassStringOverrides(
+                                    currentGame,
+                                    currentCarClass,
+                                    optimalRangeSubSection,
+                                    currentCarId,
+                                    tyreType
+                                  )
+                                : getGameOrClassNumberOverrides(
+                                    currentGame,
+                                    currentCarClass,
+                                    optimalRangeSubSection,
+                                    currentCarId,
+                                    tyreType
+                                  ),
+                            ]
+                          )
+                        );
+
+                        return [optimalRangeKey, optimalRangeSubsectionResult];
+                      })
+                    );
+
+                    return [subSectionKey, subSectionResult];
                   }
 
                   const sectionGetter = GETTER_MAPPING[topLevelKey];
@@ -260,7 +285,7 @@ function getTelemetryLabelsAndValuesFromConfig(
                   return [
                     subSectionKey,
                     typeof subSection === "object"
-                      ? sectionGetter(currentGame, currentCarClass, subSection, currentCarId, currentTyre)
+                      ? sectionGetter(currentGame, currentCarClass, subSection, currentCarId, selectedTyre)
                       : subSection,
                   ];
                 })
@@ -272,12 +297,10 @@ function getTelemetryLabelsAndValuesFromConfig(
     masterSectionUiLabels: Object.fromEntries(
       Object.entries(configContents.masterSectionUiLabels).map(([key, value]) => [
         key,
-        getGameOrClassStringOverrides(currentGame, currentCarClass, value, currentCarId, currentTyre),
+        getGameOrClassStringOverrides(currentGame, currentCarClass, value, currentCarId, selectedTyre),
       ])
     ),
   };
-
-  return resultMaps;
 
   return {
     availableValues: debugMode

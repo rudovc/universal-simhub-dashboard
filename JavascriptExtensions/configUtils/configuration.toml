@@ -310,7 +310,7 @@ GT3_Gen2 = ""
 Hyper = "LMU_NeoRedPlugin.Extended.VM_ELECTRIC_MOTOR_MAP"
 Generic = "LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE"
 
-[ers.mode.transformation."LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE"]
+[ers.mode.transformation."LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE".Generic]
 value = """
 {
     if(<%value%>.length <= 6) {
@@ -362,8 +362,8 @@ AssettoCorsa = "GameRawData.Physics.KersCharge"
 LMU = "GameRawData.CurrentPlayerTelemetry.mBatteryChargeFraction"
 
 [ers.soc.transformation]
-"GameRawData.Physics.KersCharge" = { value = "<%value%> * 100" }
-"mBatteryChargeFraction" = { value = "<%value%> * 100" }
+"GameRawData.Physics.KersCharge" = { Generic = { value = "<%value%> * 100" } }
+"mBatteryChargeFraction" = { Generic = { value = "<%value%> * 100" } }
 
 [ers.soc.label]
 Generic = ""
@@ -414,7 +414,7 @@ GT3_Gen2 = ""
 Generic = ""
 LMU = "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL"
 
-[ers.recovery.transformation."LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL"]
+[ers.recovery.transformation."LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL".Generic]
 value = "<%value%> === 'N/A' ? '-' : <%value%>"
 
 [ers.recovery.label]
@@ -498,7 +498,7 @@ Generic = "TC"
 [carControl.tc.popup]
 Generic = "TC LEVEL"
 
-[carControl.tc.transformation."LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP"]
+[carControl.tc.transformation."LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP".Generic]
 value = """
 {
     if (<%value%>.includes("OFF")) {
@@ -572,7 +572,7 @@ LMU = "LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP"
 8 = "u 8 (MD)"
 9 = "u 9 (HI)"
 
-[carControl.abs.transformation."LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP"]
+[carControl.abs.transformation."LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP".Generic]
 value = "<%value%>.includes('OFF') ? 0 : parseInt(<%value%>)"
 
 [carControl.abs.label]
@@ -670,10 +670,10 @@ Hyper = "LMU_NeoRedPlugin.Energy.VE.Current_%"
 [fuel.delta.label]
 Generic = "Δ"
 
-[fuel.delta.transformation.Fuel]
+[fuel.delta.transformation.Fuel.Generic]
 value = "Number(<%value%>).toFixed(2)"
 
-[fuel.delta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%"]
+[fuel.delta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%".Generic]
 value = "<%value%>.toFixed(2)"
 
 # ---- 3.f NRG STATE SECTION ----
@@ -694,10 +694,10 @@ AssettoCorsa = "ERS Max"
 Generic = ""
 Hyper = "NRG"
 
-[fuel.nrgState.transformation.ERSPercent]
+[fuel.nrgState.transformation.ERSPercent.Generic]
 value = "<%value%>.toFixed(2)"
 
-[fuel.nrgState.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%"]
+[fuel.nrgState.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%".Generic]
 value = "<%value%>.toFixed(2)"
 
 # ---- 3.g NRG USAGE SECTION ----
@@ -712,7 +712,7 @@ Generic = ""
 Generic = ""
 Hyper = "Laps"
 
-[fuel.nrgUsage.transformation."LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%"]
+[fuel.nrgUsage.transformation."LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%".Generic]
 value = "<%value%>.toFixed(2)"
 
 # ==== 4. TEMPERATURES SECTION ====
@@ -729,7 +729,7 @@ Generic = "OilTemperature"
 [temperature.oil.label]
 Generic = "Oil"
 
-[temperature.oil.transformation.OilTemperature]
+[temperature.oil.transformation.OilTemperature.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 4.b WATER TEMP SECTION ----
@@ -739,7 +739,7 @@ Generic = "WaterTemperature"
 [temperature.water.label]
 Generic = "Water"
 
-[temperature.water.transformation.WaterTemperature]
+[temperature.water.transformation.WaterTemperature.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 4.c ENGINE TEMP SECTION ----
@@ -764,7 +764,7 @@ Generic = "TyreTemperatureFrontLeft"
 [tyres.fl_temp.label]
 Generic = "°FL"
 
-[tyres.fl_temp.transformation.TyreTemperatureFrontLeft]
+[tyres.fl_temp.transformation.TyreTemperatureFrontLeft.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.b FL WEAR SECTION ----
@@ -775,7 +775,8 @@ Generic = "TyreWearFrontLeft"
 Generic = "%FL"
 
 [tyres.fl_wear.transformation.TyreWearFrontLeft]
-value = "Number.parseInt(<%value%>.toFixed(0))"
+Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
+LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.c FL PRES SECTION ----
 [tyres.fl_pres.property]
@@ -784,7 +785,7 @@ Generic = "TyrePressureFrontLeft"
 [tyres.fl_pres.label]
 Generic = "%FL"
 
-[tyres.fl_pres.transformation.TyrePressureFrontLeft]
+[tyres.fl_pres.transformation.TyrePressureFrontLeft.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.d FR TEMP SECTION ----
@@ -794,7 +795,7 @@ Generic = "TyreTemperatureFrontRight"
 [tyres.fr_temp.label]
 Generic = "°FR"
 
-[tyres.fr_temp.transformation.TyreTemperatureFrontRight]
+[tyres.fr_temp.transformation.TyreTemperatureFrontRight.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.e FR WEAR SECTION ----
@@ -805,7 +806,8 @@ Generic = "TyreWearFrontRight"
 Generic = "%FR"
 
 [tyres.fr_wear.transformation.TyreWearFrontRight]
-value = "Number.parseInt(<%value%>.toFixed(0))"
+Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
+LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.f FR PRES SECTION ----
 [tyres.fr_pres.property]
@@ -814,7 +816,7 @@ Generic = "TyrePressureFrontRight"
 [tyres.fr_pres.label]
 Generic = "%FR"
 
-[tyres.fr_pres.transformation.TyrePressureFrontRight]
+[tyres.fr_pres.transformation.TyrePressureFrontRight.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.g RL TEMP SECTION ----
@@ -824,7 +826,7 @@ Generic = "TyreTemperatureRearLeft"
 [tyres.rl_temp.label]
 Generic = "°RL"
 
-[tyres.rl_temp.transformation.TyreTemperatureRearLeft]
+[tyres.rl_temp.transformation.TyreTemperatureRearLeft.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.h RL WEAR SECTION ----
@@ -835,7 +837,8 @@ Generic = "TyreWearRearLeft"
 Generic = "%RL"
 
 [tyres.rl_wear.transformation.TyreWearRearLeft]
-value = "Number.parseInt(<%value%>.toFixed(0))"
+Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
+LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.i RL PRES SECTION ----
 [tyres.rl_pres.property]
@@ -844,7 +847,7 @@ Generic = "TyrePressureRearLeft"
 [tyres.rl_pres.label]
 Generic = "%RL"
 
-[tyres.rl_pres.transformation.TyrePressureRearLeft]
+[tyres.rl_pres.transformation.TyrePressureRearLeft.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.j RR TEMP SECTION ----
@@ -854,7 +857,7 @@ Generic = "TyreTemperatureRearRight"
 [tyres.rr_temp.label]
 Generic = "°RR"
 
-[tyres.rr_temp.transformation.TyreTemperatureRearRight]
+[tyres.rr_temp.transformation.TyreTemperatureRearRight.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.k RR WEAR SECTION ----
@@ -865,7 +868,8 @@ Generic = "TyreWearRearRight"
 Generic = "%RR"
 
 [tyres.rr_wear.transformation.TyreWearRearRight]
-value = "Number.parseInt(<%value%>.toFixed(0))"
+Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
+LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.l RR PRES SECTION ----
 [tyres.rr_pres.property]
@@ -874,7 +878,7 @@ Generic = "TyrePressureRearRight"
 [tyres.rr_pres.label]
 Generic = "%RR"
 
-[tyres.rr_pres.transformation.TyrePressureRearRight]
+[tyres.rr_pres.transformation.TyrePressureRearRight.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 
@@ -902,6 +906,11 @@ goodThreshold = 20
 criticalThreshold = 40
 
 # ---- 5.n IDEAL PRESSURE RANGE ----
+[tyres.ideal.pres.range.Generic]
+optimal = 26
+goodThreshold = 2
+criticalThreshold = 5
+
 [tyres.ideal.pres.range.Automobilista2.Generic]
 optimal = 28
 goodThreshold = 1
@@ -933,6 +942,11 @@ goodThreshold = 1
 criticalThreshold = 3
 
 [tyres.ideal.pres.range.LMDh]
+optimal = 28
+goodThreshold = 1
+criticalThreshold = 3
+
+[tyres.ideal.pres.range.LMU.Generic]
 optimal = 28
 goodThreshold = 1
 criticalThreshold = 3

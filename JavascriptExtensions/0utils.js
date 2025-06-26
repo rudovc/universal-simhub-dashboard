@@ -205,11 +205,19 @@ function constructAndParseTransformations(transformationMap, parsedConfig = unde
 
       return [
         property,
-        Object.entries(transformations).map(([arg, fnBody]) => {
-          const transformation = [`(${arg})`, fnBody.replaceAll(/(:?\n)|(:?<%)|(:?%>)/g, "")].join(" => ");
+        (
+          /** @type {string} */ currentGame,
+          /** @type {string} */ currentCarClass,
+          /** @type {string} */ currentCarId
+        ) => {
+          return Object.entries(
+            getGameOrClassFunctionBodyStringOverrides(currentGame, currentCarClass, transformations, currentCarId)
+          ).map(([arg, fnBody]) => {
+            const transformation = [`(${arg})`, fnBody.replaceAll(/(:?\n)|(:?<%)|(:?%>)/g, "")].join(" => ");
 
-          return eval(transformation);
-        })[0],
+            return eval(transformation);
+          })[0];
+        },
       ];
     })
   );
@@ -459,15 +467,15 @@ class LabelMap {
  * @param {GameOrCarClassNullableFunctionRecord} map
  * @param {string | undefined} currentCarId
  */
-function getGameOrClassFunctionOverrides(currentGame, currentCarClass, map, currentCarId) {
-  if (typeof map === "function") {
+function getGameOrClassFunctionBodyStringOverrides(currentGame, currentCarClass, map, currentCarId) {
+  if (typeof map === "string") {
     return map;
   }
 
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
-    if (!gameMap || typeof gameMap === "number") {
+    if (!gameMap || typeof gameMap === "string") {
       return gameMap;
     }
 

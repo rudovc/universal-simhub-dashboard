@@ -95,7 +95,7 @@
           "type": "object",
           "patternProperties": {
             "^.*$": {
-              "enum": ["Temp", "Pres"]
+              "enum": ["temp", "pres"]
             }
           },
           "additionalProperties": false
