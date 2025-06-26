@@ -766,127 +766,127 @@ value = "Number.parseInt(<%value%>.toFixed(0))"
 Generic = "TYRES"
 
 # ---- 5.a FL TEMP SECTION ----
-[tyres.fl_temp.property]
+[tyres.flTemp.property]
 Generic = "TyreTemperatureFrontLeft"
 
-[tyres.fl_temp.label]
+[tyres.flTemp.label]
 Generic = "°FL"
 
-[tyres.fl_temp.transformation.TyreTemperatureFrontLeft.Generic]
+[tyres.flTemp.transformation.TyreTemperatureFrontLeft.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.b FL WEAR SECTION ----
-[tyres.fl_wear.property]
+[tyres.flWear.property]
 Generic = "TyreWearFrontLeft"
 
-[tyres.fl_wear.label]
+[tyres.flWear.label]
 Generic = "%FL"
 
-[tyres.fl_wear.transformation.TyreWearFrontLeft]
+[tyres.flWear.transformation.TyreWearFrontLeft]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
 # AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.c FL PRES SECTION ----
-[tyres.fl_pres.property]
+[tyres.flPres.property]
 Generic = "TyrePressureFrontLeft"
 
-[tyres.fl_pres.label]
+[tyres.flPres.label]
 Generic = "%FL"
 
-[tyres.fl_pres.transformation.TyrePressureFrontLeft.Generic]
+[tyres.flPres.transformation.TyrePressureFrontLeft.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.d FR TEMP SECTION ----
-[tyres.fr_temp.property]
+[tyres.frTemp.property]
 Generic = "TyreTemperatureFrontRight"
 
-[tyres.fr_temp.label]
+[tyres.frTemp.label]
 Generic = "°FR"
 
-[tyres.fr_temp.transformation.TyreTemperatureFrontRight.Generic]
+[tyres.frTemp.transformation.TyreTemperatureFrontRight.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.e FR WEAR SECTION ----
-[tyres.fr_wear.property]
+[tyres.frWear.property]
 Generic = "TyreWearFrontRight"
 
-[tyres.fr_wear.label]
+[tyres.frWear.label]
 Generic = "%FR"
 
-[tyres.fr_wear.transformation.TyreWearFrontRight]
+[tyres.frWear.transformation.TyreWearFrontRight]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
 # AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.f FR PRES SECTION ----
-[tyres.fr_pres.property]
+[tyres.frPres.property]
 Generic = "TyrePressureFrontRight"
 
-[tyres.fr_pres.label]
+[tyres.frPres.label]
 Generic = "%FR"
 
-[tyres.fr_pres.transformation.TyrePressureFrontRight.Generic]
+[tyres.frPres.transformation.TyrePressureFrontRight.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.g RL TEMP SECTION ----
-[tyres.rl_temp.property]
+[tyres.rlTemp.property]
 Generic = "TyreTemperatureRearLeft"
 
-[tyres.rl_temp.label]
+[tyres.rlTemp.label]
 Generic = "°RL"
 
-[tyres.rl_temp.transformation.TyreTemperatureRearLeft.Generic]
+[tyres.rlTemp.transformation.TyreTemperatureRearLeft.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.h RL WEAR SECTION ----
-[tyres.rl_wear.property]
+[tyres.rlWear.property]
 Generic = "TyreWearRearLeft"
 
-[tyres.rl_wear.label]
+[tyres.rlWear.label]
 Generic = "%RL"
 
-[tyres.rl_wear.transformation.TyreWearRearLeft]
+[tyres.rlWear.transformation.TyreWearRearLeft]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
 # AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.i RL PRES SECTION ----
-[tyres.rl_pres.property]
+[tyres.rlPres.property]
 Generic = "TyrePressureRearLeft"
 
-[tyres.rl_pres.label]
+[tyres.rlPres.label]
 Generic = "%RL"
 
-[tyres.rl_pres.transformation.TyrePressureRearLeft.Generic]
+[tyres.rlPres.transformation.TyrePressureRearLeft.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 # ---- 5.j RR TEMP SECTION ----
-[tyres.rr_temp.property]
+[tyres.rrTemp.property]
 Generic = "TyreTemperatureRearRight"
 
-[tyres.rr_temp.label]
+[tyres.rrTemp.label]
 Generic = "°RR"
 
-[tyres.rr_temp.transformation.TyreTemperatureRearRight.Generic]
+[tyres.rrTemp.transformation.TyreTemperatureRearRight.Generic]
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.k RR WEAR SECTION ----
-[tyres.rr_wear.property]
+[tyres.rrWear.property]
 Generic = "TyreWearRearRight"
 
-[tyres.rr_wear.label]
+[tyres.rrWear.label]
 Generic = "%RR"
 
-[tyres.rr_wear.transformation.TyreWearRearRight]
+[tyres.rrWear.transformation.TyreWearRearRight]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
 # AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.l RR PRES SECTION ----
-[tyres.rr_pres.property]
+[tyres.rrPres.property]
 Generic = "TyrePressureRearRight"
 
-[tyres.rr_pres.label]
+[tyres.rrPres.label]
 Generic = "%RR"
 
-[tyres.rr_pres.transformation.TyrePressureRearRight.Generic]
+[tyres.rrPres.transformation.TyrePressureRearRight.Generic]
 value = "Number.parseFloat(<%value%>.toFixed(1))"
 
 
@@ -980,31 +980,31 @@ goodThreshold = 1
 criticalThreshold = 3
 
 # ---- 5.o FL TYRE SECTION ----
-[tyres.fl_type.property]
-LMU = "LMU_NeoRedPlugin.Tyre.FL_TyreCompound_Name"
+[tyres.flType.property]
+LMU = "LMU_NeoRedPlugin.Tyre.flTyreCompound_Name"
 
-[tyres.fl_type.label]
+[tyres.flType.label]
 Generic = "FL"
 
 # ---- 5.p FR TYRE SECTION ----
-[tyres.fr_type.property]
-LMU = "LMU_NeoRedPlugin.Tyre.FR_TyreCompound_Name"
+[tyres.frType.property]
+LMU = "LMU_NeoRedPlugin.Tyre.frTyreCompound_Name"
 
-[tyres.fr_type.label]
+[tyres.frType.label]
 Generic = "FR"
 
 # ---- 5.q RL TYRE SECTION ----
-[tyres.rl_type.property]
-LMU = "LMU_NeoRedPlugin.Tyre.RL_TyreCompound_Name"
+[tyres.rlType.property]
+LMU = "LMU_NeoRedPlugin.Tyre.rlTyreCompound_Name"
 
-[tyres.rl_type.label]
+[tyres.rlType.label]
 Generic = "RL"
 
 # ---- 5.r RR TYRE SECTION ----
-[tyres.rr_type.property]
-LMU = "LMU_NeoRedPlugin.Tyre.RR_TyreCompound_Name"
+[tyres.rrType.property]
+LMU = "LMU_NeoRedPlugin.Tyre.rrTyreCompound_Name"
 
-[tyres.rr_type.label]
+[tyres.rrType.label]
 Generic = "RR"
 
 `;

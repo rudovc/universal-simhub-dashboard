@@ -861,13 +861,13 @@ Generic = "°RR"
 value = "Number.parseInt(<%value%>.toFixed(0))"
 
 # ---- 5.k RR WEAR SECTION ----
-[tyres.rr_wear.property]
+[tyres.rrWear.property]
 Generic = "TyreWearRearRight"
 
-[tyres.rr_wear.label]
+[tyres.rrWear.label]
 Generic = "%RR"
 
-[tyres.rr_wear.transformation.TyreWearRearRight]
+[tyres.rrWear.transformation.TyreWearRearRight]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
 # AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
