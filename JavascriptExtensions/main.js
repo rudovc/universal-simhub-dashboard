@@ -1,5 +1,5 @@
 // @ts-check
-"use strict";
+'use strict';
 
 /**
  _    _         _                                _   _____  _             _             _      _____               _      _                             _ 
@@ -157,8 +157,7 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 9.a PIT LIMITER
  * ------------------
  *  10. OUTPUTS
- *  - 10.a getTelemetryLabelsAndValues (master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file based on current game/class/car ID)
- *    !!! YOU **MUST** ADD NEW VALUES TO THE OUTPUT OF `getTelemetryLabelsAndValues` IF YOU ADD NEW MAPPING SECTIONS !!!
+ *  - 10.a getTelemetryLabelsAndValuesFromConfig (master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file based on current game/class/car ID)
  * -------------------
  *  11. SIMHUB OUTPUTS (in this file)
  * ===========================
@@ -182,14 +181,14 @@ function getMasterSectionLabelFromConfig(
   currentCarClass,
   currentCarId,
   section,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
   );
 
   if (debugMode) {
@@ -200,7 +199,7 @@ function getMasterSectionLabelFromConfig(
 
   if (label === undefined) {
     throw new Error(
-      `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
+      `${section} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -223,14 +222,14 @@ function getPopupLabelFromConfig(
   currentCarId,
   section,
   property,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
   );
 
   if (debugMode) {
@@ -241,7 +240,7 @@ function getPopupLabelFromConfig(
 
   if (label === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -263,14 +262,14 @@ function getPropertyUILabelFromConfig(
   currentCarId,
   section,
   property,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
   );
 
   if (debugMode) {
@@ -281,7 +280,7 @@ function getPropertyUILabelFromConfig(
 
   if (label === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -303,21 +302,21 @@ function getPropertyValueFromConfig(
   currentCarId,
   section,
   property,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
   );
 
   const propertyKey = telemetry.gameProperties[section][property];
 
   if (propertyKey === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -335,9 +334,9 @@ function getPropertyValueFromConfig(
           currentGame,
           currentCarClass,
           telemetry.transformations[section][property][propertyKey],
-          currentCarId
+          currentCarId,
         )
-      : (value) => value;
+      : value => value;
 
   const getFinalValue = (/** @type {string | number} */ rawValue) => {
     return calculateFinalValue(rawValue, labelMap, transformation);
@@ -348,7 +347,7 @@ function getPropertyValueFromConfig(
     transformation,
     labelMap,
     getFinalValue,
-    availableValues: debugMode ? configContents : "Set debugMode = true to see available values",
+    availableValues: debugMode ? configContents : 'Set debugMode = true to see available values',
   };
 }
 
@@ -368,14 +367,14 @@ function getPropertyOptimalRangesFromConfig(
   currentCarId,
   section,
   property,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
   );
 
   if (debugMode) {
@@ -386,7 +385,7 @@ function getPropertyOptimalRangesFromConfig(
 
   if (propertyKey === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
   const optimalRanges = telemetry.optimalRanges[section][property];
@@ -401,7 +400,7 @@ function getPropertyOptimalRangesFromConfig(
     propertyKey in telemetry.transformations[section][property] &&
     telemetry.transformations[section][property][propertyKey]
       ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-      : (prop) => prop;
+      : prop => prop;
 
   return {
     property: propertyKey,
@@ -424,7 +423,7 @@ function getPrimaryTyreMetricFromConfig(
   currentCarClass,
   currentCarId,
   currentTyre,
-  debugMode
+  debugMode,
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
@@ -432,7 +431,7 @@ function getPrimaryTyreMetricFromConfig(
     currentCarClass,
     currentCarId,
     debugMode,
-    currentTyre
+    currentTyre,
   );
 
   if (debugMode) {
@@ -475,7 +474,7 @@ function getPropertyPopupLabel(currentGame, currentCarClass, section, property, 
 
   if (label === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyPopupLabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -500,7 +499,7 @@ function getPropertyUILabel(currentGame, currentCarClass, section, property, deb
 
   if (label === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyUILabel(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -524,7 +523,7 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
 
   if (propertyKey === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyValue(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
 
@@ -539,7 +538,7 @@ function getPropertyValue(currentGame, currentCarClass, section, property, debug
     propertyKey in telemetry.transformations[section][property] &&
     telemetry.transformations[section][property][propertyKey]
       ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-      : (prop) => prop;
+      : prop => prop;
 
   return { property: propertyKey, transformation, labelMap };
 }
@@ -563,7 +562,7 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
 
   if (propertyKey === undefined) {
     throw new Error(
-      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
+      `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``,
     );
   }
   const optimalRanges = telemetry.optimalRanges[section][property];
@@ -578,7 +577,7 @@ function getPropertyOptimalRanges(currentGame, currentCarClass, section, propert
     propertyKey in telemetry.transformations[section][property] &&
     telemetry.transformations[section][property][propertyKey]
       ? telemetry.transformations[section][property][propertyKey](currentGame, currentCarClass, currentCarId)
-      : (prop) => prop;
+      : prop => prop;
 
   return {
     property: propertyKey,
