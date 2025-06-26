@@ -784,7 +784,7 @@ Generic = "%FL"
 
 [tyres.fl_wear.transformation.TyreWearFrontLeft]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
-LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
+# AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.c FL PRES SECTION ----
 [tyres.fl_pres.property]
@@ -815,7 +815,7 @@ Generic = "%FR"
 
 [tyres.fr_wear.transformation.TyreWearFrontRight]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
-LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
+# AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.f FR PRES SECTION ----
 [tyres.fr_pres.property]
@@ -846,7 +846,7 @@ Generic = "%RL"
 
 [tyres.rl_wear.transformation.TyreWearRearLeft]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
-LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
+# AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.i RL PRES SECTION ----
 [tyres.rl_pres.property]
@@ -877,7 +877,7 @@ Generic = "%RR"
 
 [tyres.rr_wear.transformation.TyreWearRearRight]
 Generic = { value = "Number.parseInt(<%value%>.toFixed(0))" }
-LMU = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
+# AssettoCorsaCompetizione = { Generic = { value = "100 - Number.parseInt(<%value%>.toFixed(0))" } }
 
 # ---- 5.l RR PRES SECTION ----
 [tyres.rr_pres.property]

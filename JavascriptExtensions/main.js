@@ -429,7 +429,7 @@ function getPropertyOptimalRangesFromConfig(
  * @param {string | undefined} currentCarClass
  * @param {string | undefined} currentCarId
  * @param {string | undefined} selectedTyre
- * @param {"pres" | "temp" | undefined} metricOverride
+ * @param {"pres" | "temp" | "wear" | undefined} metricOverride
  * @param {string | undefined} tyreType
  * @param {boolean} debugMode
  */
