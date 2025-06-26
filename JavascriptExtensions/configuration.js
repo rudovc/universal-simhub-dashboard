@@ -371,7 +371,7 @@ LMU = "GameRawData.CurrentPlayerTelemetry.mBatteryChargeFraction"
 
 [ers.soc.transformation]
 "GameRawData.Physics.KersCharge" = { Generic = { value = "<%value%> * 100" } }
-"mBatteryChargeFraction" = { Generic = { value = "<%value%> * 100" } }
+"GameRawData.CurrentPlayerTelemetry.mBatteryChargeFraction" = { Generic = { value = "<%value%> * 100" } }
 
 [ers.soc.label]
 Generic = ""
