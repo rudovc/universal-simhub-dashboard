@@ -929,6 +929,11 @@ optimal = 26
 goodThreshold = 2
 criticalThreshold = 5
 
+[tyres.ideal.pres.range.AssettoCorsa.vrc_formula_alpha_2024_csp]
+optimal = 25
+goodThreshold = 2
+criticalThreshold = 3
+
 [tyres.ideal.pres.range.Automobilista2.Generic]
 optimal = 28
 goodThreshold = 1
@@ -1027,6 +1032,7 @@ Generic = "Misc"
 # ---- 9.a PIT LIMITER SECTION ----
 [misc.limiter.property]
 Generic = "PitLimiterOn"
+AssettoCorsa = "GameRawData.Physics.PitLimiterOn"
 
 [misc.limiter.label]
 Generic = "PIT LIMITER"
