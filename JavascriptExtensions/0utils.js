@@ -249,7 +249,7 @@ function constructSubsectionResultMap(subSection, parsedConfig, isIdealRanges = 
             throw new Error(
               `Provided reference in ${JSON.stringify(
                 value
-              )} is not a string. The reference must refer to an existing transformation in the same configuration`
+              )} is not a string. The reference must refer to an existing property in the same configuration`
             );
           }
 

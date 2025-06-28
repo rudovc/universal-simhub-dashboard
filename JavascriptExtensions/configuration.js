@@ -37,12 +37,19 @@ GTE = "SETT"
 5 = "QUALI"
 
 [ers.mode.value.AssettoCorsa.Generic]
-0 = "Charging"
-1 = "Low 1"
-2 = "Low 2"
-3 = "High 1"
-4 = "High 2"
-5 = "Quali"
+0 = "CHARGING"
+1 = "LOW 1"
+2 = "LOW 2"
+3 = "HIGH 1"
+4 = "HIGH 2"
+5 = "QUALI"
+
+[ers.mode.value.AssettoCorsa.vrc_formula_alpha_2024_csp]
+0 = "OFF"
+1 = "LOW"
+2 = "MEDIUM"
+3 = "HIGH"
+4 = "WET"
 
 [ers.mode.value.AssettoCorsaCompetizione.amr_v12_vantage_gt3]
 1 = "1 - DRY FAST"
@@ -422,6 +429,9 @@ GT3_Gen2 = ""
 Generic = ""
 LMU = "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL"
 
+[ers.recovery.property.AssettoCorsa]
+vrc_formula_alpha_2024_csp = "DataCorePlugin.GameRawData.Physics.ErsHeatCharging"
+
 [ers.recovery.transformation."LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL".Generic]
 value = "<%value%> === 'N/A' ? '-' : <%value%>"
 
@@ -436,6 +446,10 @@ GT3 = ""
 GT3_Gen1 = ""
 GT3_Gen2 = ""
 
+[ers.recovery.value.AssettoCorsa]
+vrc_formula_alpha_2024_csp = { 0 = "MOTOR", 1 = "BATTERY" }
+
+1 = "BATTERY"
 [ers.recovery.popup]
 Generic = "ERS RECOVERY"
 Automobilista2 = "ERS RECOVERY"
@@ -466,7 +480,7 @@ reference = "ers.soc.transformation"
 # Describes state of ERS at the moment of the last lap
 [ers.lap.label]
 Generic = ""
-AssettoCorsa = "LLap"
+AssettoCorsa = "Lap"
 Hyper = "LLap"
 LMP1 = "LLap"
 LMDh = "LLap"
@@ -530,13 +544,13 @@ value = """
 LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLSLIPANGLEMAP"
 
 [carControl.tcSlip.label]
-Generic = "SLIP"
+Generic = "Slip"
 Automobilista2 = ""
 AssettoCorsaCompetizione = ""
 iRacing = "TC1"
 
 [carControl.tcSlip.label.LMU]
-Generic = "SLIP"
+Generic = "Slip"
 LMP2 = ""
 
 [carControl.tcSlip.popup]
@@ -551,7 +565,7 @@ AssettoCorsaCompetizione = "GameRawData.Graphics.TCCut"
 LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLPOWERCUTMAP"
 
 [carControl.tcCut.label]
-Generic = "CUT"
+Generic = "Cut"
 Automobilista2 = ""
 AssettoCorsaCompetizione = "Cut"
 iRacing = "TC2"
@@ -1036,6 +1050,7 @@ Generic = "IGNITION"
 
 [misc.ignition.popup]
 Generic = "IGNITION"
+AssettoCorsa = { vrc_formula_alpha_2024_csp = "ENGINE" }
 
 # ---- 9.c STARTER SECTION ----
 [misc.starter.property]
@@ -1167,6 +1182,15 @@ criticalThreshold = 250
 optimal = 550
 goodThreshold = 200
 criticalThreshold = 300
+
+# ---- 1.f ENGINE BRAKING SECTION ----
+# Describes state of ERS at the moment of the last lap
+[misc.engineBraking.label]
+Generic = ""
+AssettoCorsa = "ENG BRK"
+
+[misc.engineBraking.property]
+AssettoCorsa = "GameRawData.Physics.EngineBrake"
 
 `;
 
