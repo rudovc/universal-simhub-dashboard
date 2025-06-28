@@ -707,6 +707,9 @@ Hyper = "NRG"
 [fuel.nrgState.transformation.ERSPercent.Generic]
 value = "<%value%>.toFixed(2)"
 
+[fuel.nrgState.transformation.ERSPercent.AssettoCorsa]
+value = "(100 - <%value%>).toFixed(2)"
+
 [fuel.nrgState.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%".Generic]
 value = "<%value%>.toFixed(2)"
 

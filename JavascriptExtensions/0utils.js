@@ -485,14 +485,14 @@ class LabelMap {
  * @param {string | undefined} currentCarId
  */
 function getGameOrClassFunctionBodyStringOverrides(currentGame, currentCarClass, map, currentCarId) {
-  if (typeof map === "string") {
+  if (typeof map === "string" || (typeof map === "object" && "value" in map)) {
     return map;
   }
 
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
-    if (!gameMap || typeof gameMap === "string") {
+    if (!gameMap || typeof gameMap === "string" || (typeof gameMap === "object" && "value" in gameMap)) {
       return gameMap;
     }
 
