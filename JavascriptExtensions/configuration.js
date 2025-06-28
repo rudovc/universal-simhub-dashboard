@@ -508,6 +508,7 @@ LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP"
 
 [carControl.tc.label]
 Generic = "TC"
+AssettoCorsa = { vrc_formula_alpha_2024_csp = "" }
 
 [carControl.tc.popup]
 Generic = "TC LEVEL"
@@ -540,6 +541,7 @@ Generic = "Slip"
 Automobilista2 = ""
 AssettoCorsaCompetizione = ""
 iRacing = "TC1"
+AssettoCorsa = { vrc_formula_alpha_2024_csp = "" }
 
 [carControl.tcSlip.label.LMU]
 Generic = "Slip"
@@ -561,6 +563,7 @@ Generic = "Cut"
 Automobilista2 = ""
 AssettoCorsaCompetizione = "Cut"
 iRacing = "TC2"
+AssettoCorsa = { vrc_formula_alpha_2024_csp = "" }
 
 [carControl.tcCut.popup]
 Generic = "TC CUT LEVEL"
@@ -595,6 +598,7 @@ Hyper = ""
 LMP1 = ""
 LMP2 = ""
 GTE = ""
+AssettoCorsa = { vrc_formula_alpha_2024_csp = "" }
 
 [carControl.abs.label.Automobilista2]
 F-Ultimate_Gen1 = ""
