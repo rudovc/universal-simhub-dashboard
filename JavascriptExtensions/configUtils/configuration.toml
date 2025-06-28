@@ -439,9 +439,8 @@ GT3_Gen1 = ""
 GT3_Gen2 = ""
 
 [ers.recovery.value.AssettoCorsa]
-vrc_formula_alpha_2024_csp = { 0 = "MOTOR", 1 = "BATTERY" }
+vrc_formula_alpha_2024_csp = { 0 = "MOTOR", 1 = "BATT" }
 
-1 = "BATTERY"
 [ers.recovery.popup]
 Generic = "ERS RECOVERY"
 Automobilista2 = "ERS RECOVERY"
