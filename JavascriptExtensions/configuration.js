@@ -933,10 +933,10 @@ goodThreshold = 2
 criticalThreshold = 5
 
 [tyres.ideal.pres.range.AssettoCorsa.vrc_formula_alpha_2024_csp]
-fr = { optimal = 26.5, goodThreshold = 2, criticalThreshold = 3 }
-fl = { optimal = 26.5, goodThreshold = 2, criticalThreshold = 3 }
-rl = { optimal = 25.5, goodThreshold = 2, criticalThreshold = 3 }
-rr = { optimal = 25.5, goodThreshold = 2, criticalThreshold = 3 }
+fr = { optimal = 26, goodThreshold = 1.5, criticalThreshold = 2 }
+fl = { optimal = 26, goodThreshold = 1.5, criticalThreshold = 2 }
+rl = { optimal = 24.5, goodThreshold = 1.5, criticalThreshold = 2 }
+rr = { optimal = 24.5, goodThreshold = 1.5, criticalThreshold = 2 }
 
 [tyres.ideal.pres.range.Automobilista2.Generic]
 optimal = 28
