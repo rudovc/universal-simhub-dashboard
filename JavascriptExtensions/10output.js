@@ -72,7 +72,7 @@ function getTelemetryLabelsAndValuesFromConfig(
                                     currentCarClass,
                                     optimalRangeSection,
                                     currentCarId,
-                                    tyreType
+                                    tyreType || selectedTyre
                                   ),
                                 ];
                               }
@@ -87,14 +87,14 @@ function getTelemetryLabelsAndValuesFromConfig(
                                           currentCarClass,
                                           optimalRangeSubSection,
                                           currentCarId,
-                                          tyreType
+                                          tyreType || selectedTyre
                                         )
                                       : getGameOrClassNumberOverrides(
                                           currentGame,
                                           currentCarClass,
                                           optimalRangeSubSection,
                                           currentCarId,
-                                          tyreType
+                                          tyreType || selectedTyre
                                         ),
                                   ]
                                 )
