@@ -492,7 +492,7 @@ reference = "ers.soc.transformation"
 # ========================
 
 [carControl.master_label]
-Generic = "CONTROL"
+Generic = "ELEC"
 GTE = "ELEC"
 GT3 = "ELEC"
 GT3_Gen1 = "ELEC"
