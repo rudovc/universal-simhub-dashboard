@@ -70,6 +70,20 @@
       "required": ["master_label"],
       "additionalProperties": false
     },
+    "brakes": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "$ref": "#/$defs/nestedStringMap"
+        },
+        "ideal": { "$ref": "#/$defs/idealRangesSubsection" }
+      },
+      "patternProperties": {
+        "(?!^master_label$|^ideal$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
+    },
     "misc": {
       "type": "object",
       "properties": {

@@ -1075,6 +1075,99 @@ critical = "#FFFF0000"
 positive = "#FF00FF00"
 negative = "#FFFF0000"
 
+# ==== 6. BRAKES SECTION ====
+# All information regarding tyre temperatures and wear goes here
+# ========================
+
+[brakes.master_label]
+Generic = "BRAKES"
+
+# ---- 6.a FL TEMP SECTION ----
+[brakes.flTemp.property]
+Generic = "BrakeTemperatureFrontLeft"
+
+[brakes.flTemp.label]
+Generic = "°FL"
+
+[brakes.flTemp.transformation.BrakeTemperatureFrontLeft.Generic]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 6.b FR TEMP SECTION ----
+[brakes.frTemp.property]
+Generic = "BrakeTemperatureFrontRight"
+
+[brakes.frTemp.label]
+Generic = "°FR"
+
+[brakes.frTemp.transformation.BrakeTemperatureFrontLeft.Generic]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 6.c RL TEMP SECTION ----
+[brakes.rlTemp.property]
+Generic = "BrakeTemperatureRearLeft"
+
+[brakes.rlTemp.label]
+Generic = "°RL"
+
+[brakes.rlTemp.transformation.BrakeTemperatureRearLeft.Generic]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 6.d RR TEMP SECTION ----
+[brakes.rrTemp.property]
+Generic = "BrakeTemperatureRearRight"
+
+[brakes.rrTemp.label]
+Generic = "°RR"
+
+[brakes.rrTemp.transformation.BrakeTemperatureRearRight.Generic]
+value = "Number.parseInt(<%value%>.toFixed(0))"
+
+# ---- 6.e IDEAL BRAKE TEMP RANGE ----
+[brakes.ideal.temp.range.Generic]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.GT3]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.GT3_Gen1]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.GT3_Gen2]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.Hyper]
+optimal = 550
+goodThreshold = 200
+criticalThreshold = 300
+
+[brakes.ideal.temp.range.LMDh]
+optimal = 550
+goodThreshold = 200
+criticalThreshold = 300
+
+[brakes.ideal.temp.range.AssettoCorsaCompetizione.Generic]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.LMU.GT3]
+optimal = 500
+goodThreshold = 250
+criticalThreshold = 250
+
+[brakes.ideal.temp.range.LMU.Hyper]
+optimal = 550
+goodThreshold = 200
+criticalThreshold = 300
+
 `;
 
 const configurationData = ERS_CONFIG;
