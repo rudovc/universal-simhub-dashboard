@@ -318,6 +318,9 @@ GT3_Gen2 = ""
 Hyper = "LMU_NeoRedPlugin.Extended.VM_ELECTRIC_MOTOR_MAP"
 Generic = "LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE"
 
+[ers.mode.transformation."GameRawData.Physics.ErsPowerLevel".AssettoCorsa.vrc_formula_alpha_2024_csp]
+value = "<%value%> + 1"
+
 [ers.mode.transformation."LMU_NeoRedPlugin.Extended.VM_ENGINE_MIXTURE".Generic]
 value = """
 {
