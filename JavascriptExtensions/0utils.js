@@ -424,7 +424,7 @@ function calculateFinalValue(rawValue, labelMap, transformation) {
   const transformedValue = transformation ? transformation(rawValue) : rawValue;
 
   const hasLabelMap = typeof labelMap === "object" && "getLabel" in labelMap;
-  const value = (hasLabelMap && labelMap.getLabel(String(transformedValue))) ?? transformedValue;
+  const value = hasLabelMap ? labelMap.getLabel(String(transformedValue)) ?? transformedValue : transformedValue;
 
   return value ?? "-";
 }
