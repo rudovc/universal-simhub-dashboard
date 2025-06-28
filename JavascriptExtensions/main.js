@@ -189,7 +189,12 @@ function getMasterSectionLabelFromConfig(
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    section
   );
 
   if (debugMode) {
@@ -230,7 +235,12 @@ function getPopupLabelFromConfig(
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    section
   );
 
   if (debugMode) {
@@ -270,7 +280,12 @@ function getPropertyUILabelFromConfig(
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    section
   );
 
   if (debugMode) {
@@ -310,7 +325,12 @@ function getPropertyValueFromConfig(
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    section
   );
 
   const propertyKey = telemetry.gameProperties[section][property];
@@ -366,7 +386,12 @@ function getThemeColorValueFromConfig(configContents, currentGame, currentCarCla
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    "misc"
   );
 
   const result = telemetry.colors.misc.theme[color];
@@ -404,12 +429,17 @@ function getPropertyOptimalRangesFromConfig(
     currentGame,
     currentCarClass,
     currentCarId,
-    debugMode
+    debugMode,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    section
   );
 
   let tyreMetric = metric;
 
-  if (metric === undefined || metric === null) {
+  if ((metric === undefined || metric === null) && section === "tyres") {
     tyreMetric = getPrimaryTyreMetricFromConfig(
       configContents,
       currentGame,
@@ -487,7 +517,10 @@ function getPrimaryTyreMetricFromConfig(
     currentCarId,
     debugMode,
     selectedTyre,
-    tyreType
+    tyreType,
+    undefined,
+    undefined,
+    "tyres"
   );
 
   if (debugMode) {

@@ -28,6 +28,7 @@ const GETTER_MAPPING = {
  * @param {string | undefined} selectedTyre
  * @param {string | undefined} tyreType
  * @param {boolean} debugMode
+ * @param {string | undefined} masterSection
  * @returns {any}
  */
 function getTelemetryLabelsAndValuesFromConfig(
@@ -39,112 +40,122 @@ function getTelemetryLabelsAndValuesFromConfig(
   selectedTyre = undefined,
   tyreType = undefined,
   currentLap = undefined,
-  root = undefined
+  root = undefined,
+  masterSection = undefined
 ) {
-  const resultMaps = {
-    ...Object.fromEntries(
-      Object.entries(configContents)
-        .filter(([topLevelKey]) => topLevelKey !== "masterSectionUiLabels")
-        .map(([topLevelKey, sections]) => [
-          topLevelKey,
-          Object.fromEntries(
-            Object.entries(sections).map(([sectionKey, section]) => [
-              sectionKey,
-              Object.fromEntries(
-                Object.entries(section).map(([subSectionKey, subSection]) => {
-                  if (topLevelKey === "transformations") {
-                    return [subSectionKey, subSection];
-                  }
+  let resultMaps = {};
+  try {
+    resultMaps = {
+      ...Object.fromEntries(
+        Object.entries(configContents)
+          .filter(([topLevelKey]) => topLevelKey !== "masterSectionUiLabels")
+          .map(([topLevelKey, sections]) => [
+            topLevelKey,
+            Object.fromEntries(
+              Object.entries(sections).map(([sectionKey, section]) => [
+                sectionKey,
+                sectionKey === masterSection
+                  ? Object.fromEntries(
+                      Object.entries(section).map(([subSectionKey, subSection]) => {
+                        if (topLevelKey === "transformations") {
+                          return [subSectionKey, subSection];
+                        }
 
-                  if (topLevelKey === "optimalRanges") {
-                    const subSectionResult = Object.fromEntries(
-                      Object.entries(subSection).map(([optimalRangeKey, optimalRangeSection]) => {
-                        if (optimalRangeKey === "primaryMetric") {
+                        if (topLevelKey === "optimalRanges") {
+                          const subSectionResult = Object.fromEntries(
+                            Object.entries(subSection).map(([optimalRangeKey, optimalRangeSection]) => {
+                              if (optimalRangeKey === "primaryMetric") {
+                                return [
+                                  optimalRangeKey,
+                                  getGameOrClassStringOverrides(
+                                    currentGame,
+                                    currentCarClass,
+                                    optimalRangeSection,
+                                    currentCarId,
+                                    tyreType
+                                  ),
+                                ];
+                              }
+
+                              const optimalRangeSubsectionResult = Object.fromEntries(
+                                Object.entries(optimalRangeSection).map(
+                                  ([optimalRangeSectionKey, optimalRangeSubSection]) => [
+                                    optimalRangeSectionKey,
+                                    optimalRangeSectionKey === "property"
+                                      ? getGameOrClassStringOverrides(
+                                          currentGame,
+                                          currentCarClass,
+                                          optimalRangeSubSection,
+                                          currentCarId,
+                                          tyreType
+                                        )
+                                      : getGameOrClassNumberOverrides(
+                                          currentGame,
+                                          currentCarClass,
+                                          optimalRangeSubSection,
+                                          currentCarId,
+                                          tyreType
+                                        ),
+                                  ]
+                                )
+                              );
+
+                              return [optimalRangeKey, optimalRangeSubsectionResult];
+                            })
+                          );
+
+                          return [subSectionKey, subSectionResult];
+                        }
+
+                        const sectionGetter = GETTER_MAPPING[topLevelKey];
+
+                        if (typeof sectionGetter !== "function") {
+                          throw new Error(
+                            `Section getter does not exist for ${topLevelKey}:${subSectionKey}. Double-check the configuration file.`
+                          );
+                        }
+                        if (topLevelKey === "colors" && typeof subSection === "object") {
                           return [
-                            optimalRangeKey,
-                            getGameOrClassStringOverrides(
-                              currentGame,
-                              currentCarClass,
-                              optimalRangeSection,
-                              currentCarId,
-                              tyreType
+                            subSectionKey,
+                            Object.fromEntries(
+                              Object.entries(subSection).map(([colorKey, colorMap]) => [
+                                colorKey,
+                                sectionGetter(currentGame, currentCarClass, colorMap, currentCarId, selectedTyre),
+                              ])
                             ),
                           ];
                         }
 
-                        const optimalRangeSubsectionResult = Object.fromEntries(
-                          Object.entries(optimalRangeSection).map(
-                            ([optimalRangeSectionKey, optimalRangeSubSection]) => [
-                              optimalRangeSectionKey,
-                              optimalRangeSectionKey === "property"
-                                ? getGameOrClassStringOverrides(
-                                    currentGame,
-                                    currentCarClass,
-                                    optimalRangeSubSection,
-                                    currentCarId,
-                                    tyreType
-                                  )
-                                : getGameOrClassNumberOverrides(
-                                    currentGame,
-                                    currentCarClass,
-                                    optimalRangeSubSection,
-                                    currentCarId,
-                                    tyreType
-                                  ),
-                            ]
-                          )
-                        );
-
-                        return [optimalRangeKey, optimalRangeSubsectionResult];
+                        return [
+                          subSectionKey,
+                          typeof subSection === "object"
+                            ? sectionGetter(currentGame, currentCarClass, subSection, currentCarId, selectedTyre)
+                            : subSection,
+                        ];
                       })
-                    );
-
-                    return [subSectionKey, subSectionResult];
-                  }
-
-                  const sectionGetter = GETTER_MAPPING[topLevelKey];
-
-                  if (typeof sectionGetter !== "function") {
-                    throw new Error(
-                      `Section getter does not exist for ${topLevelKey}:${subSectionKey}. Double-check the configuration file.`
-                    );
-                  }
-                  if (topLevelKey === "colors" && typeof subSection === "object") {
-                    return [
-                      subSectionKey,
-                      Object.fromEntries(
-                        Object.entries(subSection).map(([colorKey, colorMap]) => [
-                          colorKey,
-                          sectionGetter(currentGame, currentCarClass, colorMap, currentCarId, selectedTyre),
-                        ])
-                      ),
-                    ];
-                  }
-
-                  return [
-                    subSectionKey,
-                    typeof subSection === "object"
-                      ? sectionGetter(currentGame, currentCarClass, subSection, currentCarId, selectedTyre)
-                      : subSection,
-                  ];
-                })
-              ),
-            ])
-          ),
+                    )
+                  : undefined,
+              ])
+            ),
+          ])
+      ),
+      masterSectionUiLabels: Object.fromEntries(
+        Object.entries(configContents.masterSectionUiLabels).map(([key, value]) => [
+          key,
+          getGameOrClassStringOverrides(currentGame, currentCarClass, value, currentCarId, selectedTyre),
         ])
-    ),
-    masterSectionUiLabels: Object.fromEntries(
-      Object.entries(configContents.masterSectionUiLabels).map(([key, value]) => [
-        key,
-        getGameOrClassStringOverrides(currentGame, currentCarClass, value, currentCarId, selectedTyre),
-      ])
-    ),
-  };
-
-  return {
-    availableValues: debugMode
-      ? JSON.stringify(resultMaps, null, 2)
-      : "To see possible mappings, activate debug mode by passing `debugMode = true` to this function, as such: `getTelemetryLabelsAndValues(currentGame, currentCar, true)`",
-    ...resultMaps,
-  };
+      ),
+    };
+  } catch (e) {
+    if (e.message !== "Early break") {
+      throw new Error(e);
+    }
+  } finally {
+    return {
+      availableValues: debugMode
+        ? JSON.stringify(resultMaps, null, 2)
+        : "To see possible mappings, activate debug mode by passing `debugMode = true` to this function, as such: `getTelemetryLabelsAndValues(currentGame, currentCar, true)`",
+      ...resultMaps,
+    };
+  }
 }
