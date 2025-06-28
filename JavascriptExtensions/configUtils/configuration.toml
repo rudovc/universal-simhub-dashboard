@@ -998,3 +998,71 @@ LMU = "LMU_NeoRedPlugin.Tyre.RR_TyreCompound_Name"
 
 [tyres.rrType.label]
 Generic = "RR"
+
+# ==== 9. MISCELLANEOUS SECTION ====
+# Things that don't cleanly fit any of the other categories
+# ========================
+
+[misc.master_label]
+Generic = "Misc"
+
+# ---- 9.a PIT LIMITER SECTION ----
+[misc.limiter.property]
+Generic = "PitLimiterSpeed"
+
+[misc.limiter.label]
+Generic = "PIT LIMITER"
+
+[misc.limiter.popup]
+Generic = "PIT LIMITER"
+
+# ---- 9.b IGNITION SECTION ----
+[misc.ignition.property]
+Generic = "EngineIgnitionOn"
+
+[misc.ignition.value]
+Generic = { 0 = { label = "OFF", color = "#FFFF0000" }, 1 = { label = "ON", color = "#FF0A49A9" } }
+
+[misc.ignition.label]
+Generic = "IGNITION"
+
+[misc.ignition.popup]
+Generic = "IGNITION"
+
+# ---- 9.c STARTER SECTION ----
+[misc.starter.property]
+Generic = "EngineStarted"
+
+[misc.starter.value]
+Generic = { 0 = "OFF", 1 = "STARTED" }
+
+[misc.starter.label]
+Generic = "STARTER"
+
+[misc.starter.popup]
+Generic = "STARTER"
+
+# ---- 9.d DRS SECTION ----
+[misc.drsAvailable.property]
+Generic = "DRSAvailable"
+
+[misc.drsAvailable.label]
+Generic = "DRS Available"
+
+[misc.drsActive.property]
+Generic = "DRSEnabled"
+
+[misc.drsActive.label]
+Generic = "DRS Enabled"
+
+# ---- 9.e THEME SECTION ----
+[misc.theme.colors]
+default = "#FFFFFFFF"
+background = "#FF0A49A9"
+drsActive = "#C840C919"
+limiter = "#C8E38300"
+optimal = "#FFFFFFFF"
+good = "#FFFFFF00"
+critical = "#FFFF0000"
+positive = "#FF00FF00"
+negative = "#FFFF0000"

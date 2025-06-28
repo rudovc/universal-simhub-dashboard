@@ -102,7 +102,7 @@ function parseConfig(configInput) {
   const SUB_SECTION_REQUIRED_KEYS = ["property", "label"];
   const SUB_SECTION_OPTIONAL_KEYS = ["value", "transformation", "popup", "optimal"];
 
-  const SPECIAL_EXCLUDED_SUB_SECTIONS = ["ideal"];
+  const SPECIAL_EXCLUDED_SUB_SECTIONS = ["ideal", "theme"];
 
   const parsedConfig = TOML.parse(configInput);
   const parsedConfigSections = Object.entries(parsedConfig);
@@ -230,6 +230,7 @@ const CONFIG_SUBSECTION_MAP = {
   label: "uiLabels",
   popup: "popupLabels",
   ideal: "optimalRanges",
+  colors: "colors",
 };
 
 /**
@@ -403,6 +404,19 @@ function loadFromConfig() {
 
 /**
  * @param {string | number} rawValue
+ * @param {LabelMap} labelMap
+ * @param {function(any): any} transformation
+ */
+function calculateFinalColor(rawValue, labelMap, transformation) {
+  const transformedValue = transformation ? transformation(rawValue) : rawValue;
+
+  const value = labelMap ? labelMap.getColor(String(transformedValue)) : null;
+
+  return value ?? "#FFFFFFFF";
+}
+
+/**
+ * @param {string | number} rawValue
  * @param {LabelMap | null} labelMap
  * @param {function(any): any} transformation
  */
@@ -513,6 +527,10 @@ function getGameOrClassFunctionBodyStringOverrides(currentGame, currentCarClass,
  * @param {string | undefined} currentTyre
  */
 function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, currentCarId, currentTyre) {
+  if (typeof map === "number") {
+    return map;
+  }
+
   if (currentGame in map) {
     const gameMap = map[currentGame];
 
@@ -576,6 +594,10 @@ function getGameOrClassNumberOverrides(currentGame, currentCarClass, map, curren
  * @param {string | undefined} currentTyre
  */
 function getGameOrClassStringOverrides(currentGame, currentCarClass, map, currentCarId, currentTyre = undefined) {
+  if (typeof map === "string") {
+    return map;
+  }
+
   /** @type {string | null} */
   let gameFallback = null;
 

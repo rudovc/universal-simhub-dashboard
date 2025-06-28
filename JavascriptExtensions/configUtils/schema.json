@@ -7,10 +7,7 @@
       "type": "object",
       "properties": {
         "master_label": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "type": "string" }
-          },
+          "$ref": "#/$defs/nestedStringMap",
           "minProperties": 1
         }
       },
@@ -24,10 +21,7 @@
       "type": "object",
       "properties": {
         "master_label": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "type": "string" }
-          }
+          "$ref": "#/$defs/nestedStringMap"
         }
       },
       "patternProperties": {
@@ -40,10 +34,7 @@
       "type": "object",
       "properties": {
         "master_label": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "type": "string" }
-          }
+          "$ref": "#/$defs/nestedStringMap"
         }
       },
       "patternProperties": {
@@ -56,10 +47,7 @@
       "type": "object",
       "properties": {
         "master_label": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "type": "string" }
-          }
+          "$ref": "#/$defs/nestedStringMap"
         }
       },
       "patternProperties": {
@@ -72,10 +60,7 @@
       "type": "object",
       "properties": {
         "master_label": {
-          "type": "object",
-          "patternProperties": {
-            "^.*$": { "type": "string" }
-          }
+          "$ref": "#/$defs/nestedStringMap"
         },
         "ideal": { "$ref": "#/$defs/idealRangesSubsection" }
       },
@@ -84,10 +69,69 @@
       },
       "required": ["master_label"],
       "additionalProperties": false
+    },
+    "misc": {
+      "type": "object",
+      "properties": {
+        "master_label": {
+          "$ref": "#/$defs/nestedStringMap"
+        },
+        "theme": {
+          "$ref": "#/$defs/themeSubsection"
+        }
+      },
+      "patternProperties": {
+        "(?!^master_label$|^theme$)^.*$": { "$ref": "#/$defs/subsection" }
+      },
+      "required": ["master_label"],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,
   "$defs": {
+    "themeSubsection": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "properties": {
+            "default": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "background": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "limiter": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "drsAvailable": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "drsActive": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "optimal": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "good": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "critical": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "positive": {
+              "$ref": "#/$defs/nestedStringMaps"
+            },
+            "negative": {
+              "$ref": "#/$defs/nestedStringMaps"
+            }
+          },
+          "required": ["default", "limiter", "good", "critical", "positive", "negative"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["colors"],
+      "additionalProperties": false
+    },
     "idealRangesSubsection": {
       "type": "object",
       "properties": {

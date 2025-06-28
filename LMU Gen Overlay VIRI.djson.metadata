@@ -1,12 +1,12 @@
 {
-  "ScreenCount": 7.0,
+  "ScreenCount": 6.0,
   "InGameScreensIndexs": [
+    1,
     2,
-    3,
-    4
+    3
   ],
   "IdleScreensIndexs": [],
-  "MainPreviewIndex": 2,
+  "MainPreviewIndex": 1,
   "IsOverlay": false,
   "OverlaySizeWarning": true,
   "MetadataVersion": 2.0,
@@ -16,8 +16,8 @@
   "Category": null,
   "Title": "Universal Overlay",
   "Description": null,
-  "Author": null,
+  "Author": "SneakySnek",
   "Width": 1280.0,
   "Height": 600.0,
-  "DashboardVersion": ""
+  "DashboardVersion": "v0.1.0"
 }

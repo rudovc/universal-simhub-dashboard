@@ -190,6 +190,7 @@ const GETTER_MAPPING = {
   uiLabels: getGameOrClassStringOverrides,
   popupLabels: getGameOrClassStringOverrides,
   optimalRanges: getGameOrClassNumberOverrides,
+  colors: getGameOrClassStringOverrides,
 };
 
 /**
@@ -280,6 +281,17 @@ function getTelemetryLabelsAndValuesFromConfig(
                     throw new Error(
                       `Section getter does not exist for ${topLevelKey}:${subSectionKey}. Double-check the configuration file.`
                     );
+                  }
+                  if (topLevelKey === "colors" && typeof subSection === "object") {
+                    return [
+                      subSectionKey,
+                      Object.fromEntries(
+                        Object.entries(subSection).map(([colorKey, colorMap]) => [
+                          colorKey,
+                          sectionGetter(currentGame, currentCarClass, colorMap, currentCarId, selectedTyre),
+                        ])
+                      ),
+                    ];
                   }
 
                   return [

@@ -104,9 +104,6 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 4.a OIL TEMP
  *  - 4.b WATER TEMP
  *  - 4.c ENGINE TEMP
- */
-
-/**
  * -----------------
  *  5. TYRES
  *  - 5.a FL TEMP
@@ -134,6 +131,13 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  - 6.c RL TEMP
  *  - 6.d RR TEMP
  *  - 6.e IDEAL RANGES
+ * -------------------
+ *  9. MISCELLANEOUS
+ *  - 9.a PIT LIMITER
+ *  - 9.b IGNITION
+ *  - 9.c STARTER
+ *  - 9.d DRS
+ *  - 9.e THEME
  * --------------
  *  TODO: ------ Everything below this is not yet implemented ------
  *  7. DAMAGE
@@ -152,9 +156,6 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  *  8. SUSPENSION
  *  - 8.a FRONT ARB
  *  - 8.b REAR ARB
- * -----------------
- *  9. MISCELLANEOUS
- *  - 9.a PIT LIMITER
  * ------------------
  *  10. OUTPUTS
  *  - 10.a getTelemetryLabelsAndValuesFromConfig (master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file based on current game/class/car ID)
@@ -337,11 +338,43 @@ function getPropertyValueFromConfig(
     return calculateFinalValue(rawValue, labelMap, transformation);
   };
 
+  const getFinalColor = (/** @type {string | number} */ rawValue) => {
+    return calculateFinalColor(rawValue, labelMap, transformation);
+  };
+
   return {
     property: propertyKey,
     transformation,
     labelMap,
     getFinalValue,
+    getFinalColor,
+    availableValues: debugMode ? configContents : "Set debugMode = true to see available values",
+  };
+}
+
+/**
+ * @param {{ [key: string]: any }} configContents
+ * @param {string} currentGame
+ * @param {string | undefined} currentCarClass
+ * @param {string | undefined} currentCarId
+ * @param {string} color
+ * @param {boolean} debugMode
+ */
+function getThemeColorValueFromConfig(configContents, currentGame, currentCarClass, currentCarId, color, debugMode) {
+  const telemetry = getTelemetryLabelsAndValuesFromConfig(
+    configContents,
+    currentGame,
+    currentCarClass,
+    currentCarId,
+    debugMode
+  );
+
+  const result = telemetry.colors.misc.theme[color];
+
+  return {
+    color: result,
+    defaultForeground: telemetry.colors.misc.theme.default,
+    defaultBackground: telemetry.colors.misc.theme.background,
     availableValues: debugMode ? configContents : "Set debugMode = true to see available values",
   };
 }
