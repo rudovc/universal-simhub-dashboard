@@ -423,9 +423,8 @@ function calculateFinalColor(rawValue, labelMap, transformation) {
 function calculateFinalValue(rawValue, labelMap, transformation) {
   const transformedValue = transformation ? transformation(rawValue) : rawValue;
 
-  const value =
-    (typeof labelMap === "object" && "getLabel" in labelMap && labelMap.getLabel(String(transformedValue))) ??
-    transformedValue;
+  const hasLabelMap = typeof labelMap === "object" && "getLabel" in labelMap;
+  const value = (hasLabelMap && labelMap.getLabel(String(transformedValue))) ?? transformedValue;
 
   return value ?? "-";
 }
