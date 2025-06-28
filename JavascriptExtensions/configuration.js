@@ -1032,7 +1032,6 @@ Generic = "Misc"
 # ---- 9.a PIT LIMITER SECTION ----
 [misc.limiter.property]
 Generic = "PitLimiterOn"
-AssettoCorsa = "GameRawData.Physics.PitLimiterOn"
 
 [misc.limiter.label]
 Generic = "PIT LIMITER"
