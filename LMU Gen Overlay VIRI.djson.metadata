@@ -5,13 +5,21 @@
     2,
     3
   ],
-  "IdleScreensIndexs": [],
+  "IdleScreensIndexs": [
+    1,
+    2,
+    3
+  ],
   "MainPreviewIndex": 1,
   "IsOverlay": false,
   "OverlaySizeWarning": true,
   "MetadataVersion": 2.0,
   "EnableOnDashboardMessaging": true,
-  "PitScreensIndexs": [],
+  "PitScreensIndexs": [
+    1,
+    2,
+    3
+  ],
   "SimHubVersion": "9.9.1",
   "Category": null,
   "Title": "Universal Overlay",
