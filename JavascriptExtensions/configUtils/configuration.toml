@@ -36,13 +36,6 @@ GTE = "SETT"
 4 = "HIGH 2"
 5 = "QUALI"
 
-[ers.mode.value.AssettoCorsa.vrc_formula_alpha_2024_csp]
-0 = "OFF"
-1 = "LOW"
-2 = "MEDIUM"
-3 = "HIGH"
-4 = "WET"
-
 [ers.mode.value.AssettoCorsaCompetizione.amr_v12_vantage_gt3]
 1 = "1 - DRY FAST"
 2 = "2 - DRY"
@@ -332,7 +325,7 @@ value = """
 
 [ers.mode.label]
 Generic = "Mode"
-AssettoCorsa = "Mode"
+AssettoCorsa = { Generic = "Mode", vrc_formula_alpha_2024_csp = "Strat" }
 LMP1 = "Deploy"
 AssettoCorsaCompetizione = "Map"
 GT3 = "Map"

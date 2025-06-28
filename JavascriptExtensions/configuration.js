@@ -44,13 +44,6 @@ GTE = "SETT"
 4 = "HIGH 2"
 5 = "QUALI"
 
-[ers.mode.value.AssettoCorsa.vrc_formula_alpha_2024_csp]
-0 = "OFF"
-1 = "LOW"
-2 = "MEDIUM"
-3 = "HIGH"
-4 = "WET"
-
 [ers.mode.value.AssettoCorsaCompetizione.amr_v12_vantage_gt3]
 1 = "1 - DRY FAST"
 2 = "2 - DRY"
@@ -340,7 +333,7 @@ value = """
 
 [ers.mode.label]
 Generic = "Mode"
-AssettoCorsa = "Mode"
+AssettoCorsa = { Generic = "Mode", vrc_formula_alpha_2024_csp = "Strat" }
 LMP1 = "Deploy"
 AssettoCorsaCompetizione = "Map"
 GT3 = "Map"
@@ -447,9 +440,8 @@ GT3_Gen1 = ""
 GT3_Gen2 = ""
 
 [ers.recovery.value.AssettoCorsa]
-vrc_formula_alpha_2024_csp = { 0 = "MOTOR", 1 = "BATTERY" }
+vrc_formula_alpha_2024_csp = { 0 = "MOTOR", 1 = "BATT" }
 
-1 = "BATTERY"
 [ers.recovery.popup]
 Generic = "ERS RECOVERY"
 Automobilista2 = "ERS RECOVERY"
@@ -1082,7 +1074,8 @@ Generic = "DRS Enabled"
 [misc.theme.colors]
 default = "#FFFFFFFF"
 background = "#FF0A49A9"
-drsActive = "#C840C919"
+drsActive = "#FF8A2BE2"
+drsAvailable = "#C840C919"
 limiter = "#C8E38300"
 optimal = "#FFFFFFFF"
 good = "#FFFFFF00"
