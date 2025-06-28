@@ -930,7 +930,7 @@ goodThreshold = 2
 criticalThreshold = 5
 
 [tyres.ideal.pres.range.AssettoCorsa.vrc_formula_alpha_2024_csp]
-optimal = 25
+optimal = 26
 goodThreshold = 2
 criticalThreshold = 3
 
