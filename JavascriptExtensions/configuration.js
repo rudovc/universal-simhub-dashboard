@@ -1016,7 +1016,7 @@ Generic = "Misc"
 
 # ---- 9.a PIT LIMITER SECTION ----
 [misc.limiter.property]
-Generic = "PitLimiterSpeed"
+Generic = "PitLimiterOn"
 
 [misc.limiter.label]
 Generic = "PIT LIMITER"
