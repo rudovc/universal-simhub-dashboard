@@ -430,7 +430,11 @@ function getPropertyOptimalRangesFromConfig(
       `${section}:${property} was not found in telemetry. Run in debug mode to double check return values: \`getPropertyOptimalRanges(currentGame, carClass, section, property, debugMode = true)\``
     );
   }
-  const optimalRanges = telemetry.optimalRanges[section].ideal[tyreMetric].range;
+  const optimalRanges = telemetry.optimalRanges[section].ideal[tyreMetric].range ?? {
+    optimal: undefined,
+    goodThreshold: undefined,
+    criticalThreshold: undefined,
+  };
 
   // Return identity function if transformation is undefined. Transformations are higher order functions that return a transform depending on the current game/class/car
   /** @type function(any): any */
