@@ -775,6 +775,10 @@ function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3)
 
   root.previousLapNumber = root.previousLapNumber ?? currentLapNumber;
 
+  if (currentLapNumber < root.previousLapNumber) {
+    cycleValuesOverNEntries(currentValue, root, nValues, true);
+  }
+
   if (root.valuesToCycle === null || root.valuesToCycle === undefined) {
     cycleValuesOverNEntries(currentValue, root, nValues);
   }
@@ -792,9 +796,14 @@ function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3)
  * @param {number | string} currentValue
  * @param {{ valuesToCycle: (string | number)[] | null | undefined }} root
  * @param {number} nValues
+ * @param {boolean} clearValues
  */
-function cycleValuesOverNEntries(currentValue, root, nValues = 3) {
-  root.valuesToCycle = root.valuesToCycle ?? Array(nValues).fill(null);
+function cycleValuesOverNEntries(currentValue, root, nValues = 3, clearValues = false) {
+  if (clearValues) {
+    root.valuesToCycle = Array(nValues).fill(null);
+  } else {
+    root.valuesToCycle = root.valuesToCycle ?? Array(nValues).fill(null);
+  }
   root.valuesToCycle.shift();
   root.valuesToCycle.push(currentValue);
 
@@ -817,15 +826,19 @@ function formattedDeltaOverLastLap(currentLapNumber, currentValue, root, decimal
     );
   }
 
-  if (root.previousLapNumber === undefined || root.previousLapNumber === null) {
+  if (
+    root.previousLapNumber === undefined ||
+    root.previousLapNumber === null ||
+    currentLapNumber < root.previousLapNumber
+  ) {
     root.previousLapNumber = currentLapNumber;
   }
 
-  if (root.previousValue === undefined || root.previousValue === null) {
+  if (root.previousValue === undefined || root.previousValue === null || currentLapNumber < root.previousLapNumber) {
     root.previousValue = inputValue;
   }
 
-  if (root.previousDiff === undefined || root.previousDiff === null) {
+  if (root.previousDiff === undefined || root.previousDiff === null || currentLapNumber < root.previousLapNumber) {
     root.previousDiff = 0;
   }
 
@@ -833,7 +846,7 @@ function formattedDeltaOverLastLap(currentLapNumber, currentValue, root, decimal
   const previousValue = root.previousValue;
   const previousDiff = root.previousDiff;
 
-  if (previousLapNumber !== currentLapNumber) {
+  if (previousLapNumber < currentLapNumber) {
     const valueDiff = inputValue - previousValue;
 
     root.previousValue = inputValue;
@@ -867,15 +880,19 @@ function deltaOverLastLap(currentLapNumber, currentValue, root, decimalPrecision
     );
   }
 
-  if (root.previousLapNumber === undefined || root.previousLapNumber === null) {
+  if (
+    root.previousLapNumber === undefined ||
+    root.previousLapNumber === null ||
+    currentLapNumber < root.previousLapNumber
+  ) {
     root.previousLapNumber = currentLapNumber;
   }
 
-  if (root.previousValue === undefined || root.previousValue === null) {
+  if (root.previousValue === undefined || root.previousValue === null || currentLapNumber < root.previousLapNumber) {
     root.previousValue = inputValue;
   }
 
-  if (root.previousDiff === undefined || root.previousDiff === null) {
+  if (root.previousDiff === undefined || root.previousDiff === null || currentLapNumber < root.previousLapNumber) {
     root.previousDiff = 0;
   }
 
