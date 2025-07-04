@@ -20,12 +20,12 @@
     2,
     3
   ],
-  "SimHubVersion": "9.9.1",
+  "SimHubVersion": "9.9.3",
   "Category": null,
   "Title": "Universal Overlay",
   "Description": null,
   "Author": "SneakySnek",
   "Width": 1280.0,
-  "Height": 600.0,
+  "Height": 768.0,
   "DashboardVersion": "v0.1.0"
 }
