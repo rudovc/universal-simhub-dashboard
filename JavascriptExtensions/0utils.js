@@ -395,11 +395,18 @@ function constructSectionResultMap(section, parsedConfig = undefined) {
   );
 }
 
-function loadFromConfig() {
+/**
+ * @param {any} root
+ */
+function loadFromConfig(root) {
   const parsedConfig = parseConfigFile();
   const outputData = constructOutputResultMap(parsedConfig);
 
-  return outputData;
+  if (root && !root.parsedConfigCache) {
+    root.parsedConfigCache = outputData;
+  }
+
+  return root ? root.parsedConfigCache : outputData;
 }
 
 /**

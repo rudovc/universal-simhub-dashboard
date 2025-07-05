@@ -175,6 +175,7 @@ MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
  * @param {string | undefined} currentCarClass
  * @param {string | undefined} currentCarId
  * @param {string} section
+ * @param {Object} root
  * @param {boolean} debugMode
  */
 function getMasterSectionLabelFromConfig(
@@ -183,6 +184,7 @@ function getMasterSectionLabelFromConfig(
   currentCarClass,
   currentCarId,
   section,
+  root,
   debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
@@ -194,7 +196,7 @@ function getMasterSectionLabelFromConfig(
     undefined,
     undefined,
     undefined,
-    undefined,
+    root,
     section
   );
 
@@ -219,6 +221,7 @@ function getMasterSectionLabelFromConfig(
  * @param {string | undefined} currentCarClass
  * @param {string} section
  * @param {string} property
+ * @param {Object} root
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  */
@@ -229,6 +232,7 @@ function getPopupLabelFromConfig(
   currentCarId,
   section,
   property,
+  root,
   debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
@@ -240,7 +244,7 @@ function getPopupLabelFromConfig(
     undefined,
     undefined,
     undefined,
-    undefined,
+    root,
     section
   );
 
@@ -262,10 +266,11 @@ function getPopupLabelFromConfig(
  * @param {{ [key: string]: any }} configContents
  * @param {string} currentGame
  * @param {string | undefined} currentCarClass
+ * @param {string | undefined} currentCarId
  * @param {string} section
  * @param {string} property
+ * @param {Object} root
  * @param {boolean} debugMode
- * @param {string | undefined} currentCarId
  */
 function getPropertyUILabelFromConfig(
   configContents,
@@ -274,6 +279,7 @@ function getPropertyUILabelFromConfig(
   currentCarId,
   section,
   property,
+  root,
   debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
@@ -285,7 +291,7 @@ function getPropertyUILabelFromConfig(
     undefined,
     undefined,
     undefined,
-    undefined,
+    root,
     section
   );
 
@@ -310,6 +316,7 @@ function getPropertyUILabelFromConfig(
  * @param {string | undefined} currentCarId
  * @param {string} section
  * @param {string} property
+ * @param {Object} root
  * @param {boolean} debugMode
  * @param {string | undefined} currentTyre
  */
@@ -320,6 +327,7 @@ function getPropertyValueFromConfig(
   currentCarId,
   section,
   property,
+  root,
   debugMode,
   currentTyre = undefined
 ) {
@@ -332,7 +340,7 @@ function getPropertyValueFromConfig(
     currentTyre,
     undefined,
     undefined,
-    undefined,
+    root,
     section
   );
 
@@ -381,9 +389,18 @@ function getPropertyValueFromConfig(
  * @param {string | undefined} currentCarClass
  * @param {string | undefined} currentCarId
  * @param {string} color
+ * @param {Object} root
  * @param {boolean} debugMode
  */
-function getThemeColorValueFromConfig(configContents, currentGame, currentCarClass, currentCarId, color, debugMode) {
+function getThemeColorValueFromConfig(
+  configContents,
+  currentGame,
+  currentCarClass,
+  currentCarId,
+  color,
+  root,
+  debugMode
+) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
     currentGame,
@@ -393,7 +410,7 @@ function getThemeColorValueFromConfig(configContents, currentGame, currentCarCla
     undefined,
     undefined,
     undefined,
-    undefined,
+    root,
     "misc"
   );
 
@@ -414,6 +431,7 @@ function getThemeColorValueFromConfig(configContents, currentGame, currentCarCla
  * @param {string} section
  * @param {string | undefined} property
  * @param {string | undefined} metric
+ * @param {Object} root
  * @param {boolean} debugMode
  * @param {string | undefined} currentCarId
  * @param {string | undefined} currentTyre
@@ -426,8 +444,9 @@ function getPropertyOptimalRangesFromConfig(
   section,
   property,
   metric,
-  debugMode,
-  currentTyre = undefined
+  root,
+  currentTyre = undefined,
+  debugMode
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
     configContents,
@@ -438,7 +457,7 @@ function getPropertyOptimalRangesFromConfig(
     currentTyre,
     undefined,
     undefined,
-    undefined,
+    root,
     section
   );
 
@@ -450,7 +469,10 @@ function getPropertyOptimalRangesFromConfig(
       currentGame,
       currentCarClass,
       currentCarId,
-      section
+      section,
+      undefined,
+      undefined,
+      root
     ).tyreMetric;
   }
 
@@ -503,6 +525,7 @@ function getPropertyOptimalRangesFromConfig(
  * @param {string | undefined} selectedTyre
  * @param {"pres" | "temp" | "wear" | undefined} metricOverride
  * @param {string | undefined} tyreType
+ * @param {Object} root
  * @param {boolean} debugMode
  */
 function getPrimaryTyreMetricFromConfig(
@@ -513,6 +536,7 @@ function getPrimaryTyreMetricFromConfig(
   selectedTyre = undefined,
   metricOverride = undefined,
   tyreType = undefined,
+  root = undefined,
   debugMode = false
 ) {
   const telemetry = getTelemetryLabelsAndValuesFromConfig(
@@ -524,7 +548,7 @@ function getPrimaryTyreMetricFromConfig(
     selectedTyre,
     tyreType,
     undefined,
-    undefined,
+    root,
     "tyres"
   );
 

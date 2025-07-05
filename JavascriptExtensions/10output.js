@@ -27,6 +27,8 @@ const GETTER_MAPPING = {
  * @param {string | undefined} currentCarId
  * @param {string | undefined} selectedTyre
  * @param {string | undefined} tyreType
+ * @param {number | undefined} currentLap
+ * @param {Object | undefined} root
  * @param {boolean} debugMode
  * @param {string | undefined} masterSection
  * @returns {any}
@@ -44,6 +46,11 @@ function getTelemetryLabelsAndValuesFromConfig(
   masterSection = undefined
 ) {
   let resultMaps = {};
+
+  if (root && root.telemetryCache) {
+    return root.telemetryCache;
+  }
+
   try {
     resultMaps = {
       ...Object.fromEntries(
@@ -151,11 +158,19 @@ function getTelemetryLabelsAndValuesFromConfig(
       throw new Error(e);
     }
   } finally {
-    return {
+    let output = {
       availableValues: debugMode
         ? JSON.stringify(resultMaps, null, 2)
         : "To see possible mappings, activate debug mode by passing `debugMode = true` to this function, as such: `getTelemetryLabelsAndValues(currentGame, currentCar, true)`",
       ...resultMaps,
     };
+
+    if (!root) {
+      return output;
+    }
+
+    root.telemetryCache = output;
+
+    return root.telemetryCache;
   }
 }
