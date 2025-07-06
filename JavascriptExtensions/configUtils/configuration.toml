@@ -540,10 +540,9 @@ AssettoCorsa = { vrc_formula_alpha_2024_csp = "" }
 
 [carControl.tcSlip.label.LMU]
 Generic = "Slip"
-LMP2 = ""
 
 [carControl.tcSlip.popup]
-Generic = "TC SLIP LEVEL"
+Generic = "TC SLIP ANGLE"
 iRacing = "TC1 LEVEL"
 
 # ---- 2.c TC CUT SECTION ----
