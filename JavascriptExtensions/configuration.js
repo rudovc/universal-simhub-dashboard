@@ -689,21 +689,22 @@ LMU = ""
 [fuel.laps.label]
 Generic = "ELaps"
 
-# ---- 3.e FUEL DELTA SECTION ----
-# Describes fuel delta to last lap
-[fuel.delta.property]
+# ---- 3.e ENERGY DELTA SECTION ----
+# Describes energy delta to last lap
+[fuel.nrgDelta.property]
 reference = "fuel.state.property"
 
-[fuel.delta.property.LMU]
+[fuel.nrgDelta.property.LMU]
 Hyper = "LMU_NeoRedPlugin.Energy.VE.Current_%"
 
-[fuel.delta.label]
-Generic = "Δ"
+[fuel.nrgDelta.label]
+Generic = ""
+LMU = { Generic = "", Hyper = "NRG Δ" }
 
-[fuel.delta.transformation.Fuel.Generic]
+[fuel.nrgDelta.transformation.Fuel.Generic]
 value = "Number(<%value%>).toFixed(2)"
 
-[fuel.delta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%".Generic]
+[fuel.nrgDelta.transformation."LMU_NeoRedPlugin.Energy.VE.Current_%".Generic]
 value = "<%value%>.toFixed(2)"
 
 # ---- 3.f NRG STATE SECTION ----
@@ -749,17 +750,26 @@ Hyper = "ELaps"
 value = "<%value%>.toFixed(2)"
 
 # ---- 3.h FUEL LAST LAP USAGE SECTION ----
-# Current fuel usage per lap
+# Current fuel usage in the last lap
 [fuel.lapUsage.label]
 Generic = "LLap"
 
 [fuel.lapUsage.property]
 Generic = "DataCorePlugin.Computed.Fuel_LastLapConsumption"
 
-[fuel.lapUsage.property.LMU]
-Hyper = "LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%"
+# ---- 3.h AVG FUEL USAGE PER LAP SECTION ----
+# Current fuel usage per lap, on average, if the game provides it.
+# If not, it will be averaged by the dashboard, so it's safe to use the default "last lap" property otherwise
+[fuel.avgUsage.label]
+Generic = "LAvg"
 
-[fuel.lapUsage.transformation."LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%".Generic]
+[fuel.avgUsage.property]
+Generic = "DataCorePlugin.Computed.Fuel_LastLapConsumption"
+
+[fuel.avgUsage.property.LMU]
+Generic = "LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%"
+
+[fuel.avgUsage.transformation."LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%".Generic]
 value = "((<%value%> / 100) * $prop('MaxFuel')).toFixed(2)"
 
 
