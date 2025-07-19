@@ -793,10 +793,6 @@ function calculateArraySum(arr) {
  */
 function calculateArrayAverage(arr) {
   return arr.reduce((acc, cur) => {
-    if (!acc) {
-      return cur;
-    }
-
     if (typeof cur !== "number") {
       const parsedNumber = parseFloat(cur);
 
@@ -804,7 +800,15 @@ function calculateArrayAverage(arr) {
         return acc;
       }
 
+      if (!acc) {
+        return parsedNumber;
+      }
+
       return (acc + parsedNumber) / 2;
+    }
+
+    if (!acc) {
+      return cur;
     }
 
     return (acc + cur) / 2;

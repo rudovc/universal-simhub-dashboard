@@ -743,7 +743,7 @@ Generic = ""
 
 [fuel.nrgUsage.label.LMU]
 Generic = ""
-Hyper = "Laps"
+Hyper = "ELaps"
 
 [fuel.nrgUsage.transformation."LMU_NeoRedPlugin.Energy.VE.FractionPerLap_%".Generic]
 value = "<%value%>.toFixed(2)"
@@ -760,7 +760,7 @@ Generic = "DataCorePlugin.Computed.Fuel_LastLapConsumption"
 Hyper = "LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%"
 
 [fuel.lapUsage.transformation."LMU_NeoRedPlugin.Energy.Fuel.FractionPerLap_%".Generic]
-value = "((<%value%> / 100) * $prop('Fuel')).toFixed(2)"
+value = "((<%value%> / 100) * $prop('MaxFuel')).toFixed(2)"
 
 
 # ==== 4. TEMPERATURES SECTION ====
