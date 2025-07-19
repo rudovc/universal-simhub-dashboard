@@ -4,7 +4,6 @@
 /**
  * ==== 10. OUTPUT SECTION ====
  * Master output function, this is the underlying function called by every other function on SimHub's side, which exposes everything in this file based on current car/class/car id
- * !!! YOU **MUST** ADD NEW VALUES TO THE OUTPUT OF `getTelemetryLabelsAndValues` IF YOU ADD NEW MAPPING SECTIONS !!!
  * ========================
  */
 

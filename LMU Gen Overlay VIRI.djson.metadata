@@ -1,14 +1,12 @@
 {
-  "ScreenCount": 6.0,
+  "ScreenCount": 7.0,
   "InGameScreensIndexs": [
     1,
     2,
     3
   ],
   "IdleScreensIndexs": [
-    1,
-    2,
-    3
+    6
   ],
   "MainPreviewIndex": 1,
   "IsOverlay": false,

@@ -768,12 +768,55 @@ function changedSinceTimeMs(currentValue, currentFormattedTime, root, delayInMS 
 }
 
 /**
+ * @param {(number | null | undefined)[]} arr
+ * @returns {number}
+ */
+function calculateArraySum(arr) {
+  return arr.reduce((acc, cur) => {
+    if (typeof cur !== "number") {
+      const parsedNumber = parseFloat(cur);
+
+      if (Number.isNaN(parsedNumber)) {
+        return acc;
+      }
+
+      return acc + parsedNumber;
+    }
+
+    return acc + cur;
+  }, 0);
+}
+
+/**
+ * @param {(number | null | undefined)[]} arr
+ * @returns {number}
+ */
+function calculateArrayAverage(arr) {
+  return arr.reduce((acc, cur) => {
+    if (!acc) {
+      return cur;
+    }
+
+    if (typeof cur !== "number") {
+      const parsedNumber = parseFloat(cur);
+
+      if (Number.isNaN(parsedNumber)) {
+        return acc;
+      }
+
+      return (acc + parsedNumber) / 2;
+    }
+
+    return (acc + cur) / 2;
+  }, 0);
+}
+/**
  * @param {number} currentLapNumber
  * @param {number | string} currentValue
  * @param {{ previousLapNumber: number | null | undefined, valuesToCycle: (string | number)[] | null | undefined }} root
  * @param {number} nValues
  */
-function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3) {
+function cycleValuesOverNStints(currentLapNumber, currentValue, root, nValues = 3) {
   if (!root) {
     throw new Error(
       `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
@@ -796,6 +839,39 @@ function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3)
   }
 
   // biome-ignore lint/complexity/useLiteralKeys: <explanation>
+  return root["valuesToCycle"];
+}
+
+/**
+ * @param {number} currentLapNumber
+ * @param {number | string} currentValue
+ * @param {{ previousLapNumber: number | null | undefined, valuesToCycle: (string | number)[] | null | undefined }} root
+ * @param {number} nValues
+ * @param {boolean} validLap
+ * @param {boolean} clearValues
+ */
+function cycleValuesOverNLaps(currentLapNumber, currentValue, root, nValues = 3, validLap = true, clearValues = false) {
+  if (!root) {
+    throw new Error(
+      `Provided root is ${root}. Functions that rely on persistent calculation must receive a root object`
+    );
+  }
+
+  root.previousLapNumber = root.previousLapNumber ?? currentLapNumber;
+
+  if (currentLapNumber < root.previousLapNumber || clearValues) {
+    cycleValuesOverNEntries(currentValue, root, nValues, true);
+  }
+
+  if (root.valuesToCycle === null || root.valuesToCycle === undefined) {
+    cycleValuesOverNEntries(currentValue, root, nValues);
+  }
+
+  if (validLap && root.previousLapNumber !== currentLapNumber) {
+    root.previousLapNumber = currentLapNumber;
+    cycleValuesOverNEntries(currentValue, root, nValues);
+  }
+
   return root["valuesToCycle"];
 }
 
@@ -940,17 +1016,29 @@ function debugObject(value) {
  * @param {number} currentValue
  * @param {number} previousValue
  * @param {number} timeSpan
- * @param {{ resultEstimate: number | null, previousLapNumber: number | null; totalMeasurementTimeSeconds: number | null; valueAverageOverTimeSpan: number | null; }} root
+ * @param {{ previousLapTime: number | null , resultEstimate: number | null, previousLapNumber: number | null; totalMeasurementTimeSeconds: number | null; valueAverageOverTimeSpan: number | null; }} root
+ * @param {boolean} validLap
  */
-function estimateRequiredForSeconds(currentLapNumber, lastLapTimeSeconds, currentValue, previousValue, timeSpan, root) {
+function estimateRequiredForSeconds(
+  currentLapNumber,
+  lastLapTimeSeconds,
+  currentValue,
+  previousValue,
+  timeSpan,
+  root,
+  validLap = true
+) {
   root.resultEstimate = root.resultEstimate ?? 0;
 
   root.previousLapNumber = root.previousLapNumber ?? 0;
+  root.previousLapTime = root.previousLapTime ?? (validLap ? lastLapTimeSeconds : 0);
   root.totalMeasurementTimeSeconds = root.totalMeasurementTimeSeconds ?? 0;
   root.valueAverageOverTimeSpan = root.valueAverageOverTimeSpan ?? 0;
 
+  const lastValidLapTime = validLap ? lastLapTimeSeconds : root.previousLapTime;
+
   if (root.previousLapNumber !== currentLapNumber) {
-    root.totalMeasurementTimeSeconds = (root.totalMeasurementTimeSeconds + lastLapTimeSeconds) / 2;
+    root.totalMeasurementTimeSeconds = (root.totalMeasurementTimeSeconds + lastValidLapTime) / 2;
     root.valueAverageOverTimeSpan = (root.valueAverageOverTimeSpan + previousValue) / 2;
 
     const calcTime = timeSpan / root.totalMeasurementTimeSeconds;
