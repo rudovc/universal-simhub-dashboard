@@ -658,12 +658,7 @@ Generic = "TLap"
 # ---- 3.c FUEL TIME SECTION ----
 # Projected remaining stint time at the current fuel usage rate
 [fuel.time.property]
-# Leave this property empty in games where you want the dashboard to calculate the remaining laps dynamically
-# from your chosen fuel usage + fuel state properties.
-# We want this for LMU because the LMU plugins 'remembers' fuel usage from previous sessions, so it doesn't need
-# 5 fresh clean laps to update remaining time
 Generic = "DataCorePlugin.Computed.Fuel_RemainingTime"
-LMU = ""
 
 [fuel.time.label]
 Generic = "ETime"
@@ -672,11 +667,6 @@ Generic = "ETime"
 # Projected remaining laps number at the current fuel usage rate
 [fuel.laps.property]
 Generic = "DataCorePlugin.Computed.Fuel_RemainingLaps"
-# Leave this property empty in games where you want the dashboard to calculate the remaining laps dynamically
-# from your chosen fuel usage + fuel state properties.
-# We want this for LMU because the LMU plugins 'remembers' fuel usage from previous sessions, so it doesn't need
-# 5 fresh clean laps to update remaining laps
-LMU = ""
 
 [fuel.laps.label]
 Generic = "ELaps"
