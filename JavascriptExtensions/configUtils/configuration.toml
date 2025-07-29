@@ -993,17 +993,17 @@ goodThreshold = 1
 criticalThreshold = 3
 
 [tyres.ideal.pres.range.LMU.Generic]
-optimal = 28
+optimal = 25
 goodThreshold = 1
 criticalThreshold = 3
 
 [tyres.ideal.pres.range.LMU.GT3]
-optimal = 28
+optimal = 25
 goodThreshold = 1
 criticalThreshold = 3
 
 [tyres.ideal.pres.range.LMU.GTE]
-optimal = 28
+optimal = 25
 goodThreshold = 1
 criticalThreshold = 3
 
