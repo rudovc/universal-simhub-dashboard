@@ -10,11 +10,11 @@ for different types of car, class or games that I play.
 - Enabled System Info plugin in SimHub (instructions available on the [SimHub Wiki](https://github.com/SHWotever/SimHub/wiki/System-informations))
 - The super helpful
   [SimHub NeoRed Plugins](https://www.overtake.gg/downloads/lmu-neosuperdash.77210/)
-  by Haagel -
+  by Haagel and [LMU Electronic Bridge](https://github.com/nikolaiNr7/LMU-Electronic-Bridge-Release) by nikolainr7 -
   only needed if you want to use this dash for Le Mans Ultimate.
   (originally I wanted to use just native SimHub properties,
   but LMU is still building up native support for
-  SimHub and may not ever have all of the needed propertie)
+  SimHub and may not ever have all of the needed properties)
 
 ## Installation
 

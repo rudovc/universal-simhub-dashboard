@@ -423,7 +423,7 @@ GT3_Gen2 = ""
 # Describes current ERS deployment mode
 [ers.recovery.property]
 Generic = ""
-LMU = "LMU_NeoRedPlugin.Extended.VM_REGEN_LEVEL"
+LMU = "LMUElectronicBridge.Regen_Str"
 
 [ers.recovery.property.AssettoCorsa]
 vrc_formula_alpha_2024_csp = "DataCorePlugin.GameRawData.Physics.ErsHeatCharging"
@@ -507,7 +507,7 @@ GT3_Gen2 = "ELEC"
 Generic = "TCLevel"
 Automobilista2 = "TCLevel"
 AssettoCorsa = "TCLevel"
-LMU = "LMU_NeoRedPlugin.Extended.VM_TRACTIONCONTROLMAP"
+LMU = "LMUElectronicBridge.TC_Main_Str"
 
 [carControl.tc.label]
 Generic = "TC"
@@ -577,7 +577,7 @@ iRacing = "TC2 LEVEL"
 
 [carControl.abs.property]
 Generic = "ABSLevel"
-LMU = "LMU_NeoRedPlugin.Extended.VM_ANTILOCKBRAKESYSTEMMAP"
+LMU = "LMUElectronicBridge.ABS_Str"
 
 [carControl.abs.value.LMU]
 0 = "Off"
