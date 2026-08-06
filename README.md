@@ -1,3 +1,5 @@
+# THIS REPOSITORY HAS BEEN ARCHIVED AND MOVED TO CODEBERG BECAUSE CODEBERG WILL NOT SELL MY CODE TO TRAIN AI #
+
 # Universal Simhub Dashboard
 
 This is a hacky attempt at creating an easily configurable universal SimHub dashboard,
